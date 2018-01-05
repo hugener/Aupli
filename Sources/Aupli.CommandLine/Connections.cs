@@ -29,12 +29,13 @@ namespace Aupli.CommandLine
             this.NextButton = new ButtonConnection(ConnectorPin.P1Pin18);
             this.PreviousButton = new ButtonConnection(ConnectorPin.P1Pin16);
             this.VolumeInput = new Ky040Connection(ConnectorPin.P1Pin36, ConnectorPin.P1Pin38, ConnectorPin.P1Pin40);
-            this.RfidController = new Mfrc522Connection("/dev/spidev0.0", ConnectorPin.P1Pin22);
             this.Amplifier = new Max9744Connection(
                 ConnectorPin.P1Pin07,
                 ConnectorPin.P1Pin11,
                 ProcessorPin.Pin02,
                 ProcessorPin.Pin03);
+            this.Amplifier.SetShutdownState(false);
+            this.Amplifier.SetVolume(0);
             var dataPins = new IOutputBinaryPin[]
             {
                 gpioConnectionDriver.Out(ConnectorPin.P1Pin31),
@@ -49,6 +50,8 @@ namespace Aupli.CommandLine
                     ScreenWidth = 16
                 },
                 new Hd44780Pins(gpioConnectionDriver.Out(ConnectorPin.P1Pin29), gpioConnectionDriver.Out(ConnectorPin.P1Pin32), dataPins));
+            this.Display.Clear();
+            this.RfidController = new Mfrc522Connection("/dev/spidev0.0", ConnectorPin.P1Pin22);
             this.disposer = new Disposer(
                 this.MenuButton,
                 this.PlayPauseButton,

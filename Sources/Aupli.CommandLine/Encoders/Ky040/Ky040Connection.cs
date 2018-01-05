@@ -10,22 +10,22 @@
         private readonly InputPinConfiguration buttonPinConfiguration;
         private readonly IGpioConnectionDriver gpioConnectionDriver;
         private readonly GpioConnection gpioConnection;
-        private readonly GpioInputBinaryPin clkPin;
-        private readonly GpioInputBinaryPin dtPin;
-        private byte previousSequence;
+        private readonly GpioInputBinaryPin pinA;
+        private readonly GpioInputBinaryPin pinB;
+        private int abOld;
         private EncoderDirection encoderDirection;
 
         public Ky040Connection(ConnectorPin clkConnectorPin, ConnectorPin dtConnectorPin, ConnectorPin buttonConnectorPin)
         {
             this.gpioConnectionDriver = GpioConnectionSettings.DefaultDriver;
             this.clkPinConfiguration = clkConnectorPin.Input().PullUp();
-            PinConfigurationExtensionMethods.OnStatusChanged(this.clkPinConfiguration, this.OnEncoderChanged);
+            this.clkPinConfiguration.OnStatusChanged(this.OnEncoderChanged);
             this.dtPinConfiguration = dtConnectorPin.Input().PullUp();
-            PinConfigurationExtensionMethods.OnStatusChanged(this.dtPinConfiguration, this.OnEncoderChanged);
+            this.dtPinConfiguration.OnStatusChanged(this.OnEncoderChanged);
             this.buttonPinConfiguration = buttonConnectorPin.Input().PullUp();
-            PinConfigurationExtensionMethods.OnStatusChanged(this.buttonPinConfiguration, this.OnButtonPressed);
-            this.clkPin = GpioBinaryPinExtensionMethods.In(this.gpioConnectionDriver, clkConnectorPin, PinResistor.PullUp);
-            this.dtPin = GpioBinaryPinExtensionMethods.In(this.gpioConnectionDriver, dtConnectorPin, PinResistor.PullUp);
+            this.buttonPinConfiguration.OnStatusChanged(this.OnButtonPressed);
+            this.pinA = this.gpioConnectionDriver.In(clkConnectorPin, PinResistor.PullUp);
+            this.pinB = this.gpioConnectionDriver.In(dtConnectorPin, PinResistor.PullUp);
             if ((this.gpioConnectionDriver.GetCapabilities() & GpioConnectionDriverCapabilities.CanSetPinDetectedEdges) > 0)
             {
                 this.gpioConnectionDriver.SetPinDetectedEdges(clkConnectorPin.ToProcessor(), PinDetectedEdges.Falling);
@@ -41,55 +41,31 @@
 
         public void Dispose()
         {
-            this.clkPin.Dispose();
-            this.dtPin.Dispose();
+            this.pinA.Dispose();
+            this.pinB.Dispose();
             this.gpioConnection.Close();
         }
 
         private void OnEncoderChanged(bool obj)
         {
-            var clkState = (byte)(this.clkPin.Read() ? 1 : 0);
-            var dtState = (byte)(this.dtPin.Read() ? 1 : 0);
+            var a = this.pinA.Read() ? 1 : 0;
+            var b = this.pinB.Read() ? 1 : 0;
 
-            var c = clkState ^ dtState;
-            var sequence = (byte)(c | dtState << 1);
+            var abNew = a << 1 | b;
+            var criterion = abNew ^ this.abOld;
 
-            var delta = (sequence - this.previousSequence) % 4;
-            if (delta == 1)
+            Console.WriteLine("Criterion: " + criterion);
+            switch (criterion)
             {
-                if (this.encoderDirection == EncoderDirection.Clockwise)
-                {
-                    this.Rotating?.Invoke(this, new RotationEventArgs(EncoderDirection.Clockwise));
-                }
-                else
-                {
-                    this.encoderDirection = EncoderDirection.Clockwise;
-                }
-            }
-            else if (delta == 2)
-            {
-                if (this.encoderDirection == EncoderDirection.Clockwise)
-                {
-                    this.Rotating?.Invoke(this, new RotationEventArgs(EncoderDirection.Clockwise));
-                }
-                else if (this.encoderDirection == EncoderDirection.CounterClockwise)
-                {
+                case 1:
                     this.Rotating?.Invoke(this, new RotationEventArgs(EncoderDirection.CounterClockwise));
-                }
-            }
-            else if (delta == 3)
-            {
-                if (this.encoderDirection == EncoderDirection.CounterClockwise)
-                {
-                    this.Rotating?.Invoke(this, new RotationEventArgs(EncoderDirection.CounterClockwise));
-                }
-                else
-                {
-                    this.encoderDirection = EncoderDirection.CounterClockwise;
-                }
+                    break;
+                case 2:
+                    this.Rotating?.Invoke(this, new RotationEventArgs(EncoderDirection.Clockwise));
+                    break;
             }
 
-            this.previousSequence = sequence;
+            this.abOld = abNew;
         }
 
         private void OnButtonPressed(bool state)

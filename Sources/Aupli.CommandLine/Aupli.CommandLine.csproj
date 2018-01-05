@@ -7,6 +7,11 @@
     <FileVersion>01.0.1.0</FileVersion>
     <Version>0.0.1-pre001</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Aupli.CommandLine.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +22,11 @@
     <PackageReference Include="Pi.IO.Interop" Version="0.0.2-preview1" />
     <PackageReference Include="Pi.IO.SerialPeripheralInterface" Version="0.0.2-preview1" />
     <PackageReference Include="Sundew.Base" Version="3.1.0-pre011" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MpcNET\src\MpcNET\MpcNET.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,8 +8,8 @@ namespace Aupli.CommandLine.Encoders.Ky040
 {
     public enum EncoderDirection
     {
-        Clockwise,
+        Clockwise = 1,
 
-        CounterClockwise
+        CounterClockwise = 3
     }
 }

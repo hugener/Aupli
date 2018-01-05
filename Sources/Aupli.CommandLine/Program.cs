@@ -1,15 +1,26 @@
-﻿namespace Aupli.CommandLine
+﻿using MpcNET.Commands;
+
+namespace Aupli.CommandLine
 {
     using System;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
     using Aupli.CommandLine.Encoders.Ky040;
+    using MpcNET;
+    using MpcNET.Tags;
     using Pi.Timers;
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Welcome let's start");
 
+            var mpcConnection = new MpcConnection(new IPEndPoint(IPAddress.Loopback, 6600));
+            await mpcConnection.ConnectAsync();
+            await mpcConnection.SendAsync(Command.Database.Update());
             using (var connections = new Connections())
             {
                 var amplifier = connections.Amplifier;
@@ -20,8 +31,7 @@
                 var previousButton = connections.PreviousButton;
                 var volumeInput = connections.VolumeInput;
                 var rfidController = connections.RfidController;
-                amplifier.SetShutdownState(false);
-                amplifier.SetVolume(0);
+
 
                 display.Clear();
                 display.Home();
@@ -46,16 +56,17 @@
                     display.WriteLine(line1);
                     display.WriteLine(line2);
                     Console.WriteLine("Next button pressed");
+                    amplifier.SetVolume((byte)(amplifier.GetVolume() + 5));
                 };
 
-                playPauseButton.Pressed += (sender, eventArgs) =>
+                playPauseButton.Pressed += async (sender, eventArgs) =>
                 {
                     line1 = "Play pressed    ";
                     display.Clear();
                     display.WriteLine(line1);
                     display.WriteLine(line2);
                     Console.WriteLine("PlayPause button pressed");
-                    amplifier.SetVolume(20);
+                    await mpcConnection.SendAsync(Command.Playback.PlayPause());
                 };
 
                 previousButton.Pressed += (sender, eventArgs) =>
@@ -65,6 +76,7 @@
                     display.WriteLine(line1);
                     display.WriteLine(line2);
                     Console.WriteLine("Previous button pressed");
+                    amplifier.SetVolume((byte)(amplifier.GetVolume() - 5));
                 };
 
                 volumeInput.Pressed += (sender, eventArgs) =>
@@ -100,13 +112,37 @@
                     }
                 };
 
-                rfidController.TagDetected += (sender, eventArgs) =>
+                rfidController.TagDetected += async (sender, eventArgs) =>
                 {
                     line2 = "Found:  " + eventArgs.Uid;
                     display.Clear();
                     display.WriteLine(line1);
                     display.WriteLine(line2);
                     Console.WriteLine(line2);
+                    var tagDirectory = eventArgs.Uid.ToString();
+                    var findMpcMessage = await mpcConnection.SendAsync(Command.Database.Find(FindTags.Base, tagDirectory));
+                    if (findMpcMessage.IsResponseValid)
+                    {
+                        var statusMessage = await mpcConnection.SendAsync(Command.Status.GetStatus());
+                        if (statusMessage.IsResponseValid)
+                        {
+                            if (findMpcMessage.Response.Body.FirstOrDefault(x =>
+                                    x.Id == statusMessage.Response.Body.SongId) == null)
+                            {
+                                Console.WriteLine("Clear playlist");
+                                await mpcConnection.SendAsync(Command.Playlists.Current.Clear());
+                                Console.WriteLine("Add songs to playlist");
+                                await mpcConnection.SendAsync(Command.Playlists.Current.AddDirectory(tagDirectory));
+                                var firstSong = findMpcMessage.Response.Body.First();
+                                Console.WriteLine($"Start song {firstSong.Title} playlist");
+                                await mpcConnection.SendAsync(Command.Playback.Play(firstSong));
+                            }
+                            else
+                            {
+                                Console.WriteLine("Playlist already playing");
+                            }
+                        }
+                    }
                 };
 
                 rfidController.StartScanning();
@@ -119,6 +155,11 @@
                     }
                 }
                 while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+
+                if (mpcConnection.IsConnected)
+                {
+                    await mpcConnection.DisconnectAsync();
+                }
             }
         }
     }

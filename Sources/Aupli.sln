@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aupli.CommandLine", "Aupli.CommandLine\Aupli.CommandLine.csproj", "{D7048FC8-F266-49AA-88A0-518FB794BB5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MpcNET", "..\..\MpcNET\src\MpcNET\MpcNET.csproj", "{49DFB0F7-69A5-437F-9FEA-E72032CA6B7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MpcNet.Tester", "MpcNet.Tester\MpcNet.Tester.csproj", "{62011EC4-700E-4AC9-8F2B-DD5597FC3AAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{D7048FC8-F266-49AA-88A0-518FB794BB5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7048FC8-F266-49AA-88A0-518FB794BB5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7048FC8-F266-49AA-88A0-518FB794BB5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49DFB0F7-69A5-437F-9FEA-E72032CA6B7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49DFB0F7-69A5-437F-9FEA-E72032CA6B7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49DFB0F7-69A5-437F-9FEA-E72032CA6B7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49DFB0F7-69A5-437F-9FEA-E72032CA6B7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62011EC4-700E-4AC9-8F2B-DD5597FC3AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62011EC4-700E-4AC9-8F2B-DD5597FC3AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62011EC4-700E-4AC9-8F2B-DD5597FC3AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62011EC4-700E-4AC9-8F2B-DD5597FC3AAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
