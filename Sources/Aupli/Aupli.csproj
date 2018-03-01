@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>01.0.1.0</FileVersion>
+    <Version>0.0.1-pre001</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Aupli.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\Aupli.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="playlists.json" />
+    <None Remove="settings.json" />
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="playlists.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sundew.Base" Version="3.1.0-pre015" />
+    <PackageReference Include="Sundew.CommandLine" Version="1.0.0-pre012" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MpcNET\Sources\MpcNET\MpcNET.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.IO.Components\Pi.IO.Components.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.IO.GeneralPurpose\Pi.IO.GeneralPurpose.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.IO.InterIntegratedCircuit\Pi.IO.InterIntegratedCircuit.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.IO.Interop\Pi.IO.Interop.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.IO.SerialPeripheralInterface\Pi.IO.SerialPeripheralInterface.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.IO\Pi.IO.csproj" />
+    <ProjectReference Include="..\..\..\Pi\Pi.System\Pi.System.csproj" />
+    <ProjectReference Include="..\Sundew.Pi.ApplicationFramework\Sundew.Pi.ApplicationFramework.csproj" />
+    <ProjectReference Include="..\Sundew.Pi.IO.Components\Sundew.Pi.IO.Components.csproj" />
+    <ProjectReference Include="..\Sundew.Pi.IO.Drivers\Sundew.Pi.IO.Drivers.csproj" />
+  </ItemGroup>
+
+</Project>

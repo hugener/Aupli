@@ -1,0 +1,12 @@
+[Unit]
+ Description=Aupli
+ After=mpd.service
+
+[Service]
+ Type=idle
+ WorkingDirectory=/home/pi/Aupli
+ ExecStart=/usr/local/bin/dotnet /home/pi/Aupli/Aupli.dll -s
+ Restart=on-failure
+
+[Install]
+ WantedBy=multi-user.target
