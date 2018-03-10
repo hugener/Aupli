@@ -77,8 +77,9 @@ namespace Aupli.Player
 
                 renderContext.WriteLine(
                     $"{this.playerStatus.Artist.LimitAndPadRight(renderContext.Width - 6, ' ')} {this.playerStatus.Elapsed:mm\\:ss}");
+                var trackText = $" #{this.playerStatus.Track:D2}";
                 renderContext.WriteLine(
-                    $"{this.playerStatus.Title.LimitAndPadRight(renderContext.Width - 4, ' ')} #{this.playerStatus.Track:D2}");
+                    $"{this.playerStatus.Title.LimitAndPadRight(renderContext.Width - trackText.Length, ' ')}{trackText}");
             }
 
             if (this.playerStatus.State == PlayerState.Paused)
