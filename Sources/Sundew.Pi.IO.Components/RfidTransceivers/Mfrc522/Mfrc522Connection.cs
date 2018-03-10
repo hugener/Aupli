@@ -97,7 +97,10 @@ namespace Sundew.Pi.IO.Components.RfidTransceivers.Mfrc522
                     {
                         var uid = this.mfrc522Device.ReadUid();
                         this.mfrc522Device.HaltTag();
-                        this.TagDetected?.Invoke(this, new TagDetectedEventArgs(uid));
+                        if (uid.IsValid)
+                        {
+                            this.TagDetected?.Invoke(this, new TagDetectedEventArgs(uid));
+                        }
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();

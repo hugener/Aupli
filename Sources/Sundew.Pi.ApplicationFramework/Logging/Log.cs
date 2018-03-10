@@ -69,9 +69,7 @@ namespace Sundew.Pi.ApplicationFramework.Logging
         {
             if (this.LogLevel <= logLevel && !this.cancellationTokenSource.IsCancellationRequested)
             {
-                this.logWriter.Write(GetMessage(logLevel, category, dateTime, message));
-
-                // this.logBlockingCollection.Add(GetMessage(logLevel, category, dateTime, message));
+                this.logBlockingCollection.Add(GetMessage(logLevel, category, dateTime, message));
             }
         }
 
@@ -92,15 +90,16 @@ namespace Sundew.Pi.ApplicationFramework.Logging
                 $"{dateTime:G} | {logLevel.ToString().LimitAndPadRight(7, ' ')} | {category.LimitAndPadRight(25, ' ')} | {message}";
         }
 
-        private void OutputLog()
+        private async void OutputLog()
         {
             try
             {
+                this.logWriter.Initialize();
                 var cancellationToken = this.cancellationTokenSource.Token;
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var logItem = this.logBlockingCollection.Take(cancellationToken);
-                    this.logWriter.Write(logItem);
+                    await this.logWriter.WriteAsync(logItem);
                 }
             }
             catch (OperationCanceledException)

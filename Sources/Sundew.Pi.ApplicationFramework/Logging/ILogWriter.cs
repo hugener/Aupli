@@ -8,6 +8,7 @@
 namespace Sundew.Pi.ApplicationFramework.Logging
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Interface for implementing a log writer.
@@ -18,6 +19,12 @@ namespace Sundew.Pi.ApplicationFramework.Logging
         /// Writes the specified log message.
         /// </summary>
         /// <param name="message">The message.</param>
-        void Write(string message);
+        /// <returns>An async task.</returns>
+        Task WriteAsync(string message);
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        void Initialize();
     }
 }

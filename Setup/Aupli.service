@@ -1,6 +1,7 @@
+#/lib/systemd/system
 [Unit]
  Description=Aupli
- After=mpd.service
+ After=mpd.service lircd.service
 
 [Service]
  Type=idle

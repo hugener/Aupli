@@ -164,7 +164,10 @@ namespace Aupli.Volume
 
         private void OnMusicPlayerInfoChanged(object sender, StatusEventArgs e)
         {
-            this.volumeControls.Amplifier.SetMuteState(e.State != PlayerState.Playing || this.isUsingHeadPhones);
+            if (!this.isMuted)
+            {
+                this.volumeControls.Amplifier.SetMuteState(e.State != PlayerState.Playing || this.isUsingHeadPhones);
+            }
         }
     }
 }

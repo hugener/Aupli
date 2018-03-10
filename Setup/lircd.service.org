@@ -1,4 +1,3 @@
-#/lib/systemd/system
 [Unit]
 Documentation=man:lircd(8)
 Documentation=http://lirc.org/html/configure.html
@@ -7,8 +6,7 @@ Wants=lircd-setup.service
 After=network.target lircd-setup.service
 
 [Service]
-Type=forking
-PIDFile=/var/run/lirc/lircd.pid
+Type=simple
 ExecStart=/usr/sbin/lircd --nodaemon --listen
 ; User=lirc
 ; Group=lirc

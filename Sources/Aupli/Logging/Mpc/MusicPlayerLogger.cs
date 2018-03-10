@@ -60,7 +60,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="playlistName">Name of the playlist.</param>
         public void IgnoredPlaylist(string playlistName)
         {
-            this.logger.Log(this.currentLogLevel, "Ignored playlist: " + playlistName);
+            this.logger.Log(this.currentLogLevel, "Ignored playlist: " + (string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName));
         }
 
         /// <summary>

@@ -8,6 +8,7 @@
 namespace Sundew.Pi.ApplicationFramework.Logging
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Write writer that outputs to the console.
@@ -19,9 +20,16 @@ namespace Sundew.Pi.ApplicationFramework.Logging
         /// Logs the specified message to the console.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void Write(string message)
+        /// <returns>A completed task.</returns>
+        public Task WriteAsync(string message)
         {
             Console.WriteLine(message);
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public void Initialize()
+        {
         }
 
         /// <inheritdoc />

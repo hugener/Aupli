@@ -10,6 +10,7 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using global::Pi.Timers;
     using Sundew.Base.Collections;
     using Sundew.Base.Computation;
 
@@ -23,6 +24,7 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
         private readonly object renderLock = new object();
         private readonly IRenderingContextFactory renderContextFactory;
         private readonly ITextViewRendererObserver textViewRendererObserver;
+        private readonly ITimer renderingTimer = global::Pi.Timers.Timer.Create();
         private Task renderTask;
         private ITextView textView;
         private CancellationTokenSource cancellationTokenSource;
@@ -69,6 +71,7 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
         public void Dispose()
         {
             this.cancellationTokenSource?.Cancel();
+            this.renderingTimer.Dispose();
             this.renderTask?.Wait();
             this.cancellationTokenSource?.Dispose();
             this.cancellationTokenSource = null;
@@ -88,10 +91,11 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
             {
                 if (this.textView != newTextView)
                 {
+                    this.renderingTimer.Stop();
                     var oldView = this.textView;
                     oldView?.OnClosing();
                     this.textView = newTextView;
-                    this.invalidater = new Invalidater();
+                    this.invalidater = new Invalidater(this.renderingTimer);
                     this.renderContextFactory.TryCreateCustomCharacterBuilder(out var characterContext);
                     this.textView.OnShowing(this.invalidater, characterContext);
                     this.textViewRendererObserver?.OnViewChanged(newTextView, oldView);

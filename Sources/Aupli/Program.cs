@@ -13,6 +13,7 @@ namespace Aupli
     using System.Threading.Tasks;
     using Aupli.CommandLine;
     using Aupli.OperationSystem;
+    using Newtonsoft.Json;
     using Pi.IO.GeneralPurpose;
     using Sundew.Base.Computation;
     using Sundew.CommandLine;
@@ -32,7 +33,7 @@ namespace Aupli
         {
             var commandLineParser = new CommandLineParser<Options, int>();
             commandLineParser.WithArguments(
-                new Options(false, LogType.Console, "Aupli.log", LogLevel.Debug),
+                new Options(false, true, LogLevel.Debug, new FileLogOptions()),
                 options => Result.Success(options));
             var result = commandLineParser.Parse(args);
             if (!result)
@@ -76,18 +77,18 @@ namespace Aupli
                         catch (OperationCanceledException)
                         {
                         }
-                    }
 
-                    await configurationFactory.SaveSettingsAsync();
-                    await configurationFactory.SavePlaylistMapAsync();
+                        await configurationFactory.SaveSettingsAsync();
+                        await configurationFactory.SavePlaylistMapAsync();
 
-                    logger.LogInfo("Stopped Aupli");
-                    if (result.Value.AllowShutdown)
-                    {
-                        logger.LogInfo("Shutting down Aupli");
-                        await Task.Delay(TimeSpan.FromSeconds(3), CancellationToken.None);
-                        var powerConnection = new PowerConnection();
-                        powerConnection.Shutdown();
+                        logger.LogInfo("Stopped Aupli");
+                        if (result.Value.AllowShutdown)
+                        {
+                            logger.LogInfo("Shutting down Aupli");
+                            await Task.Delay(TimeSpan.FromSeconds(3.5), CancellationToken.None);
+                            var powerConnection = new PowerConnection();
+                            powerConnection.Shutdown();
+                        }
                     }
                 }
                 catch (Exception e)
@@ -105,14 +106,18 @@ namespace Aupli
         {
             var options = result.Value;
             var logWriters = new List<ILogWriter>();
-            if (options.LogType.HasFlag(LogType.Console))
+            if (options.IsLoggingToConsole)
             {
                 logWriters.Add(new ConsoleLogWriter());
             }
 
-            if (options.LogType.HasFlag(LogType.File))
+            if (options.FileLogOptions != null)
             {
-                logWriters.Add(new FileLogWriter(options.LogPath));
+                var fileLoggingOptions = options.FileLogOptions;
+                logWriters.Add(new FileLogWriter(
+                    fileLoggingOptions.LogPath,
+                    fileLoggingOptions.MaxLogFileSizeInBytes,
+                    fileLoggingOptions.MaxNumberOfLogFiles));
             }
 
             return new Log(new MultiLogWriter(logWriters), options.LogLevel);

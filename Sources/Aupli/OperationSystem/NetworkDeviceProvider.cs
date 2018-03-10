@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IPAddressProvider.cs" company="Hukano">
+// <copyright file="NetworkDeviceProvider.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -7,36 +7,46 @@
 
 namespace Aupli.OperationSystem
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
 
     /// <summary>
     /// Provides the IP address on a Unix system.
     /// </summary>
-    public class IPAddressProvider
+    public class NetworkDeviceProvider
     {
         /// <summary>
-        /// Tries the get system ip address.
+        /// Tries the get network devices.
         /// </summary>
-        /// <param name="ipAddress">The ip address.</param>
-        /// <returns><c>true</c>, if the system address could be obtained, otherwise <c>false</c>.</returns>
-        public bool TryGetSystemIpAddress(out IPAddress ipAddress)
+        public IEnumerable<NetworkDevice> GetSystemNetworkDevices()
         {
             var processStartInfo =
-                new ProcessStartInfo($"ifconfig", "eth0")
+                new ProcessStartInfo("ifconfig")
                 {
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                 };
 
             var ifConfigProcess = Process.Start(processStartInfo);
-            ipAddress = IPAddress.None;
+            var networkDevices = new List<NetworkDevice>();
+            var networkDeviceName = "Unknown";
             while (!ifConfigProcess.StandardOutput.EndOfStream)
             {
                 var line = ifConfigProcess.StandardOutput.ReadLine();
                 if (line == null)
                 {
-                    break;
+                    continue;
+                }
+
+                if (!line.StartsWith(" "))
+                {
+                    var endOfDeviceNameIndex = line.IndexOf(": ", StringComparison.InvariantCulture);
+                    if (endOfDeviceNameIndex > 0)
+                    {
+                        networkDeviceName = line.Substring(0, endOfDeviceNameIndex);
+                    }
                 }
 
                 if (line.Contains("inet "))
@@ -48,17 +58,16 @@ namespace Aupli.OperationSystem
                         ip = ip.Substring(0, firstSpace);
                     }
 
-                    if (!IPAddress.TryParse(ip, out ipAddress))
+                    if (IPAddress.TryParse(ip, out var ipAddress))
                     {
-                        ipAddress = IPAddress.None;
+                        networkDevices.Add(new NetworkDevice(networkDeviceName, ipAddress));
+                        networkDeviceName = "Unknown";
                     }
-
-                    break;
                 }
             }
 
             ifConfigProcess.WaitForExit();
-            return !Equals(ipAddress, IPAddress.None);
+            return networkDevices;
         }
     }
 }

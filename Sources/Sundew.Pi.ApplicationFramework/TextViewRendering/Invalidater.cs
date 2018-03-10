@@ -7,9 +7,18 @@
 
 namespace Sundew.Pi.ApplicationFramework.TextViewRendering
 {
+    using global::Pi.Timers;
+
     internal class Invalidater : IInvalidater
     {
         private bool invalidate = true;
+
+        public Invalidater(ITimer timer)
+        {
+            this.Timer = timer;
+        }
+
+        public ITimer Timer { get; }
 
         public bool IsRenderRequiredAndReset()
         {

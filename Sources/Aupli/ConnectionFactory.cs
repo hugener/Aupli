@@ -114,7 +114,7 @@ namespace Aupli
                     new VolumeAdjuster(
                         new Range<byte>(
                             (byte)(max9744Connection.VolumeRange.Min + 10),
-                            (byte)(max9744Connection.VolumeRange.Max - 0)),
+                            (byte)(max9744Connection.VolumeRange.Max - 30)),
                         new Percentage(initialVolume),
                         0.05);
                 max9744Connection.SetVolume(volumeAdjuster.Volume.AbsoluteValue);

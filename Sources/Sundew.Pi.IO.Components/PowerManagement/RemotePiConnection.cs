@@ -10,7 +10,6 @@ namespace Sundew.Pi.IO.Components.PowerManagement
     using System;
     using global::Pi.IO.GeneralPurpose;
     using global::Pi.System.Threading;
-    using Sundew.Base.Disposal;
 
     /// <summary>
     /// Represents a connection to the RemotePI for shutting down PI.

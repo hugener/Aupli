@@ -6,9 +6,9 @@
     using global::Pi.System.Threading;
     using Timer = global::Pi.Timers.Timer;
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine("Timer tester!");
             var threadFactory = new ThreadFactory(Board.Current, true);

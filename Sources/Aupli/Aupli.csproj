@@ -42,8 +42,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.Base" Version="3.1.0-pre015" />
-    <PackageReference Include="Sundew.CommandLine" Version="1.0.0-pre012" />
+    <PackageReference Include="Sundew.Base" Version="3.2.0-pre004" />
+    <PackageReference Include="Sundew.CommandLine" Version="2.0.0-pre000" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 

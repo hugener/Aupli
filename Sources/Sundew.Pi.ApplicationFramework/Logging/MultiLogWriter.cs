@@ -8,6 +8,8 @@
 namespace Sundew.Pi.ApplicationFramework.Logging
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Sundew.Base.Collections;
 
     /// <summary>
@@ -24,16 +26,25 @@ namespace Sundew.Pi.ApplicationFramework.Logging
         /// <param name="logWriters">The log writers.</param>
         public MultiLogWriter(IEnumerable<ILogWriter> logWriters)
         {
-            this.logWriters = logWriters;
+            this.logWriters = logWriters.ToList();
+        }
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        public void Initialize()
+        {
+            this.logWriters.ForEach(x => x.Initialize());
         }
 
         /// <summary>
         /// Logs the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void Write(string message)
+        /// <returns>An async task.</returns>
+        public async Task WriteAsync(string message)
         {
-            this.logWriters.ForEach(x => x.Write(message));
+            await this.logWriters.ForEachAsync(async x => await x.WriteAsync(message));
         }
 
         /// <inheritdoc />

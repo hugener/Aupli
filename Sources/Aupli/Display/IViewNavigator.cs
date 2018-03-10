@@ -29,6 +29,7 @@ namespace Aupli.Display
         /// Navigates to volume textView.
         /// </summary>
         /// <param name="activeTimeSpan">The active time span.</param>
+        /// <returns>An async task.</returns>
         Task NavigateToVolumeViewAsync(TimeSpan activeTimeSpan);
 
         /// <summary>

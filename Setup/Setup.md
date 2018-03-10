@@ -109,7 +109,7 @@ sudo nano /etc/upmpdcli.conf
 friendlyname = Laia-Aupli
 
 # Publish sources from Package manager console:
-dotnet publish -r linux-arm
+dotnet publish -r linux-arm -c Release .\Aupli\Aupli.csproj
 
 Transfer published output to /home/pi/Aupli using WinSCP etc.
 

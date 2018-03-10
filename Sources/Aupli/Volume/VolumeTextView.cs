@@ -44,7 +44,7 @@ namespace Aupli.Volume
         public void Render(IRenderContext renderContext)
         {
             renderContext.Home();
-            var line1 = $"Volume: {this.volume.ToString(0), 5}{' '.Repeat(renderContext.Width - 5 + 8)}";
+            var line1 = $"Volume: {this.volume.ToString(0),5}{' '.Repeat(renderContext.Width - 5 + 8)}";
             if (this.isMuted)
             {
                 line1 = "Muted".LimitAndPadRight(renderContext.Width - 5, ' ');

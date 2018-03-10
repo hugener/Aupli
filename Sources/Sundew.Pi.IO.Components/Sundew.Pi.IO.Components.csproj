@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" />
-    <PackageReference Include="Sundew.Base" Version="3.1.0-pre014" />
+    <PackageReference Include="Sundew.Base" Version="3.2.0-pre004" />
   </ItemGroup>
 
   <ItemGroup>

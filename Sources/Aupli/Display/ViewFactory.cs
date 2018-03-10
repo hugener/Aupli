@@ -42,7 +42,7 @@ namespace Aupli.Display
         {
             this.startUpView = new Lazy<StartUpTextView>(() => new StartUpTextView(startupConfiguration));
             this.playerView = new Lazy<PlayerTextView>(() => new PlayerTextView(connectionFactory.MusicPlayer));
-            this.menuView = new Lazy<MenuTextView>(() => new MenuTextView(new IPAddressProvider()));
+            this.menuView = new Lazy<MenuTextView>(() => new MenuTextView(new NetworkDeviceProvider(), controllerFactory.MenuController));
             this.volumeView = new AsyncLazy<VolumeTextView>(async () => new VolumeTextView(await controllerFactory.GetVolumeControllerAsync()), LazyThreadSafetyMode.ExecutionAndPublication);
             this.shutdownView = new Lazy<ShutdownTextView>(() => new ShutdownTextView(startupConfiguration));
         }

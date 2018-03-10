@@ -25,6 +25,7 @@ namespace Aupli.Menu
         {
             this.interactionController = interactionController;
             this.interactionController.KeyInputEvent.Register(this, this.OnInteractionControllerKeyInput);
+            this.interactionController.TagInputEvent.Register(this, this.OnTagInput);
         }
 
         /// <summary>
@@ -32,9 +33,19 @@ namespace Aupli.Menu
         /// </summary>
         public event EventHandler Exit;
 
+        /// <summary>
+        /// Occurs when a tag input occurs.
+        /// </summary>
+        public event EventHandler<TagInputArgs> TagInput;
+
         private void OnInteractionControllerKeyInput(object sender, KeyInputArgs keyInputArgs)
         {
             this.Exit?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnTagInput(object sender, TagInputArgs e)
+        {
+            this.TagInput?.Invoke(this, e);
         }
     }
 }

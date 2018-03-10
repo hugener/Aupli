@@ -8,6 +8,7 @@
 namespace Aupli.CommandLine
 {
     using System;
+    using Newtonsoft.Json;
     using Sundew.Base.Enumerations;
     using Sundew.CommandLine;
     using Sundew.Pi.ApplicationFramework.Logging;
@@ -22,14 +23,14 @@ namespace Aupli.CommandLine
         /// Initializes a new instance of the <see cref="Options" /> class.
         /// </summary>
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
-        /// <param name="logType">Type of the log.</param>
-        /// <param name="logPath">The log path.</param>
+        /// <param name="isLoggingToConsole">if set to <c>true</c> [is logging to console].</param>
+        /// <param name="fileLogOptions">The file log options.</param>
         /// <param name="logLevel">The log level.</param>
-        public Options(bool allowShutdown, LogType logType, string logPath, LogLevel logLevel)
+        public Options(bool allowShutdown, bool isLoggingToConsole, LogLevel logLevel = LogLevel.Info, FileLogOptions fileLogOptions = null)
         {
             this.AllowShutdown = allowShutdown;
-            this.LogType = logType;
-            this.LogPath = logPath;
+            this.IsLoggingToConsole = isLoggingToConsole;
+            this.FileLogOptions = fileLogOptions;
             this.LogLevel = logLevel;
         }
 
@@ -42,20 +43,20 @@ namespace Aupli.CommandLine
         public bool AllowShutdown { get; private set; }
 
         /// <summary>
-        /// Gets the type of the log.
+        /// Gets a value indicating whether this instance is logging to console.
         /// </summary>
         /// <value>
-        /// The type of the log.
+        /// <c>true</c> if this instance is logging to console; otherwise, <c>false</c>.
         /// </value>
-        public LogType LogType { get; private set; }
+        public bool IsLoggingToConsole { get; private set; }
 
         /// <summary>
-        /// Gets the log path.
+        /// Gets the file log options.
         /// </summary>
         /// <value>
-        /// The log path.
+        /// The file log options.
         /// </value>
-        public string LogPath { get; private set; }
+        public FileLogOptions FileLogOptions { get; private set; }
 
         /// <summary>
         /// Gets the log level.
@@ -78,19 +79,20 @@ namespace Aupli.CommandLine
                 b => this.AllowShutdown = b,
                 "Allows Aupli to shutdown the device when closing.");
 
-            argumentsBuilder.AddOptional(
-                "l",
-                "log",
-                () => this.LogType.ToString(),
-                value => this.LogType = value.ParseFlagsEnum<LogType>(),
-                "Specifies whether to use a File- or Console logger");
+            argumentsBuilder.AddSwitch(
+                "cl",
+                "console-log",
+                this.IsLoggingToConsole,
+                value => this.IsLoggingToConsole = value,
+                "Specifies whether to use a Console logger");
 
             argumentsBuilder.AddOptional(
-                "lp",
-                "log-path",
-                () => this.LogPath,
-                value => this.LogPath = value,
-                "Specifies the log path, in case of the File logger");
+                "fl",
+                "file-log",
+                this.FileLogOptions,
+                () => new FileLogOptions(),
+                value => this.FileLogOptions = value,
+                "Specifies whether to use a File logger and it's options");
 
             argumentsBuilder.AddOptional(
                 "ll",
