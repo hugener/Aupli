@@ -10,8 +10,8 @@ namespace Aupli.Mpc
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Aupli.Numeric;
     using MpcNET;
+    using Numeric;
     using Sundew.Base.Threading;
 
     /// <summary>
@@ -20,18 +20,19 @@ namespace Aupli.Mpc
     public class MusicPlayer : IMusicPlayer
     {
         private readonly AsyncLock mpcCommandLock = new AsyncLock();
-        private readonly MpcConnection mpcConnection;
+        private readonly IMpcConnection mpcConnection;
         private readonly IMusicPlayerObserver musicPlayerObserver;
         private readonly Task musicPlayerTask;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private string currentPlaylist;
+        private MpdStatus status;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MusicPlayer" /> class.
         /// </summary>
         /// <param name="mpcConnection">The MPC connection.</param>
         /// <param name="musicPlayerObserver">The music player observer.</param>
-        public MusicPlayer(MpcConnection mpcConnection, IMusicPlayerObserver musicPlayerObserver)
+        public MusicPlayer(IMpcConnection mpcConnection, IMusicPlayerObserver musicPlayerObserver)
         {
             this.mpcConnection = mpcConnection;
             this.musicPlayerObserver = musicPlayerObserver;
@@ -53,8 +54,7 @@ namespace Aupli.Mpc
         /// <value>
         /// The status.
         /// </value>
-        public PlayerStatus Status { get; private set; } =
-            new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, -1, TimeSpan.Zero);
+        public PlayerStatus Status { get; private set; } = PlayerStatus.NoStatus;
 
         /// <summary>
         /// Updates the status asynchronously.
@@ -148,7 +148,15 @@ namespace Aupli.Mpc
         {
             await this.ExecuteCommandAsync(async () =>
             {
-                await this.mpcConnection.SendAsync(commands => commands.Playback.Next());
+                if (this.status.Song == this.status.PlaylistLength - 1)
+                {
+                    await this.mpcConnection.SendAsync(commands => commands.Playback.Play(0));
+                }
+                else
+                {
+                    await this.mpcConnection.SendAsync(commands => commands.Playback.Next());
+                }
+
                 await Task.Delay(10);
                 await this.UpdateDisplayWithCurrentSongAsync();
             });
@@ -162,7 +170,15 @@ namespace Aupli.Mpc
         {
             await this.ExecuteCommandAsync(async () =>
             {
-                await this.mpcConnection.SendAsync(commands => commands.Playback.Previous());
+                if (this.status.Song == 0)
+                {
+                    await this.mpcConnection.SendAsync(commands => commands.Playback.Play(this.status.PlaylistLength - 1));
+                }
+                else
+                {
+                    await this.mpcConnection.SendAsync(commands => commands.Playback.Previous());
+                }
+
                 await Task.Delay(10);
                 await this.UpdateDisplayWithCurrentSongAsync();
             });
@@ -198,15 +214,15 @@ namespace Aupli.Mpc
             if (currentSongResult.IsResponseValid && statusResult.IsResponseValid)
             {
                 var currentSong = currentSongResult.Response.Content;
-                var status = statusResult.Response.Content;
-                if (currentSong != null && status != null)
+                this.status = statusResult.Response.Content;
+                if (currentSong != null && this.status != null)
                 {
                     var playerStatus = new PlayerStatus(
                         currentSong.Artist,
                         currentSong.Title,
-                        GetPlayerState(status.State),
+                        GetPlayerState(this.status.State),
                         currentSong.Position,
-                        TimeSpan.FromSeconds(Math.Round(status.Elapsed.TotalSeconds, 0)));
+                        TimeSpan.FromSeconds(Math.Round(this.status.Elapsed.TotalSeconds, 0)));
                     if (!playerStatus.Equals(this.Status))
                     {
                         this.Status = playerStatus;

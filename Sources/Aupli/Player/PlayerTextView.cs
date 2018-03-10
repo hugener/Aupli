@@ -103,8 +103,8 @@ namespace Aupli.Player
 
         private void ResetPlayerState()
         {
-            this.playerStatus = new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, -1, TimeSpan.Zero);
-            this.previousPlayerStatus = new PlayerStatus(null, null, PlayerState.Unknown, -1, TimeSpan.Zero);
+            this.playerStatus = PlayerStatus.NoStatus;
+            this.previousPlayerStatus = PlayerStatus.NoStatus;
         }
     }
 }

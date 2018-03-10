@@ -15,6 +15,12 @@ namespace Aupli.Mpc
     public class PlayerStatus : IEquatable<PlayerStatus>
     {
         /// <summary>
+        /// The no status.
+        /// </summary>
+        public static readonly PlayerStatus NoStatus =
+            new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, -1, TimeSpan.Zero);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PlayerStatus" /> class.
         /// </summary>
         /// <param name="artist">The artist.</param>
