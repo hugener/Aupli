@@ -57,6 +57,14 @@ namespace Aupli.Mpc
         public PlayerState State => this.PlayerStatus.State;
 
         /// <summary>
+        /// Gets the track.
+        /// </summary>
+        /// <value>
+        /// The track.
+        /// </value>
+        public int Track => this.PlayerStatus.Track;
+
+        /// <summary>
         /// Gets the elapsed.
         /// </summary>
         /// <value>

@@ -28,6 +28,7 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
         private Task renderTask;
         private ITextView textView;
         private CancellationTokenSource cancellationTokenSource;
+        private ViewTimer viewTimer;
         private Invalidater invalidater;
 
         /// <summary>
@@ -71,6 +72,7 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
         public void Dispose()
         {
             this.cancellationTokenSource?.Cancel();
+            this.viewTimer?.Dispose();
             this.renderingTimer.Dispose();
             this.renderTask?.Wait();
             this.cancellationTokenSource?.Dispose();
@@ -95,7 +97,9 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
                     var oldView = this.textView;
                     oldView?.OnClosing();
                     this.textView = newTextView;
-                    this.invalidater = new Invalidater(this.renderingTimer);
+                    this.viewTimer?.Dispose();
+                    this.viewTimer = new ViewTimer(this.renderingTimer);
+                    this.invalidater = new Invalidater(this.viewTimer);
                     this.renderContextFactory.TryCreateCustomCharacterBuilder(out var characterContext);
                     this.textView.OnShowing(this.invalidater, characterContext);
                     this.textViewRendererObserver?.OnViewChanged(newTextView, oldView);

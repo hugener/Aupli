@@ -59,6 +59,7 @@ namespace Aupli.Player
             this.previousPlayerStatus = this.playerStatus;
             if (localPreviousPlayerStatus.Artist == this.playerStatus.Artist &&
                 localPreviousPlayerStatus.Title == this.playerStatus.Title &&
+                localPreviousPlayerStatus.Track == this.playerStatus.Track &&
                 localPreviousPlayerStatus.State == this.playerStatus.State)
             {
                 renderContext.SetPosition(renderContext.Width - 5, 0);
@@ -77,7 +78,7 @@ namespace Aupli.Player
                 renderContext.WriteLine(
                     $"{this.playerStatus.Artist.LimitAndPadRight(renderContext.Width - 6, ' ')} {this.playerStatus.Elapsed:mm\\:ss}");
                 renderContext.WriteLine(
-                    $"{this.playerStatus.Title.LimitAndPadRight(renderContext.Width, ' ')}");
+                    $"{this.playerStatus.Title.LimitAndPadRight(renderContext.Width - 4, ' ')} #{this.playerStatus.Track:D2}");
             }
 
             if (this.playerStatus.State == PlayerState.Paused)
@@ -95,14 +96,14 @@ namespace Aupli.Player
 
         private void OnPlayerInfoStatusChanged(object sender, StatusEventArgs e)
         {
-            this.playerStatus = new PlayerStatus(e.Artist, e.Title, e.State, e.Elapsed);
+            this.playerStatus = new PlayerStatus(e.Artist, e.Title, e.State, e.Track, e.Elapsed);
             this.invalidater?.Invalidate();
         }
 
         private void ResetPlayerState()
         {
-            this.playerStatus = new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, TimeSpan.Zero);
-            this.previousPlayerStatus = new PlayerStatus(null, null, PlayerState.Unknown, TimeSpan.Zero);
+            this.playerStatus = new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, -1, TimeSpan.Zero);
+            this.previousPlayerStatus = new PlayerStatus(null, null, PlayerState.Unknown, -1, TimeSpan.Zero);
         }
     }
 }

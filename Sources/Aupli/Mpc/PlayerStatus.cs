@@ -20,12 +20,14 @@ namespace Aupli.Mpc
         /// <param name="artist">The artist.</param>
         /// <param name="title">The title.</param>
         /// <param name="playerState">Result of the player.</param>
+        /// <param name="track">The track.</param>
         /// <param name="elapsed">The elapsed.</param>
-        public PlayerStatus(string artist, string title, PlayerState playerState, TimeSpan elapsed)
+        public PlayerStatus(string artist, string title, PlayerState playerState, int track, TimeSpan elapsed)
         {
             this.Artist = artist;
             this.Title = title;
             this.State = playerState;
+            this.Track = track;
             this.Elapsed = elapsed;
         }
 
@@ -62,6 +64,14 @@ namespace Aupli.Mpc
         public TimeSpan Elapsed { get; }
 
         /// <summary>
+        /// Gets the track.
+        /// </summary>
+        /// <value>
+        /// The track.
+        /// </value>
+        public int Track { get; }
+
+        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -73,6 +83,7 @@ namespace Aupli.Mpc
             return this.Artist == other.Artist &&
                    this.Title == other.Title &&
                    this.State == other.State &&
+                   this.Track == other.Track &&
                    this.Elapsed == other.Elapsed;
         }
     }

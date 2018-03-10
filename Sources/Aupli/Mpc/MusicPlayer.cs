@@ -54,7 +54,7 @@ namespace Aupli.Mpc
         /// The status.
         /// </value>
         public PlayerStatus Status { get; private set; } =
-            new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, TimeSpan.Zero);
+            new PlayerStatus(string.Empty, string.Empty, PlayerState.Unknown, -1, TimeSpan.Zero);
 
         /// <summary>
         /// Updates the status asynchronously.
@@ -205,6 +205,7 @@ namespace Aupli.Mpc
                         currentSong.Artist,
                         currentSong.Title,
                         GetPlayerState(status.State),
+                        currentSong.Position,
                         TimeSpan.FromSeconds(Math.Round(status.Elapsed.TotalSeconds, 0)));
                     if (!playerStatus.Equals(this.Status))
                     {
