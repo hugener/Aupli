@@ -148,7 +148,7 @@ namespace Aupli.Mpc
         {
             await this.ExecuteCommandAsync(async () =>
             {
-                if (this.status.Song == this.status.PlaylistLength - 1)
+                if (!this.status.Repeat && this.status.Song == this.status.PlaylistLength - 1)
                 {
                     await this.mpcConnection.SendAsync(commands => commands.Playback.Play(0));
                 }
@@ -170,7 +170,7 @@ namespace Aupli.Mpc
         {
             await this.ExecuteCommandAsync(async () =>
             {
-                if (this.status.Song == 0)
+                if (!this.status.Repeat && this.status.Song == 0)
                 {
                     await this.mpcConnection.SendAsync(commands => commands.Playback.Play(this.status.PlaylistLength - 1));
                 }
