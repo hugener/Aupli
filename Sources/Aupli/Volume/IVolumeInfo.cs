@@ -1,28 +1,33 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IInvalidater.cs" company="Hukano">
+// <copyright file="IVolumeInfo.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Pi.ApplicationFramework.TextViewRendering
+namespace Aupli.Volume
 {
+    using Aupli.Numeric;
+
     /// <summary>
-    /// Interface for <see cref="ITextView"/> to indicate whether they have to be invalidated.
+    /// Interface for getting volume info.
     /// </summary>
-    public interface IInvalidater
+    public interface IVolumeInfo
     {
         /// <summary>
-        /// Creates the timer.
+        /// Gets the volume.
         /// </summary>
-        /// <returns>
-        /// A new <see cref="IViewTimer" />.
-        /// </returns>
-        IViewTimer CreateTimer();
+        /// <value>
+        /// The volume.
+        /// </value>
+        Percentage Volume { get; }
 
         /// <summary>
-        /// Indicates that the <see cref="ITextView"/> needs to be rendered.
+        /// Gets a value indicating whether this instance is muted.
         /// </summary>
-        void Invalidate();
+        /// <value>
+        ///   <c>true</c> if this instance is muted; otherwise, <c>false</c>.
+        /// </value>
+        bool IsMuted { get; }
     }
 }

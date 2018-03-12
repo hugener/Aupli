@@ -24,7 +24,7 @@ namespace Aupli.Display
     {
         private readonly Lazy<StartUpTextView> startUpView;
 
-        private readonly Lazy<PlayerTextView> playerView;
+        private readonly AsyncLazy<PlayerTextView> playerView;
 
         private readonly Lazy<MenuTextView> menuView;
 
@@ -41,7 +41,7 @@ namespace Aupli.Display
         public ViewFactory(ControllerFactory controllerFactory, ConnectionFactory connectionFactory, ILifecycleConfiguration startupConfiguration)
         {
             this.startUpView = new Lazy<StartUpTextView>(() => new StartUpTextView(startupConfiguration));
-            this.playerView = new Lazy<PlayerTextView>(() => new PlayerTextView(connectionFactory.MusicPlayer));
+            this.playerView = new AsyncLazy<PlayerTextView>(async () => new PlayerTextView(connectionFactory.MusicPlayer, await controllerFactory.GetVolumeControllerAsync()), LazyThreadSafetyMode.ExecutionAndPublication);
             this.menuView = new Lazy<MenuTextView>(() => new MenuTextView(new NetworkDeviceProvider(), controllerFactory.MenuController));
             this.volumeView = new AsyncLazy<VolumeTextView>(async () => new VolumeTextView(await controllerFactory.GetVolumeControllerAsync()), LazyThreadSafetyMode.ExecutionAndPublication);
             this.shutdownView = new Lazy<ShutdownTextView>(() => new ShutdownTextView(startupConfiguration));
@@ -54,14 +54,6 @@ namespace Aupli.Display
         /// The start up textView.
         /// </value>
         public StartUpTextView StartUpTextView => this.startUpView.Value;
-
-        /// <summary>
-        /// Gets the player textView.
-        /// </summary>
-        /// <value>
-        /// The player textView.
-        /// </value>
-        public PlayerTextView PlayerTextView => this.playerView.Value;
 
         /// <summary>
         /// Gets the shutdown textView.
@@ -78,6 +70,14 @@ namespace Aupli.Display
         /// The menu textView.
         /// </value>
         public MenuTextView MenuTextView => this.menuView.Value;
+
+        /// <summary>
+        /// Gets the player textView.
+        /// </summary>
+        /// <value>
+        /// The player textView.
+        /// </value>
+        public async Task<PlayerTextView> GetPlayerTextViewAsync() => await this.playerView;
 
         /// <summary>
         /// Gets the volume textView.

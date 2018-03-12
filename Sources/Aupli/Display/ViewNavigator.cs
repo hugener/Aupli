@@ -54,10 +54,10 @@ namespace Aupli.Display
         }
 
         /// <inheritdoc />
-        public void NavigateToPlayerView()
+        public async Task NavigateToPlayerViewAsync()
         {
             this.logger.LogDebug("Navigate to PlayerTextView");
-            var result = this.textViewRenderer.TrySetView(this.viewFactory.PlayerTextView);
+            var result = this.textViewRenderer.TrySetView(await this.viewFactory.GetPlayerTextViewAsync());
             if (result && result.Value != null)
             {
                 this.screenStack.Push(result.Value);

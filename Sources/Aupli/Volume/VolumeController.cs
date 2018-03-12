@@ -18,7 +18,7 @@ namespace Aupli.Volume
     /// <summary>
     /// Controls the volume of the MAX 9744 using the KY-040.
     /// </summary>
-    public class VolumeController
+    public class VolumeController : IVolumeInfo
     {
         private readonly IVolumeControl volumeControl;
         private readonly IPlayerInfo playerInfo;
@@ -68,6 +68,14 @@ namespace Aupli.Volume
         /// The volume.
         /// </value>
         public Percentage Volume => this.volumeControls.VolumeAdjuster.Volume.Percentage;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is muted.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is muted; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsMuted => this.isMuted;
 
         /// <summary>
         /// Starts the asynchronous.

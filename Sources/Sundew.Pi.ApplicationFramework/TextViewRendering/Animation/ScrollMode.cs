@@ -1,28 +1,24 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IInvalidater.cs" company="Hukano">
+// <copyright file="ScrollMode.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
-namespace Sundew.Pi.ApplicationFramework.TextViewRendering
+namespace Sundew.Pi.ApplicationFramework.TextViewRendering.Animation
 {
     /// <summary>
-    /// Interface for <see cref="ITextView"/> to indicate whether they have to be invalidated.
+    /// Specifies the scroll mode for <see cref="TextScroller"/>.
     /// </summary>
-    public interface IInvalidater
+    public enum ScrollMode
     {
         /// <summary>
-        /// Creates the timer.
+        /// The text bounces back and forth.
         /// </summary>
-        /// <returns>
-        /// A new <see cref="IViewTimer" />.
-        /// </returns>
-        IViewTimer CreateTimer();
+        Bounce,
 
         /// <summary>
-        /// Indicates that the <see cref="ITextView"/> needs to be rendered.
+        /// The text scrolls and then restarts.
         /// </summary>
-        void Invalidate();
+        Restart
     }
 }

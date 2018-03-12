@@ -9,14 +9,18 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
 {
     internal class Invalidater : IInvalidater
     {
+        private readonly ViewTimerCache viewTimerCache;
         private bool invalidate = true;
 
-        public Invalidater(IViewTimer timer)
+        public Invalidater(ViewTimerCache viewTimerCache)
         {
-            this.Timer = timer;
+            this.viewTimerCache = viewTimerCache;
         }
 
-        public IViewTimer Timer { get; }
+        public IViewTimer CreateTimer()
+        {
+            return this.viewTimerCache.GetOrCreate();
+        }
 
         public bool IsRenderRequiredAndReset()
         {

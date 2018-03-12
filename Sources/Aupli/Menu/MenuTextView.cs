@@ -11,8 +11,8 @@ namespace Aupli.Menu
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Aupli.Input;
-    using Aupli.OperationSystem;
+    using Input;
+    using OperationSystem;
     using Sundew.Base.Text;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
@@ -28,6 +28,7 @@ namespace Aupli.Menu
         private IPAddress ipAddress;
         private int ipAddressIndex;
         private string tag;
+        private IViewTimer timer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuTextView" /> class.
@@ -48,9 +49,10 @@ namespace Aupli.Menu
                 x => !Equals(x.IpAddress, IPAddress.Loopback)
                 && !Equals(x.IpAddress, IPAddress.None)
                 && !Equals(x.IpAddress, IPAddress.Any)).ToList();
-            invalidater.Timer.Tick += this.OnTimerTick;
-            invalidater.Timer.Interval = TimeSpan.FromSeconds(1);
-            invalidater.Timer.Start(TimeSpan.FromSeconds(1));
+            this.timer = invalidater.CreateTimer();
+            this.timer.Tick += this.OnTimerTick;
+            this.timer.Interval = TimeSpan.FromSeconds(1);
+            this.timer.Start(TimeSpan.FromSeconds(1));
         }
 
         /// <inheritdoc />
@@ -70,8 +72,8 @@ namespace Aupli.Menu
         /// <inheritdoc />
         public void OnClosing()
         {
-            this.invalidater.Timer.Tick -= this.OnTimerTick;
-            this.invalidater.Timer.Stop();
+            this.timer.Tick -= this.OnTimerTick;
+            this.timer.Stop();
         }
 
         private void OnTimerTick(object sender, EventArgs e)

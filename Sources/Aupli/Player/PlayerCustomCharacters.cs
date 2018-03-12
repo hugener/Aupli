@@ -11,12 +11,13 @@ namespace Aupli.Player
 
     internal static class PlayerCustomCharacters
     {
-       /* private const int PlayTopLeft = 0;
-        private const int PlayTopRight = 1;
-        private const int PlayBottomLeft = 2;
-        private const int PlayBottomRight = 3;*/
-        private const int PauseLeft = 0;
-        private const int PauseRight = 1;
+        /* private const int PlayTopLeft = 0;
+         private const int PlayTopRight = 1;
+         private const int PlayBottomLeft = 2;
+         private const int PlayBottomRight = 3;*/
+        private const int PauseLeftId = 0;
+        private const int PauseRightId = 1;
+        private const int MuteId = 2;
         private static readonly byte[] PauseLeftCharacter =
         {
             0b01110,
@@ -37,6 +38,17 @@ namespace Aupli.Player
             0b01110,
             0b01110,
             0b01110,
+        };
+
+        private static readonly byte[] MuteCharacter =
+        {
+            0b00000,
+            0b00001,
+            0b00011,
+            0b01101,
+            0b01101,
+            0b00011,
+            0b00001,
         };
         /*
         private static readonly byte[] PlayTopLeftCharacter =
@@ -88,7 +100,9 @@ namespace Aupli.Player
         };
         */
 
-        public static string Pause => $" {(char)PauseLeft}{(char)PauseRight} ";
+        public static string Pause => $" {(char)PauseLeftId}{(char)PauseRightId} ";
+
+        public static string Mute => $"{(char)MuteId}";
 
         /*
         public static string PlayerTop => $" {(char)PlayTopLeft}{(char)PlayTopRight} ";
@@ -102,8 +116,9 @@ namespace Aupli.Player
                 characterContext.SetCustomCharacter(2, PlayBottomLeftCharacter);
                 characterContext.SetCustomCharacter(3, PlayBottomRightCharacter);*/
 
-            characterContext.SetCustomCharacter(PauseLeft, PauseLeftCharacter);
-            characterContext.SetCustomCharacter(PauseRight, PauseRightCharacter);
+            characterContext.SetCustomCharacter(PauseLeftId, PauseLeftCharacter);
+            characterContext.SetCustomCharacter(PauseRightId, PauseRightCharacter);
+            characterContext.SetCustomCharacter(MuteId, MuteCharacter);
         }
     }
 }

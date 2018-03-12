@@ -23,7 +23,8 @@ namespace Aupli.Display
         /// <summary>
         /// Navigates to player textView.
         /// </summary>
-        void NavigateToPlayerView();
+        /// <returns>An async task.</returns>
+        Task NavigateToPlayerViewAsync();
 
         /// <summary>
         /// Navigates to volume textView.

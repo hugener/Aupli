@@ -65,7 +65,7 @@ namespace Aupli
             await playerController.StartAsync();
             this.inputManager.StartFrame(playerController);
             this.inputManager.AddTarget(volumeController);
-            this.viewNavigator.NavigateToPlayerView();
+            await this.viewNavigator.NavigateToPlayerViewAsync();
             this.logger.LogDebug("Started");
         }
 

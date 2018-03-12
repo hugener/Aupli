@@ -9,7 +9,6 @@ namespace Aupli.Mpc
 {
     using System;
     using System.Threading.Tasks;
-    using Aupli.Player;
 
     /// <summary>
     /// Interface for implementing player info.

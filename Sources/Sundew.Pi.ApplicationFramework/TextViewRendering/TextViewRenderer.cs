@@ -24,21 +24,22 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
         private readonly object renderLock = new object();
         private readonly IRenderingContextFactory renderContextFactory;
         private readonly ITextViewRendererObserver textViewRendererObserver;
-        private readonly ITimer renderingTimer = global::Pi.Timers.Timer.Create();
+        private readonly ViewTimerCache viewTimerCache;
         private Task renderTask;
         private ITextView textView;
         private CancellationTokenSource cancellationTokenSource;
-        private ViewTimer viewTimer;
         private Invalidater invalidater;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextViewRenderer" /> class.
         /// </summary>
         /// <param name="renderContextFactory">The render context factory.</param>
+        /// <param name="timerFactory">The timer factory.</param>
         /// <param name="textViewRendererObserver">The textView renderer logger.</param>
-        public TextViewRenderer(IRenderingContextFactory renderContextFactory, ITextViewRendererObserver textViewRendererObserver)
+        public TextViewRenderer(IRenderingContextFactory renderContextFactory, ITimerFactory timerFactory, ITextViewRendererObserver textViewRendererObserver)
         {
             this.renderContextFactory = renderContextFactory;
+            this.viewTimerCache = new ViewTimerCache(timerFactory);
             this.textViewRendererObserver = textViewRendererObserver;
         }
 
@@ -72,8 +73,7 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
         public void Dispose()
         {
             this.cancellationTokenSource?.Cancel();
-            this.viewTimer?.Dispose();
-            this.renderingTimer.Dispose();
+            this.viewTimerCache.Dispose();
             this.renderTask?.Wait();
             this.cancellationTokenSource?.Dispose();
             this.cancellationTokenSource = null;
@@ -93,13 +93,11 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
             {
                 if (this.textView != newTextView)
                 {
-                    this.renderingTimer.Stop();
                     var oldView = this.textView;
                     oldView?.OnClosing();
                     this.textView = newTextView;
-                    this.viewTimer?.Dispose();
-                    this.viewTimer = new ViewTimer(this.renderingTimer);
-                    this.invalidater = new Invalidater(this.viewTimer);
+                    this.viewTimerCache.Reset();
+                    this.invalidater = new Invalidater(this.viewTimerCache);
                     this.renderContextFactory.TryCreateCustomCharacterBuilder(out var characterContext);
                     this.textView.OnShowing(this.invalidater, characterContext);
                     this.textViewRendererObserver?.OnViewChanged(newTextView, oldView);

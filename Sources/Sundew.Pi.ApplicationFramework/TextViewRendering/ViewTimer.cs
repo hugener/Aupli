@@ -8,19 +8,25 @@
 namespace Sundew.Pi.ApplicationFramework.TextViewRendering
 {
     using System;
+    using System.Collections.Generic;
     using global::Pi.Timers;
 
     internal class ViewTimer : IViewTimer, IDisposable
     {
         private readonly ITimer timer;
+        private readonly LinkedList<EventHandler> tick = new LinkedList<EventHandler>();
+        private bool isListening = false;
 
         public ViewTimer(ITimer timer)
         {
             this.timer = timer;
-            this.Tick += this.OnTimerTick;
         }
 
-        public event EventHandler Tick;
+        public event EventHandler Tick
+        {
+            add => this.tick.AddLast(value);
+            remove => this.tick.Remove(value);
+        }
 
         public TimeSpan Interval
         {
@@ -30,22 +36,56 @@ namespace Sundew.Pi.ApplicationFramework.TextViewRendering
 
         public void Start(TimeSpan startDelay)
         {
+            this.AttachToTimerTick();
             this.timer.Start(startDelay);
         }
 
         public void Stop()
         {
             this.timer.Stop();
+            this.DetachFromTimerTick();
+        }
+
+        public void Restart(TimeSpan startDelay)
+        {
+            if (!this.isListening)
+            {
+                this.AttachToTimerTick();
+            }
+
+            this.timer.Restart(startDelay);
+        }
+
+        public void Reset()
+        {
+            this.Stop();
+            this.tick.Clear();
         }
 
         public void Dispose()
         {
-            this.timer.Tick -= this.OnTimerTick;
+            this.Reset();
+            this.timer.Dispose();
         }
 
         private void OnTimerTick(object sender, EventArgs eventArgs)
         {
-            this.Tick?.Invoke(this, EventArgs.Empty);
+            foreach (var eventHandler in this.tick)
+            {
+                eventHandler?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void AttachToTimerTick()
+        {
+            this.isListening = true;
+            this.timer.Tick += this.OnTimerTick;
+        }
+
+        private void DetachFromTimerTick()
+        {
+            this.timer.Tick -= this.OnTimerTick;
+            this.isListening = false;
         }
     }
 }
