@@ -1,7 +1,7 @@
 {
   "Name": "Laia",
   "LastGreeting": "",
-  "IdleTimeout": "00:02:00",
+  "IdleTimeout": "00:04:00",
   "SystemTimeout": "00:04:00",
   "Volume": 0.5, 
   "Pin26Feature": "Backlight", 

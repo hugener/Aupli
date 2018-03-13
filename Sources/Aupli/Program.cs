@@ -80,16 +80,9 @@ namespace Aupli
 
                         await configurationFactory.SaveSettingsAsync();
                         await configurationFactory.SavePlaylistMapAsync();
-
-                        logger.LogInfo("Stopped Aupli");
-                        if (result.Value.AllowShutdown)
-                        {
-                            logger.LogInfo("Shutting down Aupli");
-                            await Task.Delay(TimeSpan.FromSeconds(3.5), CancellationToken.None);
-                            var powerConnection = new PowerConnection();
-                            powerConnection.Shutdown();
-                        }
                     }
+
+                    logger.LogInfo("Stopped Aupli");
                 }
                 catch (Exception e)
                 {

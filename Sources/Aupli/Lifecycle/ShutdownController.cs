@@ -32,7 +32,12 @@ namespace Aupli.Lifecycle
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
         /// <param name="shutdownTokenSource">The shutdown token source.</param>
         /// <param name="log">The log.</param>
-        public ShutdownController(IdleController inputController, RemotePiConnection remotePiConnection, bool allowShutdown, CancellationTokenSource shutdownTokenSource, ILog log)
+        public ShutdownController(
+            IdleController inputController,
+            RemotePiConnection remotePiConnection,
+            bool allowShutdown,
+            CancellationTokenSource shutdownTokenSource,
+            ILog log)
         {
             this.inputController = inputController;
             this.remotePiConnection = remotePiConnection;
@@ -40,7 +45,7 @@ namespace Aupli.Lifecycle
             this.shutdownTokenSource = shutdownTokenSource;
             this.logger = log.GetCategorizedLogger(typeof(ShutdownController), true);
             this.inputController.SystemIdle += this.OnInputControllerSystemIdle;
-            this.remotePiConnection.ShutdownRequested += this.OnRemotePiConnectionShutdownRequested;
+            this.remotePiConnection.ShuttingDown += this.OnRemotePiConnectionShuttingDown;
         }
 
         /// <summary>
@@ -48,9 +53,19 @@ namespace Aupli.Lifecycle
         /// </summary>
         public event EventHandler ShuttingDown;
 
-        private void OnRemotePiConnectionShutdownRequested(object sender, EventArgs e)
+        private void OnRemotePiConnectionShuttingDown(object sender, ShutdownEventArgs e)
         {
             this.logger.LogDebug("Remote Pi shutdown");
+            if (this.allowShutdown)
+            {
+                this.logger.LogInfo("Shutting down Aupli");
+            }
+            else
+            {
+                e.CancelShutdown();
+                this.logger.LogInfo("Closing Aupli");
+            }
+
             this.Shutdown();
         }
 

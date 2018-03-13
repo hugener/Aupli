@@ -8,8 +8,11 @@
 namespace Sundew.Pi.IO.Components.PowerManagement
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using global::Pi.IO.GeneralPurpose;
     using global::Pi.System.Threading;
+    using Sundew.Base.Time;
 
     /// <summary>
     /// Represents a connection to the RemotePI for shutting down PI.
@@ -17,9 +20,13 @@ namespace Sundew.Pi.IO.Components.PowerManagement
     /// <seealso cref="System.IDisposable" />
     public class RemotePiConnection : IDisposable
     {
+        internal static readonly TimeSpan PowerOffTimeSpan = TimeSpan.FromMinutes(4);
+        internal static readonly TimeSpan ShutdownTimeSpan = TimeSpan.FromSeconds(10);
         private readonly IGpioConnectionDriver gpioConnectionDriver;
         private readonly ConnectorPin shutdownInConnectorPin;
         private readonly ConnectorPin shutdownOutConnectorPin;
+        private readonly IOperationSystemShutdown operationSystemShutdown;
+        private readonly IDateTimeProvider dateTimeProvider;
         private readonly IThread thread;
         private readonly GpioConnection gpioConnection;
 
@@ -29,16 +36,44 @@ namespace Sundew.Pi.IO.Components.PowerManagement
         /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
         /// <param name="shutdownInConnectorPin">The shutdown in connector pin.</param>
         /// <param name="shutdownOutConnectorPin">The shutdown out connector pin.</param>
-        /// <param name="threadFactory">The thread factory.</param>
+        /// <param name="operationSystemShutdown">The operation system shutdown.</param>
         public RemotePiConnection(
             IGpioConnectionDriver gpioConnectionDriver,
             ConnectorPin shutdownInConnectorPin,
             ConnectorPin shutdownOutConnectorPin,
-            IThreadFactory threadFactory = null)
+            IOperationSystemShutdown operationSystemShutdown)
+            : this(
+                  gpioConnectionDriver,
+                  shutdownInConnectorPin,
+                  shutdownOutConnectorPin,
+                  operationSystemShutdown,
+                  null,
+                  null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemotePiConnection" /> class.
+        /// </summary>
+        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="shutdownInConnectorPin">The shutdown in connector pin.</param>
+        /// <param name="shutdownOutConnectorPin">The shutdown out connector pin.</param>
+        /// <param name="operationSystemShutdown">The operation system shutdown.</param>
+        /// <param name="threadFactory">The thread factory.</param>
+        /// <param name="dateTimeProvider">The date time provider.</param>
+        public RemotePiConnection(
+                    IGpioConnectionDriver gpioConnectionDriver,
+                    ConnectorPin shutdownInConnectorPin,
+                    ConnectorPin shutdownOutConnectorPin,
+                    IOperationSystemShutdown operationSystemShutdown,
+                    IThreadFactory threadFactory,
+                    IDateTimeProvider dateTimeProvider)
         {
             this.gpioConnectionDriver = gpioConnectionDriver;
             this.shutdownInConnectorPin = shutdownInConnectorPin;
             this.shutdownOutConnectorPin = shutdownOutConnectorPin;
+            this.operationSystemShutdown = operationSystemShutdown;
+            this.dateTimeProvider = dateTimeProvider ?? new DateTimeProvider();
             this.thread = ThreadFactory.EnsureThreadFactory(threadFactory).Create();
             var pinConfiguration = shutdownInConnectorPin.Input().PullDown();
             pinConfiguration.OnStatusChanged(this.OnShutdown);
@@ -48,7 +83,7 @@ namespace Sundew.Pi.IO.Components.PowerManagement
         /// <summary>
         /// Occurs when remote pi requests system shutdown.
         /// </summary>
-        public event EventHandler ShutdownRequested;
+        public event EventHandler<ShutdownEventArgs> ShuttingDown;
 
         /// <inheritdoc />
         public void Dispose()
@@ -76,8 +111,25 @@ namespace Sundew.Pi.IO.Components.PowerManagement
         {
             if (state)
             {
+                var cancellationTokenSource = new CancellationTokenSource();
+                var shutdownEventArgs = new ShutdownEventArgs(cancellationTokenSource, this.dateTimeProvider.Now);
+                Task.Run(() => this.ShutdownAsync(cancellationTokenSource.Token), cancellationTokenSource.Token)
+                    .ContinueWith((task, _) => cancellationTokenSource.Dispose(), null);
+                this.ShuttingDown?.Invoke(this, shutdownEventArgs);
+            }
+        }
+
+        private async Task ShutdownAsync(CancellationToken token)
+        {
+            try
+            {
                 this.gpioConnectionDriver.Out(this.shutdownInConnectorPin).Write(true);
-                this.ShutdownRequested?.Invoke(this, EventArgs.Empty);
+                await Task.Delay(ShutdownTimeSpan, token);
+                this.operationSystemShutdown.Shutdown();
+            }
+            catch (OperationCanceledException)
+            {
+                this.gpioConnectionDriver.Out(this.shutdownInConnectorPin).Write(false);
             }
         }
     }

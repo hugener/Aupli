@@ -14,6 +14,7 @@ namespace Aupli
     using Aupli.Logging.Mpc;
     using Aupli.Mpc;
     using Aupli.Numeric;
+    using Aupli.OperationSystem;
     using Aupli.Volume;
     using MpcNET;
     using Pi.IO;
@@ -121,7 +122,7 @@ namespace Aupli
                 return new VolumeControls(max9744Connection, headphoneSwitch, volumeAdjuster);
             });
 
-            this.RemotePiConnection = new RemotePiConnection(gpioConnectionDriver, ConnectorPin.P1Pin08, ConnectorPin.P1Pin10);
+            this.RemotePiConnection = new RemotePiConnection(gpioConnectionDriver, ConnectorPin.P1Pin08, ConnectorPin.P1Pin10, new RasbianShutdown());
         }
 
         /// <summary>
