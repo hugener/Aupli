@@ -8,7 +8,7 @@
 namespace Aupli.Logging.Pi.ApplicationFramework.ViewRendering
 {
     using System;
-    using Sundew.Pi.ApplicationFramework.Logging;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
     /// <summary>
@@ -17,15 +17,15 @@ namespace Aupli.Logging.Pi.ApplicationFramework.ViewRendering
     /// <seealso cref="ITextViewRendererObserver" />
     public class TextViewRendererLogger : ITextViewRendererObserver
     {
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextViewRendererLogger"/> class.
+        /// Initializes a new instance of the <see cref="TextViewRendererLogger" /> class.
         /// </summary>
-        /// <param name="log">The log.</param>
-        public TextViewRendererLogger(ILog log)
+        /// <param name="logger">The logger.</param>
+        public TextViewRendererLogger(ILogger logger)
         {
-            this.logger = log.GetCategorizedLogger<TextViewRendererLogger>(true);
+            this.log = logger.ForContext<TextViewRendererLogger>();
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.ViewRendering
         /// </summary>
         public void Started()
         {
-            this.logger.LogInfo(nameof(this.Started));
+            this.log.Information(nameof(this.Started));
         }
 
         /// <summary>
@@ -43,7 +43,10 @@ namespace Aupli.Logging.Pi.ApplicationFramework.ViewRendering
         /// <param name="oldTextView">The old text view.</param>
         public void OnViewChanged(ITextView newTextView, ITextView oldTextView)
         {
-            this.logger.LogInfo($"{nameof(this.OnViewChanged)} to {newTextView.GetType().Name} from {(oldTextView != null ? oldTextView.GetType().Name : "<None>")}");
+            this.log.Information(
+                $"{nameof(this.OnViewChanged)} to {{NewView}} from {{OldView}}",
+                newTextView.GetType().Name,
+                oldTextView != null ? oldTextView.GetType().Name : "<None>");
         }
 
         /// <summary>
@@ -51,7 +54,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.ViewRendering
         /// </summary>
         public void Stopped()
         {
-            this.logger.LogInfo(nameof(this.Stopped));
+            this.log.Information(nameof(this.Stopped));
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.ViewRendering
         /// <param name="exception">The exception.</param>
         public void OnRendererException(Exception exception)
         {
-            this.logger.LogError(exception.ToString());
+            this.log.Information(exception, nameof(this.OnRendererException));
         }
     }
 }

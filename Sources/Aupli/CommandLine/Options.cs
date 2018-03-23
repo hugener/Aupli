@@ -8,10 +8,9 @@
 namespace Aupli.CommandLine
 {
     using System;
-    using Newtonsoft.Json;
+    using Serilog.Events;
     using Sundew.Base.Enumerations;
     using Sundew.CommandLine;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
     /// Defines the commandLine options and parsing.
@@ -26,7 +25,7 @@ namespace Aupli.CommandLine
         /// <param name="isLoggingToConsole">if set to <c>true</c> [is logging to console].</param>
         /// <param name="fileLogOptions">The file log options.</param>
         /// <param name="logLevel">The log level.</param>
-        public Options(bool allowShutdown, bool isLoggingToConsole, LogLevel logLevel = LogLevel.Info, FileLogOptions fileLogOptions = null)
+        public Options(bool allowShutdown, bool isLoggingToConsole, LogEventLevel logLevel = LogEventLevel.Information, FileLogOptions fileLogOptions = null)
         {
             this.AllowShutdown = allowShutdown;
             this.IsLoggingToConsole = isLoggingToConsole;
@@ -64,7 +63,7 @@ namespace Aupli.CommandLine
         /// <value>
         /// The log level.
         /// </value>
-        public LogLevel LogLevel { get; private set; }
+        public LogEventLevel LogLevel { get; private set; }
 
         /// <summary>
         /// Configures the specified arguments builder.
@@ -98,8 +97,8 @@ namespace Aupli.CommandLine
                 "ll",
                 "log-level",
                 () => this.LogLevel.ToString(),
-                value => this.LogLevel = value.ParseEnum<LogLevel>(),
-                $"Specifies the log level: {string.Join(", ", Enum.GetNames(typeof(LogLevel)))}");
+                value => this.LogLevel = value.ParseEnum<LogEventLevel>(),
+                $"Specifies the log level: {string.Join(", ", Enum.GetNames(typeof(LogEventLevel)))}");
         }
     }
 }

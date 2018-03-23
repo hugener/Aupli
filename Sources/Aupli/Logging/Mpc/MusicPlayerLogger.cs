@@ -11,25 +11,26 @@ namespace Aupli.Logging.Mpc
     using System.Threading;
     using Aupli.Mpc;
     using MpcNET;
-    using Sundew.Pi.ApplicationFramework.Logging;
+    using Serilog;
+    using Serilog.Events;
 
     /// <summary>
     /// Logger for the music player.
     /// </summary>
-    /// <seealso cref="IMusicPlayerObserver" />
-    /// <seealso cref="IMpcConnectionObserver" />
-    public class MusicPlayerLogger : IMusicPlayerObserver, IMpcConnectionObserver
+    /// <seealso cref="IMusicPlayerReporter" />
+    /// <seealso cref="IMpcConnectionReporter" />
+    public class MusicPlayerLogger : IMusicPlayerReporter, IMpcConnectionReporter
     {
-        private readonly ILogger logger;
-        private LogLevel currentLogLevel = LogLevel.Debug;
+        private readonly ILogger log;
+        private LogEventLevel currentLogLevel = LogEventLevel.Debug;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MusicPlayerLogger"/> class.
+        /// Initializes a new instance of the <see cref="MusicPlayerLogger" /> class.
         /// </summary>
-        /// <param name="log">The log.</param>
-        public MusicPlayerLogger(ILog log)
+        /// <param name="logger">The logger.</param>
+        public MusicPlayerLogger(ILogger logger)
         {
-            this.logger = log.GetCategorizedLogger(this.GetType().Name);
+            this.log = logger.ForContext(this.GetType());
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace Aupli.Logging.Mpc
         public IDisposable EnterStatusRefresh()
         {
             var previousLogLevel = this.currentLogLevel;
-            this.currentLogLevel = LogLevel.Trace;
+            this.currentLogLevel = LogEventLevel.Verbose;
             return new LogLevelResetter(this, previousLogLevel);
         }
 
@@ -51,7 +52,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="playlistName">Name of the playlist.</param>
         public void StartingPlaylist(string playlistName)
         {
-            this.logger.Log(this.currentLogLevel, "Starting playlist: " + playlistName);
+            this.log.Write(this.currentLogLevel, "Starting playlist: {Playlist} | {ThreadId}", playlistName, GetThreadId());
         }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="playlistName">Name of the playlist.</param>
         public void IgnoredPlaylist(string playlistName)
         {
-            this.logger.Log(this.currentLogLevel, "Ignored playlist: " + (string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName));
+            this.log.Write(this.currentLogLevel, "Ignored playlist: {Playlist} | {ThreadId}", string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName, GetThreadId());
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="connectAttempt">The connect attempt.</param>
         public void Connecting(bool isReconnect, int connectAttempt)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | {(isReconnect ? "Reconnecting" : "Connecting")}: #{connectAttempt}");
+            this.log.Write(this.currentLogLevel, "{ConnectionMethod}, {Attempt} | {ThreadId}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt, GetThreadId());
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="connectAttempt">The connect attempt.</param>
         public void ConnectionAccepted(bool isReconnect, int connectAttempt)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId}  | Connection: #{connectAttempt}");
+            this.log.Write(this.currentLogLevel, "Connection Accepted {ConnectionMethod}, {Attempt} | {ThreadId}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt, GetThreadId());
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="connectionInfo">The connection information.</param>
         public void Connected(bool isReconnect, int connectAttempt, string connectionInfo)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | Connected: {connectAttempt} - {connectionInfo}");
+            this.log.Write(this.currentLogLevel, "Connected: {ConnectAttempt} - {ConnectionInfo} | {ThreadId}", connectAttempt, connectionInfo, GetThreadId());
         }
 
         /// <summary>
@@ -100,7 +101,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="command">The command.</param>
         public void Sending(string command)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | Sending: {command}");
+            this.log.Write(this.currentLogLevel, "Sending: {Command} | {ThreadId}", command, GetThreadId());
         }
 
         /// <summary>
@@ -111,7 +112,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="exception">The exception.</param>
         public void SendException(string command, int sendAttempt, Exception exception)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | Sending: {command}: attempt: {sendAttempt} - {exception}");
+            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt} | {ThreadId} | {Exception}", command, sendAttempt, GetThreadId(), exception);
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="sendAttempt">The send attempt.</param>
         public void RetrySend(string command, int sendAttempt)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | Sending: {command}: attempt: {sendAttempt}");
+            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt} | {ThreadId}", command, sendAttempt, GetThreadId());
         }
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="responseLine">The response line.</param>
         public void ReadResponse(string responseLine)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | ReadResponse: {responseLine}");
+            this.log.Write(this.currentLogLevel, "ReadResponse: {Content} | {ThreadId}", responseLine, GetThreadId());
         }
 
         /// <summary>
@@ -139,7 +140,7 @@ namespace Aupli.Logging.Mpc
         /// <param name="isExplicitDisconnect">if set to <c>true</c> [is explicit].</param>
         public void Disconnecting(bool isExplicitDisconnect)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | Disconnecting: {(isExplicitDisconnect ? "explicit" : "implicit")}");
+            this.log.Write(this.currentLogLevel, "Disconnecting: {Reason} | {ThreadId}", isExplicitDisconnect ? "explicit" : "implicit", GetThreadId());
         }
 
         /// <summary>
@@ -148,15 +149,20 @@ namespace Aupli.Logging.Mpc
         /// <param name="isExplicitDisconnect">if set to <c>true</c> [is explicit].</param>
         public void Disconnected(bool isExplicitDisconnect)
         {
-            this.logger.Log(this.currentLogLevel, $"Tid:{Thread.CurrentThread.ManagedThreadId} | Disconnected: {(isExplicitDisconnect ? "explicit" : "implicit")}");
+            this.log.Write(this.currentLogLevel, "Disconnected: {Reason} | {ThreadId}", isExplicitDisconnect ? "explicit" : "implicit", GetThreadId());
+        }
+
+        private static int GetThreadId()
+        {
+            return Thread.CurrentThread.ManagedThreadId;
         }
 
         private class LogLevelResetter : IDisposable
         {
             private readonly MusicPlayerLogger musicPlayerLogger;
-            private readonly LogLevel previousLogLevel;
+            private readonly LogEventLevel previousLogLevel;
 
-            public LogLevelResetter(MusicPlayerLogger musicPlayerLogger, LogLevel previousLogLevel)
+            public LogLevelResetter(MusicPlayerLogger musicPlayerLogger, LogEventLevel previousLogLevel)
             {
                 this.musicPlayerLogger = musicPlayerLogger;
                 this.previousLogLevel = previousLogLevel;

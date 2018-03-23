@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMusicPlayerObserver.cs" company="Hukano">
+// <copyright file="IMusicPlayerReporter.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Aupli.Mpc
     /// <summary>
     /// Interface for logging music player activity.
     /// </summary>
-    public interface IMusicPlayerObserver
+    public interface IMusicPlayerReporter
     {
         /// <summary>
         /// Enters the status refresh.

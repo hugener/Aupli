@@ -11,8 +11,8 @@ namespace Aupli
     using System.Threading.Tasks;
     using Aupli.Display;
     using Aupli.Volume;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
     /// The main controller.
@@ -22,7 +22,7 @@ namespace Aupli
         private readonly ControllerFactory controllerFactory;
         private readonly InputManager inputManager;
         private readonly IViewNavigator viewNavigator;
-        private readonly ILogger logger;
+        private readonly ILogger log;
         private IdleController idleController;
 
         /// <summary>
@@ -31,13 +31,13 @@ namespace Aupli
         /// <param name="inputManager">The input manager.</param>
         /// <param name="viewNavigator">The textView navigator.</param>
         /// <param name="controllerFactory">The controller factory.</param>
-        /// <param name="log">The log.</param>
-        public AupliController(InputManager inputManager, IViewNavigator viewNavigator, ControllerFactory controllerFactory, ILog log)
+        /// <param name="logger">The log.</param>
+        public AupliController(InputManager inputManager, IViewNavigator viewNavigator, ControllerFactory controllerFactory, ILogger logger)
         {
             this.inputManager = inputManager;
             this.viewNavigator = viewNavigator;
             this.controllerFactory = controllerFactory;
-            this.logger = log.GetCategorizedLogger(typeof(AupliController), true);
+            this.log = logger.ForContext<AupliController>();
             this.controllerFactory.StartUpController.ViewRenderingInitialized += this.OnStartUpControllerViewRenderingInitialized;
             this.controllerFactory.MenuController.Exit += this.OnMenuControllerExit;
         }
@@ -66,18 +66,18 @@ namespace Aupli
             this.inputManager.StartFrame(playerController);
             this.inputManager.AddTarget(volumeController);
             await this.viewNavigator.NavigateToPlayerViewAsync();
-            this.logger.LogDebug("Started");
+            this.log.Debug("Started");
         }
 
         private void OnStartUpControllerViewRenderingInitialized(object sender, EventArgs eventArgs)
         {
-            this.logger.LogDebug("Navigate to startup");
+            this.log.Debug("Navigate to startup");
             this.viewNavigator.NavigateToStartupView();
         }
 
         private async void OnInputControllerInputIdle(object sender, EventArgs eventArgs)
         {
-            this.logger.LogDebug("Input idle");
+            this.log.Debug("Input idle");
             this.controllerFactory.DisplayController.SetBacklight(false);
             var playerController = await this.controllerFactory.GetPlayerControllerAsync();
             playerController.MenuRequested -= this.OnPlayerControllerMenuRequested;
@@ -85,7 +85,7 @@ namespace Aupli
 
         private async void OnInputControllerActive(object sender, EventArgs eventArgs)
         {
-            this.logger.LogDebug("Input active");
+            this.log.Debug("Input active");
             this.controllerFactory.DisplayController.SetBacklight(true);
             var playerController = await this.controllerFactory.GetPlayerControllerAsync();
             playerController.MenuRequested += this.OnPlayerControllerMenuRequested;
@@ -93,26 +93,26 @@ namespace Aupli
 
         private void OnVolumeControllerVolumeChanged(object sender, VolumeEventArgs e)
         {
-            this.logger.LogDebug("Navigate to volume: ");
+            this.log.Debug("Navigate to volume: ");
             this.viewNavigator.NavigateToVolumeViewAsync(TimeSpan.FromMilliseconds(1500));
         }
 
         private void OnShutdownControllerShuttingDown(object sender, EventArgs e)
         {
-            this.logger.LogDebug("Navigate to shutdown");
+            this.log.Debug("Navigate to shutdown");
             this.viewNavigator.NavigateToShutdownView();
         }
 
         private void OnPlayerControllerMenuRequested(object sender, EventArgs e)
         {
-            this.logger.LogDebug("Navigate to menu");
+            this.log.Debug("Navigate to menu");
             this.viewNavigator.NavigateToMenuView();
             this.inputManager.StartFrame(this.controllerFactory.MenuController);
         }
 
         private void OnMenuControllerExit(object sender, EventArgs e)
         {
-            this.logger.LogDebug("Exit menu");
+            this.log.Debug("Exit menu");
             this.inputManager.EndFrame();
             this.viewNavigator.GoBack();
         }

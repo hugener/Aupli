@@ -10,7 +10,7 @@ namespace Aupli
     using System;
     using Aupli.Logging.Pi.ApplicationFramework.ViewRendering;
     using Pi.Timers;
-    using Sundew.Pi.ApplicationFramework.Logging;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
     using Sundew.Pi.IO.Drivers.Displays.Hd44780;
 
@@ -24,16 +24,16 @@ namespace Aupli
         private readonly Lazy<TextViewRenderer> viewRenderer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ViewRendererFactory"/> class.
+        /// Initializes a new instance of the <see cref="ViewRendererFactory" /> class.
         /// </summary>
         /// <param name="connectionFactory">The connection factory.</param>
-        /// <param name="log">The log.</param>
-        public ViewRendererFactory(ConnectionFactory connectionFactory, ILog log)
+        /// <param name="logger">The logger.</param>
+        public ViewRendererFactory(ConnectionFactory connectionFactory, ILogger logger)
         {
             this.viewRenderer = new Lazy<TextViewRenderer>(() =>
             {
-                var renderContextFactory = new RenderingContextFactory(connectionFactory.Lcd.Connection, connectionFactory.Lcd.Settings);
-                return new TextViewRenderer(renderContextFactory, new TimerFactory(), new TextViewRendererLogger(log));
+                var renderContextFactory = new RenderingContextFactory(connectionFactory.Lcd.Device, connectionFactory.Lcd.Settings);
+                return new TextViewRenderer(renderContextFactory, new TimerFactory(), new TextViewRendererLogger(logger));
             });
         }
 

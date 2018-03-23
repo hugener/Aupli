@@ -18,17 +18,17 @@ namespace Aupli
     using Aupli.Volume;
     using MpcNET;
     using Pi.IO;
-    using Pi.IO.Components.Displays.Hd44780;
+    using Pi.IO.Devices.Displays.Hd44780;
     using Pi.IO.GeneralPurpose;
+    using Serilog;
     using Sundew.Base.Disposal;
     using Sundew.Base.Numeric;
-    using Sundew.Pi.ApplicationFramework.Logging;
-    using Sundew.Pi.IO.Components.Amplifiers.Max9744;
-    using Sundew.Pi.IO.Components.Buttons;
-    using Sundew.Pi.IO.Components.Encoders.Ky040;
-    using Sundew.Pi.IO.Components.InfraredReceivers.Lirc;
-    using Sundew.Pi.IO.Components.PowerManagement;
-    using Sundew.Pi.IO.Components.RfidTransceivers.Mfrc522;
+    using Sundew.Pi.IO.Devices.Amplifiers.Max9744;
+    using Sundew.Pi.IO.Devices.Buttons;
+    using Sundew.Pi.IO.Devices.Encoders.Ky040;
+    using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
+    using Sundew.Pi.IO.Devices.PowerManagement;
+    using Sundew.Pi.IO.Devices.RfidTransceivers.Mfrc522;
 
     /// <summary>
     /// Factory for creating connections to hardware components.
@@ -36,7 +36,7 @@ namespace Aupli
     /// <seealso cref="System.IDisposable" />
     public class ConnectionFactory : IDisposable
     {
-        private readonly Lazy<(Hd44780LcdConnection LcdConnection, Hd44780LcdConnectionSettings Settings)> lcdConnection;
+        private readonly Lazy<(Hd44780LcdDevice LcdDevice, Hd44780LcdDeviceSettings Settings)> lcdDevice;
 
         private readonly Lazy<InputControls> inputControls;
 
@@ -51,12 +51,12 @@ namespace Aupli
         /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
         /// <param name="pin26Feature">The pin26 feature.</param>
         /// <param name="initialVolume">The initial volume.</param>
-        /// <param name="log">The log.</param>
-        public ConnectionFactory(IGpioConnectionDriver gpioConnectionDriver, Pin26Feature pin26Feature, double initialVolume, ILog log)
+        /// <param name="logger">The logger.</param>
+        public ConnectionFactory(IGpioConnectionDriver gpioConnectionDriver, Pin26Feature pin26Feature, double initialVolume, ILogger logger)
         {
-            this.lcdConnection = new Lazy<(Hd44780LcdConnection, Hd44780LcdConnectionSettings)>(() =>
+            this.lcdDevice = new Lazy<(Hd44780LcdDevice, Hd44780LcdDeviceSettings)>(() =>
             {
-                var hd47780ConnectionSettings = new Hd44780LcdConnectionSettings
+                var hd47780ConnectionSettings = new Hd44780LcdDeviceSettings
                 {
                     ScreenHeight = 2,
                     ScreenWidth = 16,
@@ -65,7 +65,7 @@ namespace Aupli
                 var backlight = pin26Feature == Pin26Feature.Backlight
                     ? new ConnectorPin?(ConnectorPin.P1Pin26)
                     : null;
-                var hd47780Connection = new Hd44780LcdConnection(
+                var hd47780Connection = new Hd44780LcdDevice(
                     hd47780ConnectionSettings,
                     gpioConnectionDriver,
                     ConnectorPin.P1Pin29,
@@ -81,48 +81,48 @@ namespace Aupli
 
             this.inputControls = new Lazy<InputControls>(() =>
             {
-                var lircConnection = new LircConnection();
-                var playPauseButton = new PullDownButtonConnection(ConnectorPin.P1Pin15);
-                var nextButton = new PullDownButtonConnection(ConnectorPin.P1Pin18);
-                var previousButton = new PullDownButtonConnection(ConnectorPin.P1Pin16);
-                var menuButton = new PullDownButtonConnection(ConnectorPin.P1Pin13);
+                var lircConnection = new LircDevice();
+                var playPauseButton = new PullDownButtonDevice(ConnectorPin.P1Pin15);
+                var nextButton = new PullDownButtonDevice(ConnectorPin.P1Pin18);
+                var previousButton = new PullDownButtonDevice(ConnectorPin.P1Pin16);
+                var menuButton = new PullDownButtonDevice(ConnectorPin.P1Pin13);
                 var rfidTransceiver = new Mfrc522Connection("/dev/spidev0.0", ConnectorPin.P1Pin22);
-                var ky040Connection = new Ky040Connection(gpioConnectionDriver, ConnectorPin.P1Pin36, ConnectorPin.P1Pin38, ConnectorPin.P1Pin40);
+                var ky040Connection = new Ky040Device(gpioConnectionDriver, ConnectorPin.P1Pin36, ConnectorPin.P1Pin38, ConnectorPin.P1Pin40);
 
                 return new InputControls(playPauseButton, nextButton, previousButton, menuButton, rfidTransceiver, lircConnection, ky040Connection);
             });
 
             this.musicPlayer = new Lazy<(MusicPlayer, MpcConnection)>(() =>
                 {
-                    var musicPlayerLogger = new MusicPlayerLogger(log);
+                    var musicPlayerLogger = new MusicPlayerLogger(logger);
                     var mpcConnection = new MpcConnection(new IPEndPoint(IPAddress.Loopback, 6600), null, musicPlayerLogger);
                     return (new MusicPlayer(mpcConnection, musicPlayerLogger), mpcConnection);
                 });
 
             this.volumeControls = new Lazy<VolumeControls>(() =>
             {
-                var max9744Connection = new Max9744Connection(
+                var max9744Device = new Max9744Device(
                     0x4b,
                     ConnectorPin.P1Pin07,
                     ConnectorPin.P1Pin11,
                     ProcessorPin.Pin02,
                     ProcessorPin.Pin03);
-                max9744Connection.SetShutdownState(false);
+                max9744Device.SetShutdownState(false);
                 var headphoneSwitch = pin26Feature == Pin26Feature.Headphone
-                    ? new PullDownSwitchConnection(ConnectorPin.P1Pin26, gpioConnectionDriver)
+                    ? new PullDownSwitchDevice(ConnectorPin.P1Pin26, gpioConnectionDriver)
                     : null;
                 var volumeAdjuster =
                     new VolumeAdjuster(
                         new Range<byte>(
-                            (byte)(max9744Connection.VolumeRange.Min + 10),
-                            (byte)(max9744Connection.VolumeRange.Max - 30)),
+                            (byte)(max9744Device.VolumeRange.Min + 10),
+                            (byte)(max9744Device.VolumeRange.Max - 30)),
                         new Percentage(initialVolume),
                         0.05);
-                max9744Connection.SetVolume(volumeAdjuster.Volume.AbsoluteValue);
-                return new VolumeControls(max9744Connection, headphoneSwitch, volumeAdjuster);
+                max9744Device.SetVolume(volumeAdjuster.Volume.AbsoluteValue);
+                return new VolumeControls(max9744Device, headphoneSwitch, volumeAdjuster);
             });
 
-            this.RemotePiConnection = new RemotePiConnection(gpioConnectionDriver, ConnectorPin.P1Pin08, ConnectorPin.P1Pin10, new RasbianShutdown());
+            this.RemotePi = new RemotePiDevice(gpioConnectionDriver, ConnectorPin.P1Pin08, ConnectorPin.P1Pin10, new RasbianShutdown());
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Aupli
         /// <value>
         /// The LCD.
         /// </value>
-        public (Hd44780LcdConnection Connection, Hd44780LcdConnectionSettings Settings) Lcd => this.lcdConnection.Value;
+        public (Hd44780LcdDevice Device, Hd44780LcdDeviceSettings Settings) Lcd => this.lcdDevice.Value;
 
         /// <summary>
         /// Gets the input controls.
@@ -163,7 +163,7 @@ namespace Aupli
         /// <value>
         /// The remote pi.
         /// </value>
-        public RemotePiConnection RemotePiConnection { get; }
+        public RemotePiDevice RemotePi { get; }
 
         /// <summary>
         /// Initializes this instance.
@@ -180,14 +180,14 @@ namespace Aupli
                         this.InputControls.MenuButton.PinConfiguration,
                         this.VolumeControls.HeadPhoneSwitch?.PinConfiguration,
                     }.Where(x => x != null)),
-                this.InputControls.LircConnection,
+                this.InputControls.RemoteControl,
                 this.InputControls.RfidTransceiver,
-                this.InputControls.Ky040Connection,
+                this.InputControls.RotaryEncoder,
                 this.VolumeControls.Amplifier,
-                this.lcdConnection.Value.LcdConnection,
+                this.lcdDevice.Value.LcdDevice,
                 this.musicPlayer.Value.MusicPlayer,
                 this.musicPlayer.Value.MpcConnection,
-                this.RemotePiConnection);
+                this.RemotePi);
         }
 
         /// <inheritdoc />

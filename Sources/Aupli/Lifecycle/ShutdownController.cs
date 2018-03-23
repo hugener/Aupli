@@ -9,9 +9,9 @@ namespace Aupli.Lifecycle
 {
     using System;
     using System.Threading;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
-    using Sundew.Pi.IO.Components.PowerManagement;
+    using Sundew.Pi.IO.Devices.PowerManagement;
 
     /// <summary>
     /// Handles the shutdown process.
@@ -19,33 +19,33 @@ namespace Aupli.Lifecycle
     public class ShutdownController
     {
         private readonly IdleController inputController;
-        private readonly RemotePiConnection remotePiConnection;
+        private readonly RemotePiDevice remotePiDevice;
         private readonly bool allowShutdown;
         private readonly CancellationTokenSource shutdownTokenSource;
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShutdownController" /> class.
         /// </summary>
         /// <param name="inputController">The input controller.</param>
-        /// <param name="remotePiConnection">The shutdown button.</param>
+        /// <param name="remotePiDevice">The shutdown button.</param>
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
         /// <param name="shutdownTokenSource">The shutdown token source.</param>
-        /// <param name="log">The log.</param>
+        /// <param name="logger">The logger.</param>
         public ShutdownController(
             IdleController inputController,
-            RemotePiConnection remotePiConnection,
+            RemotePiDevice remotePiDevice,
             bool allowShutdown,
             CancellationTokenSource shutdownTokenSource,
-            ILog log)
+            ILogger logger)
         {
             this.inputController = inputController;
-            this.remotePiConnection = remotePiConnection;
+            this.remotePiDevice = remotePiDevice;
             this.allowShutdown = allowShutdown;
             this.shutdownTokenSource = shutdownTokenSource;
-            this.logger = log.GetCategorizedLogger(typeof(ShutdownController), true);
+            this.log = logger.ForContext<ShutdownController>();
             this.inputController.SystemIdle += this.OnInputControllerSystemIdle;
-            this.remotePiConnection.ShuttingDown += this.OnRemotePiConnectionShuttingDown;
+            this.remotePiDevice.ShuttingDown += this.OnRemotePiDeviceShuttingDown;
         }
 
         /// <summary>
@@ -53,17 +53,17 @@ namespace Aupli.Lifecycle
         /// </summary>
         public event EventHandler ShuttingDown;
 
-        private void OnRemotePiConnectionShuttingDown(object sender, ShutdownEventArgs e)
+        private void OnRemotePiDeviceShuttingDown(object sender, ShutdownEventArgs e)
         {
-            this.logger.LogDebug("Remote Pi shutdown");
+            this.log.Debug("Remote Pi shutdown");
             if (this.allowShutdown)
             {
-                this.logger.LogInfo("Shutting down Aupli");
+                this.log.Information("Shutting down Aupli");
             }
             else
             {
                 e.CancelShutdown();
-                this.logger.LogInfo("Closing Aupli");
+                this.log.Information("Closing Aupli");
             }
 
             this.Shutdown();
@@ -71,10 +71,10 @@ namespace Aupli.Lifecycle
 
         private void OnInputControllerSystemIdle(object sender, EventArgs e)
         {
-            this.logger.LogDebug("System idle shutdown");
+            this.log.Debug("System idle shutdown");
             if (this.allowShutdown)
             {
-                this.remotePiConnection.Shutdown();
+                this.remotePiDevice.Shutdown();
             }
             else
             {

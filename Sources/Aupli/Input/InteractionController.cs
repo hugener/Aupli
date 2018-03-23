@@ -8,11 +8,11 @@
 namespace Aupli.Input
 {
     using System;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
-    using Sundew.Pi.IO.Components.Encoders.Ky040;
-    using Sundew.Pi.IO.Components.InfraredReceivers.Lirc;
-    using Sundew.Pi.IO.Components.RfidTransceivers.Mfrc522;
+    using Sundew.Pi.IO.Devices.Encoders.Ky040;
+    using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
+    using Sundew.Pi.IO.Devices.RfidTransceivers.Mfrc522;
 
     /// <summary>
     /// Maps hardware inputs to application input.
@@ -22,28 +22,28 @@ namespace Aupli.Input
     {
         private readonly InputControls inputControls;
         private readonly InputManager inputManager;
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionController" /> class.
         /// </summary>
         /// <param name="inputControls">The input controls.</param>
         /// <param name="inputManager">The input manager.</param>
-        /// <param name="log">The log.</param>
-        public InteractionController(InputControls inputControls, InputManager inputManager, ILog log)
+        /// <param name="logger">The logger.</param>
+        public InteractionController(InputControls inputControls, InputManager inputManager, ILogger logger)
         {
             this.inputControls = inputControls;
             this.inputManager = inputManager;
-            this.logger = log.GetCategorizedLogger(typeof(InteractionController), true);
+            this.log = logger.ForContext<InteractionController>();
             this.KeyInputEvent = inputManager.CreateEvent<KeyInputArgs>();
             this.TagInputEvent = inputManager.CreateEvent<TagInputArgs>();
             this.inputControls.PlayPauseButton.Pressed += this.OnPlayPauseButtonPressed;
             this.inputControls.NextButton.Pressed += this.OnNextButtonPressed;
             this.inputControls.PreviousButton.Pressed += this.OnPreviousButtonPressed;
             this.inputControls.MenuButton.Pressed += this.OnMenuButtonPressed;
-            this.inputControls.Ky040Connection.Pressed += this.OnKy040ConnectionPressed;
-            this.inputControls.Ky040Connection.Rotated += this.OnKy040ConnectionRotated;
-            this.inputControls.LircConnection.CommandReceived += this.OnLircConnectionLircCommand;
+            this.inputControls.RotaryEncoder.Pressed += this.OnKy040ConnectionPressed;
+            this.inputControls.RotaryEncoder.Rotated += this.OnKy040ConnectionRotated;
+            this.inputControls.RemoteControl.CommandReceived += this.OnLircConnectionLircCommand;
             this.inputControls.RfidTransceiver.TagDetected += this.OnRfidTransceiverTagDetected;
         }
 
@@ -73,9 +73,9 @@ namespace Aupli.Input
         /// </summary>
         public void Start()
         {
-            this.inputControls.LircConnection.StartListening();
+            this.inputControls.RemoteControl.StartListening();
             this.inputControls.RfidTransceiver.StartScanning();
-            this.logger.LogDebug("Started");
+            this.log.Debug("Started");
         }
 
         private static KeyInput GetInput(LircCommandEventArgs e)
@@ -145,14 +145,14 @@ namespace Aupli.Input
         private void OnRfidTransceiverTagDetected(object sender, TagDetectedEventArgs e)
         {
             var uid = e.Uid.ToString();
-            this.logger.LogDebug("TagInputEvent: " + uid);
+            this.log.Debug("TagInputEvent: {Uid}", uid);
             this.ActivityOccured?.Invoke(this, EventArgs.Empty);
             this.inputManager.Raise(this.TagInputEvent, this, new TagInputArgs(uid));
         }
 
         private void RaiseInput(KeyInput keyInput)
         {
-            this.logger.LogDebug("KeyInputEvent: " + keyInput);
+            this.log.Debug("KeyInputEvent: {KeyInput}", keyInput);
             this.ActivityOccured?.Invoke(this, EventArgs.Empty);
             this.inputManager.Raise(this.KeyInputEvent, this, new KeyInputArgs(keyInput));
         }

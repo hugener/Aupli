@@ -7,8 +7,8 @@
 
 namespace Aupli.Volume
 {
-    using Sundew.Pi.IO.Components.Amplifiers.Max9744;
-    using Sundew.Pi.IO.Components.Buttons;
+    using Sundew.Pi.IO.Devices.Amplifiers.Max9744;
+    using Sundew.Pi.IO.Devices.Buttons;
 
     /// <summary>
     /// Hardware controls for controlling volume.
@@ -18,13 +18,13 @@ namespace Aupli.Volume
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeControls" /> class.
         /// </summary>
-        /// <param name="max9744Connection">The max9744 connection.</param>
-        /// <param name="headPhoneSwitchConnection">The head phone switch connection.</param>
+        /// <param name="max9744Device">The max9744 connection.</param>
+        /// <param name="headPhoneSwitchDevice">The head phone switch connection.</param>
         /// <param name="volumeAdjuster">The volume adjuster.</param>
-        public VolumeControls(Max9744Connection max9744Connection, PullDownSwitchConnection headPhoneSwitchConnection, VolumeAdjuster volumeAdjuster)
+        public VolumeControls(Max9744Device max9744Device, PullDownSwitchDevice headPhoneSwitchDevice, VolumeAdjuster volumeAdjuster)
         {
-            this.Amplifier = max9744Connection;
-            this.HeadPhoneSwitch = headPhoneSwitchConnection;
+            this.Amplifier = max9744Device;
+            this.HeadPhoneSwitch = headPhoneSwitchDevice;
             this.VolumeAdjuster = volumeAdjuster;
         }
 
@@ -34,7 +34,7 @@ namespace Aupli.Volume
         /// <value>
         /// The amplifier.
         /// </value>
-        public Max9744Connection Amplifier { get; }
+        public Max9744Device Amplifier { get; }
 
         /// <summary>
         /// Gets the head phone switch.
@@ -42,7 +42,7 @@ namespace Aupli.Volume
         /// <value>
         /// The head phone switch.
         /// </value>
-        public PullDownSwitchConnection HeadPhoneSwitch { get; }
+        public PullDownSwitchDevice HeadPhoneSwitch { get; }
 
         /// <summary>
         /// Gets the volume adjuster.

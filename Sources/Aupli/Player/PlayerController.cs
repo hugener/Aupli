@@ -11,7 +11,7 @@ namespace Aupli.Player
     using System.Threading.Tasks;
     using Aupli.Input;
     using Aupli.Mpc;
-    using Sundew.Pi.ApplicationFramework.Logging;
+    using Serilog;
 
     /// <summary>
     /// Controls the music using player controls.
@@ -22,7 +22,7 @@ namespace Aupli.Player
         private readonly IPlaybackControls playbackControls;
         private readonly PlaylistMap playlistMap;
         private readonly IPlayerSettings playerSettings;
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerController" /> class.
@@ -31,13 +31,13 @@ namespace Aupli.Player
         /// <param name="playbackControls">The music player.</param>
         /// <param name="playlistMap">The playlist map.</param>
         /// <param name="playerSettings">The player settings.</param>
-        /// <param name="log">The log.</param>
+        /// <param name="logger">The logger.</param>
         public PlayerController(
             InteractionController interactionController,
             IPlaybackControls playbackControls,
             PlaylistMap playlistMap,
             IPlayerSettings playerSettings,
-            ILog log)
+            ILogger logger)
         {
             this.interactionController = interactionController;
             this.interactionController.KeyInputEvent.Register(this, this.OnInteractionControllerKeyInput);
@@ -45,7 +45,7 @@ namespace Aupli.Player
             this.playbackControls = playbackControls;
             this.playlistMap = playlistMap;
             this.playerSettings = playerSettings;
-            this.logger = log.GetCategorizedLogger(typeof(PlayerController), true);
+            this.log = logger.ForContext<PlayerController>();
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Aupli.Player
             var playlist = this.playlistMap.GetPlaylist(e.Uid);
             if (playlist != null)
             {
-                this.logger.LogInfo("Found playlist: " + playlist);
+                this.log.Information("Found playlist: {Playlist}", playlist);
             }
 
             await this.playbackControls.PlayPlaylistAsync(playlist);

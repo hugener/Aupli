@@ -12,8 +12,8 @@ namespace Aupli.Volume
     using Aupli.Input;
     using Aupli.Mpc;
     using Aupli.Numeric;
-    using Sundew.Pi.ApplicationFramework.Logging;
-    using Sundew.Pi.IO.Components.Buttons;
+    using Serilog;
+    using Sundew.Pi.IO.Devices.Buttons;
 
     /// <summary>
     /// Controls the volume of the MAX 9744 using the KY-040.
@@ -25,7 +25,7 @@ namespace Aupli.Volume
         private readonly InteractionController interactionController;
         private readonly VolumeControls volumeControls;
         private readonly IVolumeSettings volumeSettings;
-        private readonly ILogger logger;
+        private readonly ILogger log;
         private bool isUsingHeadPhones;
         private bool isMuted;
 
@@ -37,21 +37,21 @@ namespace Aupli.Volume
         /// <param name="interactionController">The interaction controller.</param>
         /// <param name="volumeControls">The volume controls.</param>
         /// <param name="volumeSettings">The volume settings.</param>
-        /// <param name="log">The log.</param>
+        /// <param name="logger">The logger.</param>
         public VolumeController(
             IVolumeControl volumeControl,
             IPlayerInfo playerInfo,
             InteractionController interactionController,
             VolumeControls volumeControls,
             IVolumeSettings volumeSettings,
-            ILog log)
+            ILogger logger)
         {
             this.volumeControl = volumeControl;
             this.playerInfo = playerInfo;
             this.interactionController = interactionController;
             this.volumeControls = volumeControls;
             this.volumeSettings = volumeSettings;
-            this.logger = log.GetCategorizedLogger(typeof(VolumeController), true);
+            this.log = logger.ForContext<VolumeController>();
             this.interactionController.KeyInputEvent.Register(this, this.OnInteractionControllerKeyInput);
             this.playerInfo.StatusChanged += this.OnMusicPlayerInfoChanged;
         }
@@ -93,7 +93,7 @@ namespace Aupli.Volume
                 this.volumeControls.Amplifier.SetVolume(this.volumeControls.VolumeAdjuster.Volume.AbsoluteValue);
             }
 
-            this.logger.Log(LogLevel.Debug, "Started");
+            this.log.Debug("Started");
         }
 
         private async void OnInteractionControllerKeyInput(object sender, KeyInputArgs e)
@@ -115,7 +115,7 @@ namespace Aupli.Volume
         private async Task ChangeVolumeAsync(bool isIncrementing)
         {
             var newVolume = this.volumeControls.VolumeAdjuster.Adjust(isIncrementing);
-            this.logger.Log(LogLevel.Debug, "Change volume: " + newVolume.Percentage);
+            this.log.Debug("Change volume: {NewVolume}", newVolume.Percentage);
             if (this.isUsingHeadPhones)
             {
                 await this.volumeControl.SetVolumeAsync(newVolume.Percentage);
@@ -148,7 +148,7 @@ namespace Aupli.Volume
                 this.VolumeChanged?.Invoke(this, new VolumeEventArgs(volume.Percentage, this.isMuted));
             }
 
-            this.logger.Log(LogLevel.Debug, newIsMuted ? "Muted" : "Unmuted");
+            this.log.Debug(newIsMuted ? "Muted" : "Unmuted");
         }
 
         private async Task UpdateOutputAsync(bool isUsingHeadPhones)

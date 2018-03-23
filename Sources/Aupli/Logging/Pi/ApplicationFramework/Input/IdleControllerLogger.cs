@@ -7,24 +7,24 @@
 
 namespace Aupli.Logging.Pi.ApplicationFramework.Input
 {
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
     /// Logger for the IdleController.
     /// </summary>
-    /// <seealso cref="IIdleControllerObserver" />
-    public class IdleControllerLogger : IIdleControllerObserver
+    /// <seealso cref="IIdleControllerReporter" />
+    public class IdleControllerLogger : IIdleControllerReporter
     {
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IdleControllerLogger"/> class.
         /// </summary>
-        /// <param name="log">The log.</param>
-        public IdleControllerLogger(ILog log)
+        /// <param name="logger">The log.</param>
+        public IdleControllerLogger(ILogger logger)
         {
-            this.logger = log.GetCategorizedLogger<IdleControllerLogger>(true);
+            this.log = logger.ForContext<IdleControllerLogger>();
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// </summary>
         public void Started()
         {
-            this.logger.LogDebug(nameof(this.Started));
+            this.log.Debug(nameof(this.Started));
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// </summary>
         public void OnInputActivity()
         {
-            this.logger.LogTrace(nameof(this.OnInputActivity));
+            this.log.Verbose(nameof(this.OnInputActivity));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// </summary>
         public void Activated()
         {
-            this.logger.LogDebug(nameof(this.Activated));
+            this.log.Debug(nameof(this.Activated));
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// </summary>
         public void OnSystemActivity()
         {
-            this.logger.LogTrace(nameof(this.OnSystemActivity));
+            this.log.Verbose(nameof(this.OnSystemActivity));
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// </summary>
         public void OnInputIdle()
         {
-            this.logger.LogDebug(nameof(this.OnInputIdle));
+            this.log.Debug(nameof(this.OnInputIdle));
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// </summary>
         public void OnSystemIdle()
         {
-            this.logger.LogDebug(nameof(this.OnSystemIdle));
+            this.log.Debug(nameof(this.OnSystemIdle));
         }
     }
 }

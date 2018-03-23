@@ -9,8 +9,8 @@ namespace Aupli.Input
 {
     using System;
     using Aupli.Mpc;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
     /// Reports activity from the music player.
@@ -19,17 +19,17 @@ namespace Aupli.Input
     public class SystemActivityAggregator : IActivityAggregator
     {
         private readonly IPlayerInfo playerInfo;
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemActivityAggregator" /> class.
         /// </summary>
         /// <param name="playerInfo">The player status.</param>
-        /// <param name="log">The log.</param>
-        public SystemActivityAggregator(IPlayerInfo playerInfo, ILog log)
+        /// <param name="logger">The log.</param>
+        public SystemActivityAggregator(IPlayerInfo playerInfo, ILogger logger)
         {
             this.playerInfo = playerInfo;
-            this.logger = log.GetCategorizedLogger(typeof(SystemActivityAggregator), true);
+            this.log = logger.ForContext<SystemActivityAggregator>();
             this.playerInfo.StatusChanged += this.OnPlayerInfoStatusChanged;
         }
 
@@ -42,7 +42,7 @@ namespace Aupli.Input
         {
             if (e.State == PlayerState.Playing)
             {
-                this.logger.Log(LogLevel.Trace, $"Player status: {e.State}: {e.Artist} - {e.Title} | {e.Elapsed}");
+                this.log.Verbose("Player status: {State}: {Artist} - {Title} | {Elapsed}", e.State, e.Artist, e.Title, e.Elapsed);
                 this.ActivityOccured?.Invoke(this, EventArgs.Empty);
             }
         }

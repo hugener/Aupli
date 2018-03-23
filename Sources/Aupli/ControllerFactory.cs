@@ -17,9 +17,9 @@ namespace Aupli
     using Aupli.Menu;
     using Aupli.Player;
     using Aupli.Volume;
+    using Serilog;
     using Sundew.Base.Threading;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
     /// Factory for creating various controllers.
@@ -52,20 +52,26 @@ namespace Aupli
         /// <param name="viewRendererFactory">The textView renderer factory.</param>
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
         /// <param name="cancellationTokenSource">The cancellation token source.</param>
-        /// <param name="log">The log.</param>
-        public ControllerFactory(ConnectionFactory connectionFactory, ConfigurationFactory configurationFactory, ViewRendererFactory viewRendererFactory, bool allowShutdown, CancellationTokenSource cancellationTokenSource, ILog log)
+        /// <param name="logger">The logger.</param>
+        public ControllerFactory(
+            ConnectionFactory connectionFactory,
+            ConfigurationFactory configurationFactory,
+            ViewRendererFactory viewRendererFactory,
+            bool allowShutdown,
+            CancellationTokenSource cancellationTokenSource,
+            ILogger logger)
         {
             this.startUpController = new Lazy<StartUpController>(() =>
                 new StartUpController(connectionFactory, viewRendererFactory.TextViewRenderer));
 
             this.displayController =
-                new Lazy<DisplayController>(() => new DisplayController(connectionFactory.Lcd.Connection));
+                new Lazy<DisplayController>(() => new DisplayController(connectionFactory.Lcd.Device));
 
-            var inputManager = new InputManager(log, new InputManagerLogger(log));
+            var inputManager = new InputManager(new InputManagerLogger(logger));
             var interactionController = new Lazy<InteractionController>(() => new InteractionController(
                 connectionFactory.InputControls,
                 inputManager,
-                log));
+                logger));
 
             this.playerController = new AsyncLazy<PlayerController>(
                 async () =>
@@ -74,7 +80,7 @@ namespace Aupli
                         connectionFactory.MusicPlayer,
                         await configurationFactory.GetPlaylistMapAsync(),
                         await configurationFactory.GetSettingsAsync(),
-                        log),
+                        logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
 
             this.idleController = new AsyncLazy<IdleController>(
@@ -83,10 +89,10 @@ namespace Aupli
                     var settings = await configurationFactory.GetSettingsAsync();
                     return new IdleController(
                         interactionController.Value,
-                        new SystemActivityAggregator(connectionFactory.MusicPlayer, log),
+                        new SystemActivityAggregator(connectionFactory.MusicPlayer, logger),
                         settings.IdleTimeout,
                         settings.SystemTimeout,
-                        new IdleControllerLogger(log));
+                        new IdleControllerLogger(logger));
                 },
                 LazyThreadSafetyMode.ExecutionAndPublication);
 
@@ -99,7 +105,7 @@ namespace Aupli
                     interactionController.Value,
                     connectionFactory.VolumeControls,
                     await configurationFactory.GetSettingsAsync(),
-                    log),
+                    logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
 
             this.viewNavigator = new AsyncLazy<ViewNavigator>(
@@ -109,21 +115,21 @@ namespace Aupli
                         this,
                         connectionFactory,
                         await configurationFactory.GetSettingsAsync());
-                    return new ViewNavigator(viewRendererFactory.TextViewRenderer, screenFactory, log);
+                    return new ViewNavigator(viewRendererFactory.TextViewRenderer, screenFactory, logger);
                 },
                 LazyThreadSafetyMode.ExecutionAndPublication);
 
             this.aupliController = new AsyncLazy<AupliController>(
-                async () => new AupliController(inputManager, await this.viewNavigator, this, log),
+                async () => new AupliController(inputManager, await this.viewNavigator, this, logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
 
             this.shutdownController = new AsyncLazy<ShutdownController>(
                 async () => new ShutdownController(
                     await this.idleController,
-                    connectionFactory.RemotePiConnection,
+                    connectionFactory.RemotePi,
                     allowShutdown,
                     cancellationTokenSource,
-                    log), LazyThreadSafetyMode.ExecutionAndPublication);
+                    logger), LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         /// <summary>

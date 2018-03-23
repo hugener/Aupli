@@ -8,7 +8,7 @@
 namespace Aupli.OperationSystem
 {
     using System.Diagnostics;
-    using Sundew.Pi.IO.Components.PowerManagement;
+    using Sundew.Pi.IO.Devices.PowerManagement;
 
     /// <summary>
     /// Connection to power functionality.

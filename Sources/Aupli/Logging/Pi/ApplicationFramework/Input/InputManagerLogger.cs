@@ -9,24 +9,25 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
-    /// Logger for <see cref="InputManager"/>.
+    /// Logger for <see cref="InputManager" />.
     /// </summary>
-    /// <seealso cref="IInputManagerObserver" />
-    public class InputManagerLogger : IInputManagerObserver
+    /// <seealso cref="Sundew.Pi.ApplicationFramework.Input.IInputManagerReporter" />
+    /// <seealso cref="IInputManagerReporter" />
+    public class InputManagerLogger : IInputManagerReporter
     {
-        private readonly ILogger logger;
+        private readonly ILogger log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputManagerLogger"/> class.
+        /// Initializes a new instance of the <see cref="InputManagerLogger" /> class.
         /// </summary>
-        /// <param name="log">The log.</param>
-        public InputManagerLogger(ILog log)
+        /// <param name="logger">The logger.</param>
+        public InputManagerLogger(ILogger logger)
         {
-            this.logger = log.GetCategorizedLogger<InputManagerLogger>(true);
+            this.log = logger.ForContext<InputManagerLogger>();
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// <param name="inputTarget">The input target.</param>
         public void StartedFrame(object inputTarget)
         {
-            this.logger.LogDebug($"{nameof(this.StartedFrame)}: {inputTarget.GetType()}");
+            this.log.Debug($"{nameof(this.StartedFrame)}: {{InputTarget}}", inputTarget.GetType());
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// <param name="inputTarget">The input target.</param>
         public void AddedTarget(object inputTarget)
         {
-            this.logger.LogDebug($"{nameof(this.AddedTarget)}: {inputTarget.GetType()}");
+            this.log.Debug($"{nameof(this.AddedTarget)}: {{InputTarget}}", inputTarget.GetType());
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// <param name="inputTarget">The input target.</param>
         public void RemovedTarget(object inputTarget)
         {
-            this.logger.LogDebug($"{nameof(this.RemovedTarget)}: {inputTarget.GetType()}");
+            this.log.Debug($"{nameof(this.RemovedTarget)}: {{InputTarget}}", inputTarget.GetType());
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// <param name="inputTargets">The input targets.</param>
         public void EndedFrame(IReadOnlyList<object> inputTargets)
         {
-            this.logger.LogDebug($"{nameof(this.EndedFrame)}: {string.Join(", ", inputTargets.Select(x => x.GetType()))}");
+            this.log.Debug($"{nameof(this.EndedFrame)}: {{InputTargets}}", string.Join(", ", inputTargets.Select(x => x.GetType())));
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// <param name="eventArgs">The event arguments instance containing the event data.</param>
         public void RaisingEvent<TEventArgs>(InputEvent<TEventArgs> inputEvent, TEventArgs eventArgs)
         {
-            this.logger.LogDebug($"{nameof(this.RaisingEvent)}: {typeof(TEventArgs)} {eventArgs}");
+            this.log.Debug($"{nameof(this.RaisingEvent)}: {{EventType}} {{EventArgs}}", typeof(TEventArgs), eventArgs);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace Aupli.Logging.Pi.ApplicationFramework.Input
         /// <param name="eventArgs">The event arguments instance containing the event data.</param>
         public void RaisedEvent<TEventArgs>(InputEvent<TEventArgs> inputEvent, TEventArgs eventArgs)
         {
-            this.logger.LogDebug($"{nameof(this.RaisedEvent)}: {typeof(TEventArgs)} {eventArgs}");
+            this.log.Debug($"{nameof(this.RaisedEvent)}: {{EventType}} {{EventArgs}}", typeof(TEventArgs), eventArgs);
         }
     }
 }

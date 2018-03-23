@@ -8,16 +8,14 @@
 namespace Aupli
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Aupli.CommandLine;
-    using Aupli.OperationSystem;
-    using Newtonsoft.Json;
     using Pi.IO.GeneralPurpose;
+    using Serilog;
+    using Serilog.Events;
     using Sundew.Base.Computation;
     using Sundew.CommandLine;
-    using Sundew.Pi.ApplicationFramework.Logging;
 
     /// <summary>
     /// The main entry point.
@@ -33,7 +31,7 @@ namespace Aupli
         {
             var commandLineParser = new CommandLineParser<Options, int>();
             commandLineParser.WithArguments(
-                new Options(false, true, LogLevel.Debug, new FileLogOptions()),
+                new Options(false, true, LogEventLevel.Debug, new FileLogOptions()),
                 options => Result.Success(options));
             var result = commandLineParser.Parse(args);
             if (!result)
@@ -43,13 +41,13 @@ namespace Aupli
                 return 1;
             }
 
-            using (var log = GetLog(result))
+            var log = GetLog(result);
             {
-                var logger = log.GetCategorizedLogger(typeof(Program).Name);
+                var logger = log.ForContext<Program>();
                 try
                 {
-                    logger.LogInfo("------------------------------------------");
-                    logger.LogInfo("Starting Aupli: " + string.Join(" ", args));
+                    logger.Information("------------------------------------------");
+                    logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
                     var configurationFactory = new ConfigurationFactory();
                     var settings = await configurationFactory.GetSettingsAsync();
                     using (var cancellationTokenSource = new CancellationTokenSource())
@@ -68,7 +66,7 @@ namespace Aupli
                         {
                             var aupliController = await controllerFactory.GetAupliControllerAsync();
                             await aupliController.StartAsync();
-                            logger.LogInfo("Started Aupli");
+                            logger.Information("Started Aupli");
                             while (!cancellationTokenSource.Token.IsCancellationRequested)
                             {
                                 await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationTokenSource.Token);
@@ -82,12 +80,11 @@ namespace Aupli
                         await configurationFactory.SavePlaylistMapAsync();
                     }
 
-                    logger.LogInfo("Stopped Aupli");
+                    logger.Information("Stopped Aupli");
                 }
                 catch (Exception e)
                 {
-                    logger.LogError(e.ToString());
-                    logger.LogError("Aupli crashed");
+                    logger.Error(e, "Aupli crashed");
                     return 1;
                 }
             }
@@ -95,25 +92,25 @@ namespace Aupli
             return 0;
         }
 
-        private static Log GetLog(Result<Options, ParserError<int>> result)
+        private static ILogger GetLog(Result<Options, ParserError<int>> result)
         {
             var options = result.Value;
-            var logWriters = new List<ILogWriter>();
+            var logConfiguration = new LoggerConfiguration().MinimumLevel.Is(options.LogLevel);
             if (options.IsLoggingToConsole)
             {
-                logWriters.Add(new ConsoleLogWriter());
+                logConfiguration = logConfiguration.WriteTo.Console();
             }
 
             if (options.FileLogOptions != null)
             {
                 var fileLoggingOptions = options.FileLogOptions;
-                logWriters.Add(new FileLogWriter(
+                logConfiguration = logConfiguration.WriteTo.File(
                     fileLoggingOptions.LogPath,
-                    fileLoggingOptions.MaxLogFileSizeInBytes,
-                    fileLoggingOptions.MaxNumberOfLogFiles));
+                    fileSizeLimitBytes: fileLoggingOptions.MaxLogFileSizeInBytes,
+                    retainedFileCountLimit: fileLoggingOptions.MaxNumberOfLogFiles);
             }
 
-            return new Log(new MultiLogWriter(logWriters), options.LogLevel);
+            return logConfiguration.CreateLogger();
         }
     }
 }

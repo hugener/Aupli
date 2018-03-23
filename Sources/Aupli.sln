@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aupli", "Aupli\Aupli.csproj", "{6DE238E8-E187-45F4-AADF-D251B182A9C8}"
 EndProject
@@ -15,19 +15,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pi.IO.InterIntegratedCircui
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pi.IO.GeneralPurpose", "..\..\Pi\Pi.IO.GeneralPurpose\Pi.IO.GeneralPurpose.csproj", "{701C1114-92CD-4BC8-B731-9B6E16BEBB68}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pi.IO.Components", "..\..\Pi\Pi.IO.Components\Pi.IO.Components.csproj", "{9BBFA995-9A37-49F8-B031-EDB6759D2623}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pi.IO", "..\..\Pi\Pi.IO\Pi.IO.csproj", "{3DC9C3B7-BE6F-407B-ACDE-3649D20D094A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundew.Pi.ApplicationFramework", "Sundew.Pi.ApplicationFramework\Sundew.Pi.ApplicationFramework.csproj", "{832CD503-E08C-4DE0-B6F8-3B60C21ACA10}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundew.Pi.IO.Components", "Sundew.Pi.IO.Components\Sundew.Pi.IO.Components.csproj", "{AFCBECF3-507E-4598-8A7E-49524423A684}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundew.Pi.IO.Drivers", "Sundew.Pi.IO.Drivers\Sundew.Pi.IO.Drivers.csproj", "{DAE92B51-BD17-4AE4-9F15-BFB44B3C0197}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MpcNET", "..\..\MpcNET\Sources\MpcNET\MpcNET.csproj", "{F1792063-08AF-42C0-A009-94EE09A75B45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sundew.Pi.TimerTester", "Sundew.Pi.TimerTester\Sundew.Pi.TimerTester.csproj", "{5F020BDC-AED2-4CB4-887D-CEDB7EA1879C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundew.Pi.ApplicationFramework", "..\..\Sundew.Pi.ApplicationFramework\Sources\Sundew.Pi.ApplicationFramework\Sundew.Pi.ApplicationFramework.csproj", "{32FBD440-E23F-4ED1-9D94-C6D498C42E1D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundew.Pi.IO.Devices", "..\..\Sundew.Pi.ApplicationFramework\Sources\Sundew.Pi.IO.Devices\Sundew.Pi.IO.Devices.csproj", "{00A159C8-DE26-4E2F-8B31-FFCC94DDBB09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sundew.Pi.IO.Drivers", "..\..\Sundew.Pi.ApplicationFramework\Sources\Sundew.Pi.IO.Drivers\Sundew.Pi.IO.Drivers.csproj", "{18013DFB-9040-4FCD-95F8-63A4F673990E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pi.IO.Devices", "..\..\Pi\Pi.IO.Devices\Pi.IO.Devices.csproj", "{EBBC5C63-FCAC-41B9-B972-B8A16FBD2DE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aupli.Logging.Serilog", "Aupli.Logging.Serilog\Aupli.Logging.Serilog.csproj", "{434AFFB7-BB56-42F7-9004-918A0E0FB9C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,34 +59,34 @@ Global
 		{701C1114-92CD-4BC8-B731-9B6E16BEBB68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{701C1114-92CD-4BC8-B731-9B6E16BEBB68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{701C1114-92CD-4BC8-B731-9B6E16BEBB68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9BBFA995-9A37-49F8-B031-EDB6759D2623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BBFA995-9A37-49F8-B031-EDB6759D2623}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9BBFA995-9A37-49F8-B031-EDB6759D2623}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9BBFA995-9A37-49F8-B031-EDB6759D2623}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DC9C3B7-BE6F-407B-ACDE-3649D20D094A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DC9C3B7-BE6F-407B-ACDE-3649D20D094A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DC9C3B7-BE6F-407B-ACDE-3649D20D094A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DC9C3B7-BE6F-407B-ACDE-3649D20D094A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{832CD503-E08C-4DE0-B6F8-3B60C21ACA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{832CD503-E08C-4DE0-B6F8-3B60C21ACA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{832CD503-E08C-4DE0-B6F8-3B60C21ACA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{832CD503-E08C-4DE0-B6F8-3B60C21ACA10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AFCBECF3-507E-4598-8A7E-49524423A684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFCBECF3-507E-4598-8A7E-49524423A684}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFCBECF3-507E-4598-8A7E-49524423A684}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFCBECF3-507E-4598-8A7E-49524423A684}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAE92B51-BD17-4AE4-9F15-BFB44B3C0197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAE92B51-BD17-4AE4-9F15-BFB44B3C0197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAE92B51-BD17-4AE4-9F15-BFB44B3C0197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAE92B51-BD17-4AE4-9F15-BFB44B3C0197}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F1792063-08AF-42C0-A009-94EE09A75B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1792063-08AF-42C0-A009-94EE09A75B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1792063-08AF-42C0-A009-94EE09A75B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1792063-08AF-42C0-A009-94EE09A75B45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F020BDC-AED2-4CB4-887D-CEDB7EA1879C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F020BDC-AED2-4CB4-887D-CEDB7EA1879C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F020BDC-AED2-4CB4-887D-CEDB7EA1879C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F020BDC-AED2-4CB4-887D-CEDB7EA1879C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32FBD440-E23F-4ED1-9D94-C6D498C42E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32FBD440-E23F-4ED1-9D94-C6D498C42E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32FBD440-E23F-4ED1-9D94-C6D498C42E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32FBD440-E23F-4ED1-9D94-C6D498C42E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00A159C8-DE26-4E2F-8B31-FFCC94DDBB09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00A159C8-DE26-4E2F-8B31-FFCC94DDBB09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00A159C8-DE26-4E2F-8B31-FFCC94DDBB09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00A159C8-DE26-4E2F-8B31-FFCC94DDBB09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18013DFB-9040-4FCD-95F8-63A4F673990E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18013DFB-9040-4FCD-95F8-63A4F673990E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18013DFB-9040-4FCD-95F8-63A4F673990E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18013DFB-9040-4FCD-95F8-63A4F673990E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBBC5C63-FCAC-41B9-B972-B8A16FBD2DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBBC5C63-FCAC-41B9-B972-B8A16FBD2DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBBC5C63-FCAC-41B9-B972-B8A16FBD2DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBBC5C63-FCAC-41B9-B972-B8A16FBD2DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{434AFFB7-BB56-42F7-9004-918A0E0FB9C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434AFFB7-BB56-42F7-9004-918A0E0FB9C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434AFFB7-BB56-42F7-9004-918A0E0FB9C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434AFFB7-BB56-42F7-9004-918A0E0FB9C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,9 +7,9 @@
 
 namespace Aupli.Player
 {
-    using Sundew.Pi.IO.Components.Buttons;
-    using Sundew.Pi.IO.Components.InfraredReceivers.Lirc;
-    using Sundew.Pi.IO.Components.RfidTransceivers.Mfrc522;
+    using Sundew.Pi.IO.Devices.Buttons;
+    using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
+    using Sundew.Pi.IO.Devices.RfidTransceivers.Mfrc522;
 
     /// <summary>
     /// Hardware controls related to playback.
@@ -25,11 +25,11 @@ namespace Aupli.Player
         /// <param name="mfrc522Connection">The MFRC522 connection.</param>
         /// <param name="lircConnection">The lirc connection.</param>
         public PlayerControls(
-            PullDownButtonConnection playPauseButton,
-            PullDownButtonConnection nextButton,
-            PullDownButtonConnection previousButton,
+            PullDownButtonDevice playPauseButton,
+            PullDownButtonDevice nextButton,
+            PullDownButtonDevice previousButton,
             Mfrc522Connection mfrc522Connection,
-            LircConnection lircConnection)
+            LircDevice lircConnection)
         {
             this.PlayPauseButton = playPauseButton;
             this.NextButton = nextButton;
@@ -44,7 +44,7 @@ namespace Aupli.Player
         /// <value>
         /// The play pause button.
         /// </value>
-        public PullDownButtonConnection PlayPauseButton { get; }
+        public PullDownButtonDevice PlayPauseButton { get; }
 
         /// <summary>
         /// Gets the next button.
@@ -52,7 +52,7 @@ namespace Aupli.Player
         /// <value>
         /// The next button.
         /// </value>
-        public PullDownButtonConnection NextButton { get; }
+        public PullDownButtonDevice NextButton { get; }
 
         /// <summary>
         /// Gets the previous button.
@@ -60,7 +60,7 @@ namespace Aupli.Player
         /// <value>
         /// The previous button.
         /// </value>
-        public PullDownButtonConnection PreviousButton { get; }
+        public PullDownButtonDevice PreviousButton { get; }
 
         /// <summary>
         /// Gets the MFRC522 connection.
@@ -76,6 +76,6 @@ namespace Aupli.Player
         /// <value>
         /// The lirc connection.
         /// </value>
-        public LircConnection LircConnection { get; set; }
+        public LircDevice LircConnection { get; set; }
     }
 }

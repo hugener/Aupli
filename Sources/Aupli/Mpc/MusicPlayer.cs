@@ -21,7 +21,7 @@ namespace Aupli.Mpc
     {
         private readonly AsyncLock mpcCommandLock = new AsyncLock();
         private readonly IMpcConnection mpcConnection;
-        private readonly IMusicPlayerObserver musicPlayerObserver;
+        private readonly IMusicPlayerReporter musicPlayerReporter;
         private readonly Task musicPlayerTask;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private string currentPlaylist;
@@ -31,11 +31,11 @@ namespace Aupli.Mpc
         /// Initializes a new instance of the <see cref="MusicPlayer" /> class.
         /// </summary>
         /// <param name="mpcConnection">The MPC connection.</param>
-        /// <param name="musicPlayerObserver">The music player observer.</param>
-        public MusicPlayer(IMpcConnection mpcConnection, IMusicPlayerObserver musicPlayerObserver)
+        /// <param name="musicPlayerReporter">The music player observer.</param>
+        public MusicPlayer(IMpcConnection mpcConnection, IMusicPlayerReporter musicPlayerReporter)
         {
             this.mpcConnection = mpcConnection;
-            this.musicPlayerObserver = musicPlayerObserver;
+            this.musicPlayerReporter = musicPlayerReporter;
             this.musicPlayerTask = new TaskFactory().StartNew(
                 this.GetStatus,
                 this.cancellationTokenSource.Token,
@@ -102,7 +102,7 @@ namespace Aupli.Mpc
             {
                 if (playlistName != null && playlistName != this.currentPlaylist)
                 {
-                    this.musicPlayerObserver.StartingPlaylist(playlistName);
+                    this.musicPlayerReporter.StartingPlaylist(playlistName);
                     await this.mpcConnection.SendAsync(commands => commands.Playback.Stop());
                     await this.mpcConnection.SendAsync(commands => commands.CurrentPlaylist.Clear());
                     var loadResult = await this.mpcConnection.SendAsync(commands => commands.StoredPlaylist.Load(playlistName));
@@ -119,7 +119,7 @@ namespace Aupli.Mpc
                 }
                 else
                 {
-                    this.musicPlayerObserver.IgnoredPlaylist(playlistName);
+                    this.musicPlayerReporter.IgnoredPlaylist(playlistName);
                 }
             });
         }
@@ -255,7 +255,7 @@ namespace Aupli.Mpc
                     {
                         if (lockResult)
                         {
-                            using (this.musicPlayerObserver.EnterStatusRefresh())
+                            using (this.musicPlayerReporter.EnterStatusRefresh())
                             {
                                 await this.UpdateDisplayWithCurrentSongAsync();
                                 cancellationToken.ThrowIfCancellationRequested();

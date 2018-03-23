@@ -11,7 +11,7 @@ namespace Aupli.Display
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Sundew.Pi.ApplicationFramework.Logging;
+    using Serilog;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace Aupli.Display
         private readonly Stack<ITextView> screenStack = new Stack<ITextView>();
         private readonly TextViewRenderer textViewRenderer;
         private readonly ViewFactory viewFactory;
-        private readonly ILogger logger;
+        private readonly ILogger log;
         private readonly Pi.Timers.ITimer viewTimeoutTimer;
 
         /// <summary>
@@ -31,12 +31,12 @@ namespace Aupli.Display
         /// </summary>
         /// <param name="textViewRenderer">The textView renderer.</param>
         /// <param name="viewFactory">The textView factory.</param>
-        /// <param name="log">The log.</param>
-        public ViewNavigator(TextViewRenderer textViewRenderer, ViewFactory viewFactory, ILog log)
+        /// <param name="logger">The log.</param>
+        public ViewNavigator(TextViewRenderer textViewRenderer, ViewFactory viewFactory, ILogger logger)
         {
             this.textViewRenderer = textViewRenderer;
             this.viewFactory = viewFactory;
-            this.logger = log.GetCategorizedLogger(typeof(ViewNavigator), true);
+            this.log = logger.ForContext<ViewNavigator>();
             this.viewTimeoutTimer = Pi.Timers.Timer.Create();
             this.viewTimeoutTimer.Interval = Timeout.InfiniteTimeSpan;
             this.viewTimeoutTimer.Tick += (s, e) =>
@@ -49,14 +49,14 @@ namespace Aupli.Display
         /// <inheritdoc />
         public void NavigateToStartupView()
         {
-            this.logger.LogDebug("Navigate to StartUpTextView");
+            this.log.Debug("Navigate to StartUpTextView");
             this.textViewRenderer.TrySetView(this.viewFactory.StartUpTextView);
         }
 
         /// <inheritdoc />
         public async Task NavigateToPlayerViewAsync()
         {
-            this.logger.LogDebug("Navigate to PlayerTextView");
+            this.log.Debug("Navigate to PlayerTextView");
             var result = this.textViewRenderer.TrySetView(await this.viewFactory.GetPlayerTextViewAsync());
             if (result && result.Value != null)
             {
@@ -69,7 +69,7 @@ namespace Aupli.Display
         {
             this.viewTimeoutTimer.Stop();
             this.viewTimeoutTimer.Start(activeTimeSpan);
-            this.logger.LogDebug("Navigate to VolumeTextView");
+            this.log.Debug("Navigate to VolumeTextView");
             var result = this.textViewRenderer.TrySetView(await this.viewFactory.GetVolumeTextViewAsync());
             if (result && result.Value != null)
             {
@@ -80,14 +80,14 @@ namespace Aupli.Display
         /// <inheritdoc />
         public void NavigateToShutdownView()
         {
-            this.logger.LogDebug("Navigate to ShutdownTextView");
+            this.log.Debug("Navigate to ShutdownTextView");
             this.textViewRenderer.TrySetView(this.viewFactory.ShutdownTextView);
         }
 
         /// <inheritdoc />
         public void NavigateToMenuView()
         {
-            this.logger.LogDebug("Navigate to MenuTextView");
+            this.log.Debug("Navigate to MenuTextView");
             var result = this.textViewRenderer.TrySetView(this.viewFactory.MenuTextView);
             if (result && result.Value != null)
             {
@@ -100,7 +100,7 @@ namespace Aupli.Display
         {
             if (this.screenStack.TryPop(out var screen))
             {
-                this.logger.LogDebug("Navigate back to: " + screen.GetType().Name);
+                this.log.Debug("Navigate back to: " + screen.GetType().Name);
                 this.textViewRenderer.TrySetView(screen);
             }
         }
