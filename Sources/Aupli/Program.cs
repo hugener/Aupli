@@ -42,51 +42,49 @@ namespace Aupli
             }
 
             var log = GetLog(result);
+            var logger = log.ForContext<Program>();
+            try
             {
-                var logger = log.ForContext<Program>();
-                try
+                logger.Information("------------------------------------------");
+                logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
+                var configurationFactory = new ConfigurationFactory();
+                var settings = await configurationFactory.GetSettingsAsync();
+                using (var cancellationTokenSource = new CancellationTokenSource())
+                using (var gpioConnectionDriver = new GpioConnectionDriverFactory().Create())
+                using (var connectionFactory = new ConnectionFactory(gpioConnectionDriver, settings.Pin26Feature, settings.Volume, log))
+                using (var viewRendererFactory = new ViewRendererFactory(connectionFactory, log))
+                using (var controllerFactory = new ControllerFactory(
+                    connectionFactory,
+                    configurationFactory,
+                    viewRendererFactory,
+                    result.Value.AllowShutdown,
+                    cancellationTokenSource,
+                    log))
                 {
-                    logger.Information("------------------------------------------");
-                    logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
-                    var configurationFactory = new ConfigurationFactory();
-                    var settings = await configurationFactory.GetSettingsAsync();
-                    using (var cancellationTokenSource = new CancellationTokenSource())
-                    using (var gpioConnectionDriver = new GpioConnectionDriverFactory().Create())
-                    using (var connectionFactory = new ConnectionFactory(gpioConnectionDriver, settings.Pin26Feature, settings.Volume, log))
-                    using (var viewRendererFactory = new ViewRendererFactory(connectionFactory, log))
-                    using (var controllerFactory = new ControllerFactory(
-                        connectionFactory,
-                        configurationFactory,
-                        viewRendererFactory,
-                        result.Value.AllowShutdown,
-                        cancellationTokenSource,
-                        log))
+                    try
                     {
-                        try
+                        var aupliController = await controllerFactory.GetAupliControllerAsync();
+                        await aupliController.StartAsync();
+                        logger.Information("Started Aupli");
+                        while (!cancellationTokenSource.Token.IsCancellationRequested)
                         {
-                            var aupliController = await controllerFactory.GetAupliControllerAsync();
-                            await aupliController.StartAsync();
-                            logger.Information("Started Aupli");
-                            while (!cancellationTokenSource.Token.IsCancellationRequested)
-                            {
-                                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationTokenSource.Token);
-                            }
+                            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationTokenSource.Token);
                         }
-                        catch (OperationCanceledException)
-                        {
-                        }
-
-                        await configurationFactory.SaveSettingsAsync();
-                        await configurationFactory.SavePlaylistMapAsync();
+                    }
+                    catch (OperationCanceledException)
+                    {
                     }
 
-                    logger.Information("Stopped Aupli");
+                    await configurationFactory.SaveSettingsAsync();
+                    await configurationFactory.SavePlaylistMapAsync();
                 }
-                catch (Exception e)
-                {
-                    logger.Error(e, "Aupli crashed");
-                    return 1;
-                }
+
+                logger.Information("Stopped Aupli");
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Aupli crashed");
+                return 1;
             }
 
             return 0;
@@ -98,7 +96,7 @@ namespace Aupli
             var logConfiguration = new LoggerConfiguration().MinimumLevel.Is(options.LogLevel);
             if (options.IsLoggingToConsole)
             {
-                logConfiguration = logConfiguration.WriteTo.Console();
+                logConfiguration = logConfiguration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext,-80:l} | {Message:lj}{NewLine}{Exception}");
             }
 
             if (options.FileLogOptions != null)
@@ -106,6 +104,7 @@ namespace Aupli
                 var fileLoggingOptions = options.FileLogOptions;
                 logConfiguration = logConfiguration.WriteTo.File(
                     fileLoggingOptions.LogPath,
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext,-80:l} | {Message:lj}{NewLine}{Exception}",
                     fileSizeLimitBytes: fileLoggingOptions.MaxLogFileSizeInBytes,
                     retainedFileCountLimit: fileLoggingOptions.MaxNumberOfLogFiles);
             }
