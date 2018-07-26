@@ -10,6 +10,7 @@ namespace Aupli
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Aupli.Bootstrapping;
     using Aupli.CommandLine;
     using Pi.IO.GeneralPurpose;
     using Serilog;
@@ -47,24 +48,13 @@ namespace Aupli
             {
                 logger.Information("------------------------------------------");
                 logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
-                var configurationFactory = new ConfigurationFactory();
-                var settings = await configurationFactory.GetSettingsAsync();
-                using (var cancellationTokenSource = new CancellationTokenSource())
                 using (var gpioConnectionDriver = new GpioConnectionDriverFactory().Create())
-                using (var connectionFactory = new ConnectionFactory(gpioConnectionDriver, settings.Pin26Feature, settings.Volume, log))
-                using (var viewRendererFactory = new ViewRendererFactory(connectionFactory, log))
-                using (var controllerFactory = new ControllerFactory(
-                    connectionFactory,
-                    configurationFactory,
-                    viewRendererFactory,
-                    result.Value.AllowShutdown,
-                    cancellationTokenSource,
-                    log))
+                using (var cancellationTokenSource = new CancellationTokenSource())
                 {
+                    var bootstrapper = new Bootstrapper(gpioConnectionDriver, logger);
                     try
                     {
-                        var aupliController = await controllerFactory.GetAupliControllerAsync();
-                        await aupliController.StartAsync();
+                        await bootstrapper.StartAsync(cancellationTokenSource, result.Value.AllowShutdown);
                         logger.Information("Started Aupli");
                         while (!cancellationTokenSource.Token.IsCancellationRequested)
                         {
@@ -75,8 +65,7 @@ namespace Aupli
                     {
                     }
 
-                    await configurationFactory.SaveSettingsAsync();
-                    await configurationFactory.SavePlaylistMapAsync();
+                    await bootstrapper.StopAsync();
                 }
 
                 logger.Information("Stopped Aupli");
