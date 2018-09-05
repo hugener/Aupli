@@ -21,11 +21,11 @@ namespace Aupli.SystemBoundaries.Pi.Interaction
         /// <summary>
         /// Creates the specified gpio connection driver.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <returns>
         /// The input controls.
         /// </returns>
-        public static InputControls Create(IGpioConnectionDriver gpioConnectionDriver)
+        public static InputControls Create(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
             var lircConnection = new LircDevice();
             var playPauseButton = new PullDownButtonDevice(ConnectorPin.P1Pin15);
@@ -34,10 +34,10 @@ namespace Aupli.SystemBoundaries.Pi.Interaction
             var menuButton = new PullDownButtonDevice(ConnectorPin.P1Pin13);
             var rfidTransceiver = new Mfrc522Connection("/dev/spidev0.0", ConnectorPin.P1Pin22);
             var ky040Connection = new Ky040Device(
-                gpioConnectionDriver,
                 ConnectorPin.P1Pin36,
                 ConnectorPin.P1Pin38,
                 ConnectorPin.P1Pin40,
+                gpioConnectionDriverFactory,
                 null);
 
             return new InputControls(

@@ -9,7 +9,7 @@ namespace Aupli.SystemBoundaries.Mpc
 {
     using System;
     using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.SystemBoundaries.Connectors.Volume;
+    using Aupli.ApplicationServices.RequiredInterface.Volume;
 
     /// <summary>
     /// Interface for a music player.

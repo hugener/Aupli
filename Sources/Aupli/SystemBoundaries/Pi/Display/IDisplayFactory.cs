@@ -19,11 +19,11 @@ namespace Aupli.SystemBoundaries.Pi.Display
         /// <summary>
         /// Creates the specified gpio connection driver.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <returns>
         /// A <see cref="Hd44780Display" />.
         /// </returns>
-        IDisplay Create(IGpioConnectionDriver gpioConnectionDriver);
+        IDisplay Create(IGpioConnectionDriverFactory gpioConnectionDriverFactory);
 
         /// <summary>
         /// Disposes the specified text display device.

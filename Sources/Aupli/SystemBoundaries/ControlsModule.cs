@@ -27,7 +27,7 @@ namespace Aupli.SystemBoundaries
     /// </summary>
     public class ControlsModule : IInitializable, IDisposable
     {
-        private readonly IGpioConnectionDriver gpioConnectionDriver;
+        private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
         private readonly RequiredInterface.IMusicPlayerReporter musicPlayerReporter;
         private readonly IAmplifierReporter amplifierReporter;
         private Disposer disposer;
@@ -35,12 +35,12 @@ namespace Aupli.SystemBoundaries
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlsModule" /> class.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver.</param>
         /// <param name="musicPlayerReporter">The music player reporter.</param>
         /// <param name="amplifierReporter">The amplifier reporter.</param>
-        public ControlsModule(IGpioConnectionDriver gpioConnectionDriver, RequiredInterface.IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
+        public ControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory, RequiredInterface.IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
         {
-            this.gpioConnectionDriver = gpioConnectionDriver;
+            this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.musicPlayerReporter = musicPlayerReporter;
             this.amplifierReporter = amplifierReporter;
         }
@@ -84,10 +84,10 @@ namespace Aupli.SystemBoundaries
         public Task InitializeAsync()
         {
             // Create Hardware
-            this.InputControls = this.CreateInputControls(this.gpioConnectionDriver);
+            this.InputControls = this.CreateInputControls(this.gpioConnectionDriverFactory);
 
             var systemControlFactory = this.CreateSystemControlFactory();
-            this.SystemControl = systemControlFactory.Create(this.gpioConnectionDriver);
+            this.SystemControl = systemControlFactory.Create(this.gpioConnectionDriverFactory);
 
             var amplifierFactory = this.CreateAmplifierFactory();
             this.Amplifier = amplifierFactory.Create(this.amplifierReporter);
@@ -102,6 +102,7 @@ namespace Aupli.SystemBoundaries
                 this.InputControls.RfidTransceiver,
                 this.InputControls.RotaryEncoder,
                 new GpioConnection(
+                    this.gpioConnectionDriverFactory,
                     new[]
                     {
                         this.InputControls.PlayPauseButton.PinConfiguration,
@@ -126,13 +127,13 @@ namespace Aupli.SystemBoundaries
         /// <summary>
         /// Creates the input controls.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <returns>
         /// A input controls.
         /// </returns>
-        protected virtual InputControls CreateInputControls(IGpioConnectionDriver gpioConnectionDriver)
+        protected virtual InputControls CreateInputControls(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
-            return InputControlsFactory.Create(gpioConnectionDriver);
+            return InputControlsFactory.Create(gpioConnectionDriverFactory);
         }
 
         /// <summary>

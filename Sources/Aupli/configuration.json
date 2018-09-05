@@ -1,6 +1,1 @@
-{
-  "Name": "Laia",
-  "LastGreeting": "",
-  "IdleTimeout": "00:04:00",
-  "SystemTimeout": "00:04:00",
-}
+{"Name":"Laia","LastGreeting":"","IdleTimeout":"00:02:00","SystemTimeout":"00:04:00"}

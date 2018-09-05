@@ -47,8 +47,11 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
             get => this.max9744Device.IsMuted;
             set
             {
-                this.max9744Device.SetMuteState(value);
-                this.max9744AmplifierReporter?.ChangeMute(value);
+                if (this.IsMuted != value)
+                {
+                    this.max9744Device.SetMuteState(value);
+                    this.max9744AmplifierReporter?.ChangeMute(value);
+                }
             }
         }
 

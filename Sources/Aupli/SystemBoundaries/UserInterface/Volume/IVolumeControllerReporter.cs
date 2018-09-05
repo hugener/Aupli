@@ -19,7 +19,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         /// <summary>
         /// Keys the input.
         /// </summary>
-        /// <param name="keyInputArgs">The key input arguments.</param>
-        void KeyInput(KeyInputArgs keyInputArgs);
+        /// <param name="keyInput">The key input.</param>
+        void KeyInput(KeyInput keyInput);
     }
 }

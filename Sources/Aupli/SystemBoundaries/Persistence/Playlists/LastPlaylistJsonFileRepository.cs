@@ -39,7 +39,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// </returns>
         public async Task InitializeAsync()
         {
-            this.playlist = JsonConvert.DeserializeObject<PlaylistEntity>(await File.ReadAllTextAsync(this.filePath));
+            this.playlist = JsonConvert.DeserializeObject<PlaylistEntity>(await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false));
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// </returns>
         public async Task SaveAsync()
         {
-            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.playlist));
+            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.playlist)).ConfigureAwait(false);
         }
     }
 }

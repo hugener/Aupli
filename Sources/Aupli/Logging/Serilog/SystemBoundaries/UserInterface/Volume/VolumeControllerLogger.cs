@@ -41,10 +41,10 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume
         /// <summary>
         /// Keys the input.
         /// </summary>
-        /// <param name="keyInputArgs">The key input arguments.</param>
-        public void KeyInput(KeyInputArgs keyInputArgs)
+        /// <param name="keyInput">The key input.</param>
+        public void KeyInput(KeyInput keyInput)
         {
-            this.log.Debug($"{nameof(this.KeyInput)} {{{nameof(keyInputArgs)}}}", keyInputArgs);
+            this.log.Debug($"{nameof(this.KeyInput)} {{{nameof(keyInput)}}}", keyInput);
         }
     }
 }

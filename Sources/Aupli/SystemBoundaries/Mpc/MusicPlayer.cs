@@ -25,6 +25,7 @@ namespace Aupli.SystemBoundaries.Mpc
     /// </summary>
     public class MusicPlayer : IMusicPlayer
     {
+        private static readonly TimeSpan DefaultCommandDelay = TimeSpan.FromMilliseconds(5);
         private readonly AsyncLock mpcCommandLock = new AsyncLock();
         private readonly IMpcConnection mpcConnection;
         private readonly IMusicPlayerReporter musicPlayerReporter;
@@ -32,7 +33,8 @@ namespace Aupli.SystemBoundaries.Mpc
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private string currentPlaylist;
         private MpdStatus status;
-        private int volume;
+        private Percentage volume;
+        private bool isMuted;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MusicPlayer" /> class.
@@ -98,12 +100,33 @@ namespace Aupli.SystemBoundaries.Mpc
         /// <returns>An async task.</returns>
         public async Task SetVolumeAsync(Percentage volume)
         {
-            await this.ExecuteCommandAsync(async () =>
+            if (this.volume != volume)
             {
-                await this.mpcConnection.SendAsync(new SetVolumeCommand((byte)(volume.Value * 100)));
-                await Task.Delay(10);
-                await this.UpdateDisplayWithCurrentSongAsync();
-            });
+                await this.ExecuteCommandAsync(async () =>
+                {
+                    await this.mpcConnection.SendAsync(new SetVolumeCommand((byte)(volume.Value * 100)));
+                    await Task.Delay(DefaultCommandDelay);
+                    await this.UpdateDisplayWithCurrentSongAsync();
+                });
+            }
+        }
+
+        /// <summary>
+        /// Sets the state of the mute.
+        /// </summary>
+        /// <param name="isMuted">if set to <c>true</c> [is muted].</param>
+        /// <returns>An async task.</returns>
+        public async Task SetMuteStateAsync(bool isMuted)
+        {
+            if (this.isMuted != isMuted)
+            {
+                await this.ExecuteCommandAsync(async () =>
+                {
+                    await this.mpcConnection.SendAsync(new SetVolumeCommand(0));
+                    await Task.Delay(DefaultCommandDelay);
+                    await this.UpdateDisplayWithCurrentSongAsync();
+                });
+            }
         }
 
         /// <summary>
@@ -125,7 +148,7 @@ namespace Aupli.SystemBoundaries.Mpc
                     {
                         this.currentPlaylist = playlistName;
                         await this.mpcConnection.SendAsync(new PlayCommand(0));
-                        await Task.Delay(10);
+                        await Task.Delay(DefaultCommandDelay);
                         await this.UpdateDisplayWithCurrentSongAsync();
                         return;
                     }
@@ -144,7 +167,7 @@ namespace Aupli.SystemBoundaries.Mpc
             await this.ExecuteCommandAsync(async () =>
             {
                 await this.mpcConnection.SendAsync(new PlayPauseCommand());
-                await Task.Delay(10);
+                await Task.Delay(DefaultCommandDelay);
                 await this.UpdateDisplayWithCurrentSongAsync();
             });
         }
@@ -168,7 +191,7 @@ namespace Aupli.SystemBoundaries.Mpc
                     await this.mpcConnection.SendAsync(new NextCommand());
                 }
 
-                await Task.Delay(10);
+                await Task.Delay(DefaultCommandDelay);
                 await this.UpdateDisplayWithCurrentSongAsync();
             });
         }
@@ -190,7 +213,7 @@ namespace Aupli.SystemBoundaries.Mpc
                     await this.mpcConnection.SendAsync(new PreviousCommand());
                 }
 
-                await Task.Delay(10);
+                await Task.Delay(DefaultCommandDelay);
                 await this.UpdateDisplayWithCurrentSongAsync();
             });
         }
@@ -241,10 +264,16 @@ namespace Aupli.SystemBoundaries.Mpc
                         this.StatusChanged?.Invoke(this, new StatusEventArgs(this.Status));
                     }
 
-                    if (this.volume != this.status.Volume)
+                    var newVolume = new Percentage(this.status.Volume / 100d);
+                    if (this.volume != newVolume)
                     {
-                        this.volume = this.status.Volume;
-                        this.VolumeChanged?.Invoke(this, new VolumeChangedEventArgs(new Percentage(this.volume / 100d)));
+                        this.isMuted = this.status.Volume == 0;
+                        if (!this.isMuted)
+                        {
+                            this.volume = newVolume;
+                        }
+
+                        this.VolumeChanged?.Invoke(this, new VolumeChangedEventArgs(this.volume, this.isMuted));
                     }
                 }
             }
@@ -252,7 +281,6 @@ namespace Aupli.SystemBoundaries.Mpc
 
         private async Task ExecuteCommandAsync(Func<Task> action)
         {
-            // await this.mpcConnection.SendAsync(Command.Status.NoIdle());
             using (var lockResult = await this.mpcCommandLock.WaitAsync())
             {
                 if (lockResult)

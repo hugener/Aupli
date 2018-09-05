@@ -17,12 +17,14 @@ namespace Aupli.ApplicationServices.RequiredInterface.Volume
     public class VolumeChangedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VolumeChangedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="VolumeChangedEventArgs" /> class.
         /// </summary>
         /// <param name="volume">The volume.</param>
-        public VolumeChangedEventArgs(Percentage volume)
+        /// <param name="isMuted">if set to <c>true</c> [is muted].</param>
+        public VolumeChangedEventArgs(Percentage volume, bool isMuted)
         {
             this.Volume = volume;
+            this.IsMuted = isMuted;
         }
 
         /// <summary>
@@ -32,5 +34,13 @@ namespace Aupli.ApplicationServices.RequiredInterface.Volume
         /// The volume.
         /// </value>
         public Percentage Volume { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is muted.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is muted; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsMuted { get; }
     }
 }

@@ -44,7 +44,7 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
         /// <returns>An async task.</returns>
         public async Task InitializeAsync()
         {
-            this.Volume = JsonConvert.DeserializeObject<Percentage>(await File.ReadAllTextAsync(this.filePath));
+            this.Volume = JsonConvert.DeserializeObject<Percentage>(await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false));
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
         /// <returns>An async task.</returns>
         public async Task SaveAsync()
         {
-            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.Volume));
+            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.Volume)).ConfigureAwait(false);
         }
     }
 }

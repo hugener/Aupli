@@ -21,11 +21,11 @@ namespace Aupli.SystemBoundaries.Pi.Display
         /// <summary>
         /// Creates the specified gpio connection driver.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <returns>
         /// A <see cref="Hd44780Display" />.
         /// </returns>
-        public IDisplay Create(IGpioConnectionDriver gpioConnectionDriver)
+        public IDisplay Create(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
             var hd47780ConnectionSettings = new Hd44780LcdDeviceSettings
             {
@@ -36,7 +36,7 @@ namespace Aupli.SystemBoundaries.Pi.Display
             var backlight = new ConnectorPin?(ConnectorPin.P1Pin26);
             var hd47780Connection = new Hd44780LcdDevice(
                 hd47780ConnectionSettings,
-                gpioConnectionDriver,
+                gpioConnectionDriverFactory,
                 ConnectorPin.P1Pin29,
                 ConnectorPin.P1Pin32,
                 new Hd44780DataPins(

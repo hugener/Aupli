@@ -21,9 +21,11 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl
         /// <summary>
         /// Creates the specified gpio connection driver.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
-        /// <returns>A <see cref="RemotePiDevice"/>.</returns>
-        ISystemControl Create(IGpioConnectionDriver gpioConnectionDriver);
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
+        /// <returns>
+        /// A <see cref="RemotePiDevice" />.
+        /// </returns>
+        ISystemControl Create(IGpioConnectionDriverFactory gpioConnectionDriverFactory);
 
         /// <summary>
         /// Disposes the specified system control.

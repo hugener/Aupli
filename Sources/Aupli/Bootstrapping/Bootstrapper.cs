@@ -40,18 +40,15 @@ namespace Aupli.Bootstrapping
     /// </summary>
     public class Bootstrapper
     {
-        private readonly IGpioConnectionDriver gpioConnectionDriver;
         private readonly ILogger logger;
         private Disposer disposer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Bootstrapper"/> class.
+        /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
         /// </summary>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
         /// <param name="logger">The logger.</param>
-        public Bootstrapper(IGpioConnectionDriver gpioConnectionDriver, ILogger logger)
+        public Bootstrapper(ILogger logger)
         {
-            this.gpioConnectionDriver = gpioConnectionDriver;
             this.logger = logger;
         }
 
@@ -65,56 +62,82 @@ namespace Aupli.Bootstrapping
         /// </returns>
         public async Task StartAsync(CancellationTokenSource shutdownCancellationTokenSource, bool allowShutdown)
         {
-            // Load config
-            var configurationRepository = this.CreateConfigurationRepository();
-            var configuration = await configurationRepository.GetConfigurationAsync();
+            var configurationTask = Task.Run(async () =>
+            {
+                var configurationRepository2 = this.CreateConfigurationRepository();
+                var configuration2 = await configurationRepository2.GetConfigurationAsync().ConfigureAwait(false);
+                return (configurationRepository2, configuration2);
+            }).ConfigureAwait(false);
+
+            this.logger.Verbose("Create GpioConnectionDriverFactory");
+            var gpioConnectionDriverFactory = new GpioConnectionDriverFactory(true);
+
+            var (configurationRepository, configuration) = await configurationTask;
 
             // Create startup: Splash screen etc.
-            var startupModule = new StartupModule(
-                configuration,
-                this.gpioConnectionDriver,
-                new TextViewRendererLogger(this.logger),
-                new InputManagerLogger(this.logger));
-            await startupModule.InitializeAsync();
+            var startupModuleTask = Task.Run(async () =>
+            {
+                this.logger.Verbose("Create Startup Module");
+                var startupModule = new StartupModule(
+                    configuration,
+                    gpioConnectionDriverFactory,
+                    new TextViewRendererLogger(this.logger),
+                    new InputManagerLogger(this.logger));
+                this.logger.Verbose("Initialize Startup Module");
+                await startupModule.InitializeAsync();
+                return startupModule;
+            }).ConfigureAwait(false);
+
+            this.logger.Verbose("Create Repositories");
 
             // Create required application required systemboundaries modules
             var repositories = this.CreateRepositories();
+            this.logger.Verbose("Initialize Repositories");
             await repositories.InitializeAsync();
 
             // Create domain required application modules
+            this.logger.Verbose("Create LastPlaylistModule");
             var lastPlaylistModule = new LastPlaylistModule(repositories.LastPlaylistRepository);
 
             // Create domain modules
+            this.logger.Verbose("Create PlaylistModule");
             var playlistModule = new PlaylistModule(lastPlaylistModule.LastPlaylistChangeHandler);
 
             // Create application required systemboundaries modules
+            this.logger.Verbose("Create ControlsModule");
             var controlsModule = new ControlsModule(
-                this.gpioConnectionDriver,
+                gpioConnectionDriverFactory,
                 new MusicPlayerLogger(this.logger),
                 new AmplifierLogger(this.logger));
             await controlsModule.InitializeAsync();
 
             // Create application modules
+            this.logger.Verbose("Create PlayerModule");
             var playerModule = new PlayerModule(
                 repositories.PlaylistRepository,
                 playlistModule.LastPlaylistService,
                 controlsModule.MusicPlayer,
                 new PlayerServiceLogger(this.logger));
 
+            this.logger.Verbose("Create Volume Module");
             var volumeModule = new VolumeModule(
                 repositories.VolumeRepository,
                 new Percentage(0.05),
                 controlsModule.MusicPlayer,
                 controlsModule.MusicPlayer,
                 controlsModule.Amplifier,
+                controlsModule.MusicPlayer,
                 new VolumeServiceLogger(this.logger));
 
+            await volumeModule.InitializeAsync();
+
             // Create user interface modules
+            this.logger.Verbose("Create UserInterface Module");
             var userInterfaceModule = new UserInterfaceModule(
                 controlsModule,
                 playerModule,
                 volumeModule,
-                startupModule,
+                await startupModuleTask,
                 new ShutdownParameters(allowShutdown, shutdownCancellationTokenSource),
                 configuration,
                 configuration,
@@ -131,13 +154,16 @@ namespace Aupli.Bootstrapping
             this.disposer = new Disposer(
                 userInterfaceModule,
                 controlsModule,
-                startupModule,
+                await startupModuleTask,
+                gpioConnectionDriverFactory,
                 new DisposeAction(async () => await repositories.PlaylistRepository.SaveAsync()));
 
-            // Initialization
+            this.logger.Verbose("Initialize Playlist Module");
             await playlistModule.InitializeAsync();
+            this.logger.Verbose("Initialize UserInterface Module");
             await userInterfaceModule.InitializeAsync();
             await userInterfaceModule.ViewNavigator.NavigateToPlayerViewAsync();
+            this.logger.Verbose("Save config");
             await configurationRepository.SaveConfigurationAsync();
         }
 

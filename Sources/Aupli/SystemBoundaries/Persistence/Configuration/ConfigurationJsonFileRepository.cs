@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Persistence.Configuration
 {
+    using System;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
             this.configuration = new AsyncLazy<Configuration>(
                 async () =>
                 {
-                    var settings = await File.ReadAllTextAsync(configurationFilePath);
+                    var settings = await File.ReadAllTextAsync(configurationFilePath).ConfigureAwait(false);
                     return JsonConvert.DeserializeObject<Configuration>(settings);
                 }, LazyThreadSafetyMode.ExecutionAndPublication);
         }
@@ -52,7 +53,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         /// <returns>A save task.</returns>
         public async Task SaveConfigurationAsync()
         {
-            await File.WriteAllTextAsync(this.configurationFilePath, JsonConvert.SerializeObject(await this.configuration));
+            await File.WriteAllTextAsync(this.configurationFilePath, JsonConvert.SerializeObject(await this.configuration)).ConfigureAwait(false);
         }
     }
 }

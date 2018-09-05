@@ -5,10 +5,9 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.Volume
+namespace Aupli.ApplicationServices.RequiredInterface.Volume
 {
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
-    using global::System.Threading.Tasks;
+    using System.Threading.Tasks;
     using Sundew.Base.Numeric;
 
     /// <summary>
@@ -22,5 +21,12 @@ namespace Aupli.SystemBoundaries.Connectors.Volume
         /// <param name="volume">The volume.</param>
         /// <returns>An async task.</returns>
         Task SetVolumeAsync(Percentage volume);
+
+        /// <summary>
+        /// Sets the state of the mute.
+        /// </summary>
+        /// <param name="isMuted">if set to <c>true</c> [is muted].</param>
+        /// <returns>An async task.</returns>
+        Task SetMuteStateAsync(bool isMuted);
     }
 }

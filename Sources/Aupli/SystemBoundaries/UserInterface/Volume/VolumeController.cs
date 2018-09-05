@@ -36,7 +36,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
 
         private async void OnInteractionControllerKeyInput(object sender, KeyInputArgs e)
         {
-            this.volumeControllerReporter.KeyInput(e);
+            this.volumeControllerReporter.KeyInput(e.KeyInput);
             switch (e.KeyInput)
             {
                 case KeyInput.Down:
@@ -46,7 +46,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
                     await this.volumeService.ChangeVolumeAsync(true);
                     break;
                 case KeyInput.Select:
-                    this.volumeService.ToggleMute();
+                    await this.volumeService.ToggleMuteAsync();
                     break;
             }
         }

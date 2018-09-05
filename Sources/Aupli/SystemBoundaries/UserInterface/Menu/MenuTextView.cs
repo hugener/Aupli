@@ -89,7 +89,15 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
                 this.ipAddressIndex = 0;
             }
 
-            this.ipAddress = this.networkDevices[this.ipAddressIndex++].IpAddress;
+            if (this.networkDevices.Any())
+            {
+                this.ipAddress = this.networkDevices[this.ipAddressIndex++].IpAddress;
+            }
+            else
+            {
+                this.ipAddress = null;
+            }
+
             this.invalidater.Invalidate();
         }
 

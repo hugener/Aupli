@@ -41,7 +41,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         public async Task InitializeAsync()
         {
             this.playlists =
-                JsonConvert.DeserializeObject<Dictionary<string, string>>(await File.ReadAllTextAsync(this.filePath))
+                JsonConvert.DeserializeObject<Dictionary<string, string>>(await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false))
                     .ToDictionary(pair => pair.Key, pair => new PlaylistEntity(pair.Key, pair.Value));
         }
 
@@ -68,7 +68,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// <returns>A async task.</returns>
         public async Task SaveAsync()
         {
-            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.playlists.ToDictionary(x => x.Key, x => x.Value.Name)));
+            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.playlists.ToDictionary(x => x.Key, x => x.Value.Name))).ConfigureAwait(false);
         }
     }
 }

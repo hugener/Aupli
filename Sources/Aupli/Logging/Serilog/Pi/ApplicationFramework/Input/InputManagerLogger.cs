@@ -43,10 +43,10 @@ namespace Aupli.Logging.Serilog.Pi.ApplicationFramework.Input
         /// <summary>
         /// Logs the started frame.
         /// </summary>
-        /// <param name="inputTarget">The input target.</param>
-        public void StartedInputContext(object inputTarget)
+        /// <param name="inputTargets">The input targets.</param>
+        public void StartedInputContext(IReadOnlyList<object> inputTargets)
         {
-            this.log.Debug($"{nameof(this.StartedInputContext)}: {{InputTarget}}", inputTarget.GetType());
+            this.log.Debug($"{nameof(this.StartedInputContext)}: {{InputTargets}}", string.Join(", ", inputTargets.Select(x => x.GetType())));
         }
 
         /// <summary>

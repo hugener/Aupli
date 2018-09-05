@@ -27,7 +27,7 @@ namespace Aupli.SystemBoundaries
     public class StartupModule : IInitializable, IInputParameters, IDisposable
     {
         private readonly ILifecycleConfiguration lifecycleConfiguration;
-        private readonly IGpioConnectionDriver gpioConnectionDriver;
+        private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
         private readonly ITextViewRendererReporter textViewRendererReporter;
         private readonly IInputManagerReporter inputManagerReporter;
         private ITextViewRenderer textViewRenderer;
@@ -37,17 +37,17 @@ namespace Aupli.SystemBoundaries
         /// Initializes a new instance of the <see cref="StartupModule" /> class.
         /// </summary>
         /// <param name="lifecycleConfiguration">The lifecycle configuration.</param>
-        /// <param name="gpioConnectionDriver">The gpio connection driver.</param>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <param name="textViewRendererReporter">The text view renderer reporter.</param>
         /// <param name="inputManagerReporter">The input manager reporter.</param>
         public StartupModule(
             ILifecycleConfiguration lifecycleConfiguration,
-            IGpioConnectionDriver gpioConnectionDriver,
+            IGpioConnectionDriverFactory gpioConnectionDriverFactory,
             ITextViewRendererReporter textViewRendererReporter = null,
             IInputManagerReporter inputManagerReporter = null)
         {
             this.lifecycleConfiguration = lifecycleConfiguration;
-            this.gpioConnectionDriver = gpioConnectionDriver;
+            this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.textViewRendererReporter = textViewRendererReporter;
             this.inputManagerReporter = inputManagerReporter;
         }
@@ -84,7 +84,7 @@ namespace Aupli.SystemBoundaries
         {
             // Create display
             var displayFactory = this.CreateDisplayFactory();
-            this.Display = displayFactory.Create(this.gpioConnectionDriver);
+            this.Display = displayFactory.Create(this.gpioConnectionDriverFactory);
 
             // Create Text Rendering
             var textViewRendererFactory = new TextViewRendererFactory(this.Display, this.textViewRendererReporter);
@@ -94,7 +94,7 @@ namespace Aupli.SystemBoundaries
             this.InputManager = new InputManager(this.inputManagerReporter);
             this.TextViewNavigator = new TextViewNavigator(this.textViewRenderer, this.InputManager);
 
-            await this.TextViewNavigator.ShowAsync(new StartUpTextView(this.lifecycleConfiguration));
+            await this.TextViewNavigator.ShowAsync(new StartUpTextView(this.lifecycleConfiguration)).ConfigureAwait(false);
             this.textViewRenderer.Start();
             this.disposer = new Disposer(this.textViewRenderer, displayFactory);
         }
