@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.Bootstrapping
+namespace Aupli.SystemBoundaries.UserInterface
 {
     using System;
     using System.Threading;

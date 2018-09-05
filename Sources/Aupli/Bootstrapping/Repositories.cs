@@ -10,7 +10,6 @@ namespace Aupli.Bootstrapping
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.RequiredInterface.Playlist;
     using Aupli.ApplicationServices.RequiredInterface.Volume;
-    using Aupli.DomainServices.RequiredInterface.Playlist;
     using Sundew.Base.Initialization;
 
     /// <summary>
