@@ -7,8 +7,8 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Interaction
 {
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
     using Aupli.SystemBoundaries.Pi.Interaction;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using global::Serilog;
     using Sundew.Base;
 

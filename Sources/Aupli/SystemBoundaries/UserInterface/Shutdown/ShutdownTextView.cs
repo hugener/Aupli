@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.UserInterface.Shutdown
 {
     using System.Collections.Generic;
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
+    using Aupli.SystemBoundaries.Shared.Lifecycle;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
     /// <inheritdoc />

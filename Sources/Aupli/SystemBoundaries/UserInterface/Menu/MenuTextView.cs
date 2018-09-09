@@ -11,8 +11,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Aupli.SystemBoundaries.Connectors.System;
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
+    using Aupli.SystemBoundaries.Shared.System;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;

@@ -7,7 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume
 {
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Volume;
     using global::Serilog;
     using Sundew.Base;

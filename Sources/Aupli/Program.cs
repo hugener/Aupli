@@ -11,7 +11,6 @@ namespace Aupli
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
-    using Aupli.Bootstrapping;
     using Aupli.CommandLine;
     using Serilog;
     using Serilog.Events;

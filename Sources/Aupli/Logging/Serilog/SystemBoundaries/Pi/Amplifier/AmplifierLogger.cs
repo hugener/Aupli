@@ -9,6 +9,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
 {
     using Aupli.SystemBoundaries.Pi.Amplifier;
     using global::Serilog;
+    using global::Serilog.Events;
     using Sundew.Base;
     using Sundew.Base.Numeric;
 
@@ -18,14 +19,17 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
     /// <seealso cref="Aupli.SystemBoundaries.Pi.Amplifier.IAmplifierReporter" />
     public class AmplifierLogger : IAmplifierReporter
     {
+        private readonly LogEventLevel logEventLevel;
         private ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AmplifierLogger"/> class.
+        /// Initializes a new instance of the <see cref="AmplifierLogger" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public AmplifierLogger(ILogger logger)
+        /// <param name="logEventLevel">The log event level.</param>
+        public AmplifierLogger(ILogger logger, LogEventLevel logEventLevel)
         {
+            this.logEventLevel = logEventLevel;
             this.logger = logger.ForContext<AmplifierLogger>();
         }
 
@@ -44,7 +48,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
         /// <param name="isMuted">if set to <c>true</c> [is muted].</param>
         public void ChangeMute(bool isMuted)
         {
-            this.logger.Debug("Changed mute state: {isMuted}", isMuted);
+            this.logger.Write(this.logEventLevel, "Changed mute: {isMuted}", isMuted);
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
         /// <param name="volume">The volume.</param>
         public void ChangeVolume(Percentage volume)
         {
-            this.logger.Debug("Changed volume: {volume}", volume);
+            this.logger.Write(this.logEventLevel, "Changed volume: {volume}", volume);
         }
     }
 }

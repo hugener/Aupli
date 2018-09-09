@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.System
+namespace Aupli.SystemBoundaries.Shared.System
 {
     using global::System.Net;
 

@@ -13,7 +13,7 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl
     /// Implements <see cref="ShutdownEventArgs"/> for <see cref="IShutdownDevice"/>.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
-    public class ShutdownDeviceShutdownEventArgs : Connectors.System.ShutdownEventArgs
+    public class ShutdownDeviceShutdownEventArgs : Shared.System.ShutdownEventArgs
     {
         private readonly Sundew.Pi.IO.Devices.PowerManagement.ShutdownEventArgs shutdownEventArgs;
 

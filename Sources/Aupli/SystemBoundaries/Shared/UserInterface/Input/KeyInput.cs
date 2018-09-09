@@ -4,7 +4,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Aupli.SystemBoundaries.Connectors.UserInterface.Input
+namespace Aupli.SystemBoundaries.Shared.UserInterface.Input
 {
     /// <summary>
     /// Defines the various keys.

@@ -7,8 +7,8 @@
 
 namespace Aupli.SystemBoundaries.Pi.SystemControl
 {
-    using Aupli.SystemBoundaries.Connectors.System;
-    using Aupli.SystemBoundaries.Pi.SystemControl.Rasbian;
+    using Aupli.SystemBoundaries.Pi.SystemControl.Linux;
+    using Aupli.SystemBoundaries.Shared.System;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
     using Sundew.Pi.IO.Devices.PowerManagement.RemotePi;

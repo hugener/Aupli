@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.SystemControl.Rasbian
+namespace Aupli.SystemBoundaries.Pi.SystemControl.Linux
 {
     using System.Diagnostics;
     using Sundew.Pi.IO.Devices.PowerManagement;

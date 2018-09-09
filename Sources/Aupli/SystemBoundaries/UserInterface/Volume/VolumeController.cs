@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.UserInterface.Volume
 {
     using Aupli.ApplicationServices.Volume;
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
 
     /// <summary>
     /// Controls the volume of the MAX 9744 using the KY-040.

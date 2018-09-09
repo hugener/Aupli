@@ -11,7 +11,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
     using Aupli.ApplicationServices.Interface.Player;
     using Aupli.ApplicationServices.Player;
     using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
 
     /// <summary>

@@ -5,13 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.OperationSystem.Rasbian
+namespace Aupli.SystemBoundaries.OperationSystem.Linux
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
-    using Aupli.SystemBoundaries.Connectors.System;
+    using Aupli.SystemBoundaries.Shared.System;
 
     /// <summary>
     /// Provides the IP address on a Unix system.

@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.UserInterface.RequiredInterface
+namespace Aupli.SystemBoundaries.UserInterface
 {
     using System;
 

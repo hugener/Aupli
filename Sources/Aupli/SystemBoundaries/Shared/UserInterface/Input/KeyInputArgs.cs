@@ -1,36 +1,36 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TagInputArgs.cs" company="Hukano">
+// <copyright file="KeyInputArgs.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.UserInterface.Input
+namespace Aupli.SystemBoundaries.Shared.UserInterface.Input
 {
     using global::System;
 
     /// <summary>
-    /// Input event args when a tag is detected.
+    /// Event arguments for <see cref="KeyInput"/>.
     /// </summary>
     /// <seealso cref="EventArgs" />
-    public class TagInputArgs : EventArgs
+    public class KeyInputArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TagInputArgs" /> class.
+        /// Initializes a new instance of the <see cref="KeyInputArgs"/> class.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public TagInputArgs(string uid)
+        /// <param name="keyInput">The key input.</param>
+        public KeyInputArgs(KeyInput keyInput)
         {
-            this.Uid = uid;
+            this.KeyInput = keyInput;
         }
 
         /// <summary>
-        /// Gets the uid.
+        /// Gets the key input.
         /// </summary>
         /// <value>
-        /// The uid.
+        /// The key input.
         /// </value>
-        public string Uid { get; }
+        public KeyInput KeyInput { get; }
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
@@ -40,7 +40,7 @@ namespace Aupli.SystemBoundaries.Connectors.UserInterface.Input
         /// </returns>
         public override string ToString()
         {
-            return "Tag: " + this.Uid;
+            return "Key: " + this.KeyInput;
         }
     }
 }

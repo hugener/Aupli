@@ -1,23 +1,23 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ShutdownEventArgs.cs" company="Hukano">
+// <copyright file="INetworkDeviceProvider.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.System
+namespace Aupli.SystemBoundaries.Shared.System
 {
-    using global::System;
+    using global::System.Collections.Generic;
 
     /// <summary>
-    /// Event args with shutdown cancellation support.
+    /// Interface for implementing a provider for <see cref="NetworkDevice"/>.
     /// </summary>
-    /// <seealso cref="EventArgs" />
-    public abstract class ShutdownEventArgs : EventArgs
+    public interface INetworkDeviceProvider
     {
         /// <summary>
-        /// Cancels the shutdown.
+        /// Tries the get network devices.
         /// </summary>
-        public abstract void CancelShutdown();
+        /// <returns>The network devices.</returns>
+        IEnumerable<NetworkDevice> GetNetworkDevices();
     }
 }

@@ -1,22 +1,27 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMenuRequester.cs" company="Hukano">
+// <copyright file="ISystemControl.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.UserInterface.RequiredInterface
+namespace Aupli.SystemBoundaries.Shared.System
 {
-    using System;
+    using global::System;
 
     /// <summary>
-    /// Interface for implementing a menu requester.
+    /// Interface for controlling the system.
     /// </summary>
-    public interface IMenuRequester
+    public interface ISystemControl
     {
         /// <summary>
-        /// Occurs when [menu requested].
+        /// Occurs when [shutting down].
         /// </summary>
-        event EventHandler MenuRequested;
+        event EventHandler<ShutdownEventArgs> ShuttingDown;
+
+        /// <summary>
+        /// Shutdowns this instance.
+        /// </summary>
+        void Shutdown();
     }
 }

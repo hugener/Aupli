@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.Bootstrapping
+namespace Aupli
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -25,6 +25,7 @@ namespace Aupli.Bootstrapping
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume;
     using Aupli.SystemBoundaries;
+    using Aupli.SystemBoundaries.Persistence;
     using Aupli.SystemBoundaries.Persistence.Configuration;
     using Aupli.SystemBoundaries.Persistence.Playlists;
     using Aupli.SystemBoundaries.Persistence.Volume;
@@ -32,6 +33,7 @@ namespace Aupli.Bootstrapping
     using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
     using Pi.IO.GeneralPurpose;
     using Serilog;
+    using Serilog.Events;
     using Sundew.Base.Disposal;
     using Sundew.Base.Numeric;
 
@@ -90,38 +92,38 @@ namespace Aupli.Bootstrapping
 
             this.logger.Verbose("Create Repositories");
 
-            // Create required application required systemboundaries modules
-            var repositories = this.CreateRepositories();
-            this.logger.Verbose("Initialize Repositories");
-            await repositories.InitializeAsync();
+            // Create required application required system boundaries modules
+            var repositoriesModule = this.CreateRepositoriesModule();
+            this.logger.Verbose("Initialize Repositories Module");
+            await repositoriesModule.InitializeAsync();
 
             // Create domain required application modules
             this.logger.Verbose("Create LastPlaylistModule");
-            var lastPlaylistModule = new LastPlaylistModule(repositories.LastPlaylistRepository);
+            var lastPlaylistModule = new LastPlaylistModule(repositoriesModule.LastPlaylistRepository);
 
             // Create domain modules
             this.logger.Verbose("Create PlaylistModule");
             var playlistModule = new PlaylistModule(lastPlaylistModule.LastPlaylistChangeHandler);
 
-            // Create application required systemboundaries modules
+            // Create application required system boundaries modules
             this.logger.Verbose("Create ControlsModule");
             var controlsModule = new ControlsModule(
                 gpioConnectionDriverFactory,
                 new MusicPlayerLogger(this.logger),
-                new AmplifierLogger(this.logger));
+                new AmplifierLogger(this.logger, LogEventLevel.Debug));
             await controlsModule.InitializeAsync();
 
             // Create application modules
             this.logger.Verbose("Create PlayerModule");
             var playerModule = new PlayerModule(
-                repositories.PlaylistRepository,
+                repositoriesModule.PlaylistRepository,
                 playlistModule.LastPlaylistService,
                 controlsModule.MusicPlayer,
                 new PlayerServiceLogger(this.logger));
 
             this.logger.Verbose("Create Volume Module");
             var volumeModule = new VolumeModule(
-                repositories.VolumeRepository,
+                repositoriesModule.VolumeRepository,
                 new Percentage(0.05),
                 controlsModule.MusicPlayer,
                 controlsModule.MusicPlayer,
@@ -156,7 +158,7 @@ namespace Aupli.Bootstrapping
                 controlsModule,
                 await startupModuleTask,
                 gpioConnectionDriverFactory,
-                new DisposeAction(async () => await repositories.PlaylistRepository.SaveAsync()));
+                new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()));
 
             this.logger.Verbose("Initialize Playlist Module");
             await playlistModule.InitializeAsync();
@@ -190,9 +192,9 @@ namespace Aupli.Bootstrapping
         /// Gets the repositories.
         /// </summary>
         /// <returns>The repositories.</returns>
-        protected virtual Repositories CreateRepositories()
+        protected virtual RepositoriesModule CreateRepositoriesModule()
         {
-            return new Repositories(
+            return new RepositoriesModule(
                 new VolumeJsonFileRepository("volume.json"),
                 new PlaylistMapJsonFileRepository("playlists.json"),
                 new LastPlaylistJsonFileRepository("last-playlist.json"));

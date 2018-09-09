@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.SystemControl
 {
     using System;
-    using Aupli.SystemBoundaries.Connectors.System;
+    using Aupli.SystemBoundaries.Shared.System;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Pi.IO.Devices.PowerManagement.RemotePi;
 

@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.SystemControl
 {
     using System;
-    using Aupli.SystemBoundaries.Connectors.System;
+    using Aupli.SystemBoundaries.Shared.System;
     using Sundew.Pi.IO.Devices.PowerManagement;
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl
         /// <summary>
         /// Occurs when [shutting down].
         /// </summary>
-        public event EventHandler<Connectors.System.ShutdownEventArgs> ShuttingDown;
+        public event EventHandler<Shared.System.ShutdownEventArgs> ShuttingDown;
 
         /// <summary>
         /// Shutdowns this instance.

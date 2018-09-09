@@ -10,11 +10,10 @@ namespace Aupli.SystemBoundaries.UserInterface
     using System;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices;
-    using Aupli.Bootstrapping;
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
-    using Aupli.SystemBoundaries.Connectors.Timeouts;
     using Aupli.SystemBoundaries.Pi.Display;
     using Aupli.SystemBoundaries.Pi.Interaction;
+    using Aupli.SystemBoundaries.Shared.Lifecycle;
+    using Aupli.SystemBoundaries.Shared.Timeouts;
     using Aupli.SystemBoundaries.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Menu;
     using Aupli.SystemBoundaries.UserInterface.Player;

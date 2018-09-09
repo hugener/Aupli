@@ -1,33 +1,31 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ITimeoutConfiguration.cs" company="Hukano">
+// <copyright file="ILifecycleConfiguration.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.Timeouts
+namespace Aupli.SystemBoundaries.Shared.Lifecycle
 {
-    using global::System;
-
     /// <summary>
-    /// Interface for the timeout configuration.
+    /// Interface for getting the start up configuration.
     /// </summary>
-    public interface ITimeoutConfiguration
+    public interface ILifecycleConfiguration
     {
         /// <summary>
-        /// Gets the idle timeout.
+        /// Gets or sets the name.
         /// </summary>
         /// <value>
-        /// The idle timeout.
+        /// The name.
         /// </value>
-        TimeSpan IdleTimeout { get; }
+        string Name { get; set; }
 
         /// <summary>
-        /// Gets the system timeout.
+        /// Gets or sets the last greeting.
         /// </summary>
         /// <value>
-        /// The system timeout.
+        /// The last greeting.
         /// </value>
-        TimeSpan SystemTimeout { get; }
+        string LastGreeting { get; set; }
     }
 }

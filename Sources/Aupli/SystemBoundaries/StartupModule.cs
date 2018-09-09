@@ -9,8 +9,8 @@ namespace Aupli.SystemBoundaries
 {
     using System;
     using System.Threading.Tasks;
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
     using Aupli.SystemBoundaries.Pi.Display;
+    using Aupli.SystemBoundaries.Shared.Lifecycle;
     using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
     using Aupli.SystemBoundaries.UserInterface.StartUp;
     using global::Pi.IO.GeneralPurpose;

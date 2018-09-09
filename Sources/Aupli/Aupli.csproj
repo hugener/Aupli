@@ -63,13 +63,9 @@
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00795" />
     <PackageReference Include="Sundew.Base" Version="3.2.0-pre024" />
     <PackageReference Include="Sundew.CommandLine" Version="2.0.0-pre008" />
-    <PackageReference Include="Sundew.Pi.ApplicationFramework" Version="0.0.0-pre001" />
+    <PackageReference Include="Sundew.Pi.ApplicationFramework" Version="0.0.0-pre002" />
     <PackageReference Include="Sundew.Pi.IO.Devices" Version="0.0.0-pre001" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SystemBoundaries\Connectors\Volume\" />
   </ItemGroup>
 
 </Project>

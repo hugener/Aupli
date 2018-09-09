@@ -8,8 +8,8 @@
 namespace Aupli.SystemBoundaries.Persistence.Configuration
 {
     using System;
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
-    using Aupli.SystemBoundaries.Connectors.Timeouts;
+    using Aupli.SystemBoundaries.Shared.Lifecycle;
+    using Aupli.SystemBoundaries.Shared.Timeouts;
 
     /// <summary>
     /// Contains configuration for the application lifecycle.

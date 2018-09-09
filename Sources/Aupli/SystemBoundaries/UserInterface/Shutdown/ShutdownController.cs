@@ -9,7 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
 {
     using System;
     using System.Threading;
-    using Aupli.SystemBoundaries.Connectors.System;
+    using Aupli.SystemBoundaries.Shared.System;
     using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
     using Sundew.Pi.ApplicationFramework.Input;
 

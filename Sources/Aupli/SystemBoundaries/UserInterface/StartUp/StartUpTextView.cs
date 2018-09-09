@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.UserInterface.StartUp
 {
     using System.Collections.Generic;
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
+    using Aupli.SystemBoundaries.Shared.Lifecycle;
     using Sundew.Base.Collections;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 

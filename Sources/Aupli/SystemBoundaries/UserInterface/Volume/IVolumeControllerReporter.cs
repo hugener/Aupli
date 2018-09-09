@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Volume
 {
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Sundew.Base.Reporting;
 
     /// <summary>

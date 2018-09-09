@@ -1,36 +1,36 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KeyInputArgs.cs" company="Hukano">
+// <copyright file="TagInputArgs.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.UserInterface.Input
+namespace Aupli.SystemBoundaries.Shared.UserInterface.Input
 {
     using global::System;
 
     /// <summary>
-    /// Event arguments for <see cref="KeyInput"/>.
+    /// Input event args when a tag is detected.
     /// </summary>
     /// <seealso cref="EventArgs" />
-    public class KeyInputArgs : EventArgs
+    public class TagInputArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="KeyInputArgs"/> class.
+        /// Initializes a new instance of the <see cref="TagInputArgs" /> class.
         /// </summary>
-        /// <param name="keyInput">The key input.</param>
-        public KeyInputArgs(KeyInput keyInput)
+        /// <param name="uid">The uid.</param>
+        public TagInputArgs(string uid)
         {
-            this.KeyInput = keyInput;
+            this.Uid = uid;
         }
 
         /// <summary>
-        /// Gets the key input.
+        /// Gets the uid.
         /// </summary>
         /// <value>
-        /// The key input.
+        /// The uid.
         /// </value>
-        public KeyInput KeyInput { get; }
+        public string Uid { get; }
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
@@ -40,7 +40,7 @@ namespace Aupli.SystemBoundaries.Connectors.UserInterface.Input
         /// </returns>
         public override string ToString()
         {
-            return "Key: " + this.KeyInput;
+            return "Tag: " + this.Uid;
         }
     }
 }

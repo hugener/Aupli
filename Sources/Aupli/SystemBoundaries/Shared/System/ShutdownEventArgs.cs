@@ -1,27 +1,23 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ISystemControl.cs" company="Hukano">
+// <copyright file="ShutdownEventArgs.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.System
+namespace Aupli.SystemBoundaries.Shared.System
 {
     using global::System;
 
     /// <summary>
-    /// Interface for controlling the system.
+    /// Event args with shutdown cancellation support.
     /// </summary>
-    public interface ISystemControl
+    /// <seealso cref="EventArgs" />
+    public abstract class ShutdownEventArgs : EventArgs
     {
         /// <summary>
-        /// Occurs when [shutting down].
+        /// Cancels the shutdown.
         /// </summary>
-        event EventHandler<ShutdownEventArgs> ShuttingDown;
-
-        /// <summary>
-        /// Shutdowns this instance.
-        /// </summary>
-        void Shutdown();
+        public abstract void CancelShutdown();
     }
 }

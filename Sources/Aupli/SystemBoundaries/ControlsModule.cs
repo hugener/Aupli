@@ -12,11 +12,11 @@ namespace Aupli.SystemBoundaries
     using System.Net;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.RequiredInterface.Amplifier;
-    using Aupli.SystemBoundaries.Connectors.System;
     using Aupli.SystemBoundaries.Mpc;
     using Aupli.SystemBoundaries.Pi.Amplifier;
     using Aupli.SystemBoundaries.Pi.Interaction;
     using Aupli.SystemBoundaries.Pi.SystemControl;
+    using Aupli.SystemBoundaries.Shared.System;
     using global::MpcNET;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;

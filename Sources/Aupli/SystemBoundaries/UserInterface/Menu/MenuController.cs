@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.UserInterface.Menu
 {
     using System;
-    using Aupli.SystemBoundaries.Connectors.UserInterface.Input;
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Sundew.Pi.ApplicationFramework.Navigation;
 
     /// <summary>

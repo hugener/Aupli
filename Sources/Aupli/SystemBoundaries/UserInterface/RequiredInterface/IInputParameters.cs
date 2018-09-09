@@ -7,7 +7,6 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.RequiredInterface
 {
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
     using Aupli.SystemBoundaries.Pi.Display;
     using Sundew.Pi.ApplicationFramework.Input;
     using Sundew.Pi.ApplicationFramework.Navigation;

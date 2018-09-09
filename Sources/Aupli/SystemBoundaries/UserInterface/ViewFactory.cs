@@ -10,9 +10,9 @@ namespace Aupli.SystemBoundaries.UserInterface
     using System;
     using System.Threading;
     using Aupli.ApplicationServices.Volume;
-    using Aupli.SystemBoundaries.Connectors.Lifecycle;
     using Aupli.SystemBoundaries.Mpc;
-    using Aupli.SystemBoundaries.OperationSystem.Rasbian;
+    using Aupli.SystemBoundaries.OperationSystem.Linux;
+    using Aupli.SystemBoundaries.Shared.Lifecycle;
     using Aupli.SystemBoundaries.UserInterface.Menu;
     using Aupli.SystemBoundaries.UserInterface.Player;
     using Aupli.SystemBoundaries.UserInterface.RequiredInterface;

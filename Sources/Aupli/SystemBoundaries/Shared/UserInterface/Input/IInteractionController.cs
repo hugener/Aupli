@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Connectors.UserInterface.Input
+namespace Aupli.SystemBoundaries.Shared.UserInterface.Input
 {
     using Sundew.Pi.ApplicationFramework.Input;
 
