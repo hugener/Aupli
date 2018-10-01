@@ -21,6 +21,6 @@ namespace Aupli.SystemBoundaries.Pi.Display
         /// <value>
         ///   <c>true</c> if [backlight enabled]; otherwise, <c>false</c>.
         /// </value>
-        bool BacklightEnabled { get; set; }
+        bool IsEnabled { get; set; }
     }
 }

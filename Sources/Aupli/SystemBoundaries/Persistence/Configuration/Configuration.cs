@@ -20,19 +20,19 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         /// Initializes a new instance of the <see cref="Configuration" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="lastGreeting">The last greeting.</param>
         /// <param name="idleTimeout">The idle timeout.</param>
         /// <param name="systemTimeout">The system timeout.</param>
+        /// <param name="pin26Feature">The pin26 feature.</param>
         public Configuration(
             string name,
-            string lastGreeting,
             TimeSpan idleTimeout,
-            TimeSpan systemTimeout)
+            TimeSpan systemTimeout,
+            Pin26Feature pin26Feature)
         {
             this.Name = name;
-            this.LastGreeting = lastGreeting;
             this.IdleTimeout = idleTimeout;
             this.SystemTimeout = systemTimeout;
+            this.Pin26Feature = pin26Feature;
         }
 
         /// <inheritdoc />
@@ -44,14 +44,13 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         /// </value>
         public string Name { get; set; }
 
-        /// <inheritdoc />
         /// <summary>
-        /// Gets or sets the last greeting.
+        /// Gets the pin 26 feature.
         /// </summary>
         /// <value>
-        /// The last greeting.
+        /// The pin 26 feature.
         /// </value>
-        public string LastGreeting { get; set; }
+        public Pin26Feature Pin26Feature { get; }
 
         /// <summary>
         /// Gets the idle timeout.

@@ -1,28 +1,31 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IDisplayBacklightControllerReporter.cs" company="Hukano">
+// <copyright file="IPlayerControllerReporter.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Display
+namespace Aupli.SystemBoundaries.UserInterface.Player.RequiredInterface
 {
+    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Sundew.Base.Reporting;
 
     /// <summary>
-    /// Interface for implementing a reporter for <see cref="IDisplayBacklightControllerReporter"/>.
+    /// Reporter for <see cref="PlayerController"/>.
     /// </summary>
     /// <seealso cref="Sundew.Base.Reporting.IReporter" />
-    public interface IDisplayBacklightControllerReporter : IReporter
+    public interface IPlayerControllerReporter : IReporter
     {
         /// <summary>
-        /// Enableds the backlight.
+        /// Keys the input.
         /// </summary>
-        void EnabledBacklight();
+        /// <param name="keyInput">The key input.</param>
+        void KeyInput(KeyInput keyInput);
 
         /// <summary>
-        /// Disableds the backlight.
+        /// Tags the input.
         /// </summary>
-        void DisabledBacklight();
+        /// <param name="tagInputArgs">The tag input arguments.</param>
+        void TagInput(TagInputArgs tagInputArgs);
     }
 }

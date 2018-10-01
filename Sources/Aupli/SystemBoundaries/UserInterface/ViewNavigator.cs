@@ -11,6 +11,7 @@ namespace Aupli.SystemBoundaries.UserInterface
     using System.Threading;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Interface;
+    using Aupli.SystemBoundaries.UserInterface.Internal;
     using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
     using global::Pi.Timers;
     using Sundew.Pi.ApplicationFramework.Navigation;
@@ -35,9 +36,9 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <param name="viewFactory">The textView factory.</param>
         /// <param name="timerFactory">The timer factory.</param>
         /// <param name="viewNavigatorReporter">The view navigator reporter.</param>
-        public ViewNavigator(
+        internal ViewNavigator(
             IVolumeChangeNotifier volumeChangeNotifier,
-            IMenuRequester menuRequester,
+            MenuRequester menuRequester,
             IShutdownNotifier shutdownNotifier,
             TextViewNavigator textViewNavigator,
             IViewFactory viewFactory,

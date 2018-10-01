@@ -74,25 +74,9 @@ namespace Aupli
             this.logger.Verbose("Create GpioConnectionDriverFactory");
             var gpioConnectionDriverFactory = new GpioConnectionDriverFactory(true);
 
-            var (configurationRepository, configuration) = await configurationTask;
-
-            // Create startup: Splash screen etc.
-            var startupModuleTask = Task.Run(async () =>
-            {
-                this.logger.Verbose("Create Startup Module");
-                var startupModule = new StartupModule(
-                    configuration,
-                    gpioConnectionDriverFactory,
-                    new TextViewRendererLogger(this.logger),
-                    new InputManagerLogger(this.logger));
-                this.logger.Verbose("Initialize Startup Module");
-                await startupModule.InitializeAsync();
-                return startupModule;
-            }).ConfigureAwait(false);
-
             this.logger.Verbose("Create Repositories");
 
-            // Create required application required system boundaries modules
+            // Create required ApplicationServices-required system boundaries modules
             var repositoriesModule = this.CreateRepositoriesModule();
             this.logger.Verbose("Initialize Repositories Module");
             await repositoriesModule.InitializeAsync();
@@ -132,18 +116,21 @@ namespace Aupli
                 new VolumeServiceLogger(this.logger));
 
             await volumeModule.InitializeAsync();
+            var (configurationRepository, configuration) = await configurationTask;
 
             // Create user interface modules
             this.logger.Verbose("Create UserInterface Module");
             var userInterfaceModule = new UserInterfaceModule(
+                gpioConnectionDriverFactory,
                 controlsModule,
                 playerModule,
                 volumeModule,
-                await startupModuleTask,
                 new ShutdownParameters(allowShutdown, shutdownCancellationTokenSource),
                 configuration,
                 configuration,
                 new Reporters(
+                    new TextViewRendererLogger(this.logger),
+                    new InputManagerLogger(this.logger),
                     new InteractionControllerLogger(this.logger),
                     new SystemActivityAggregatorLogger(this.logger),
                     new IdleControllerLogger(this.logger),
@@ -151,14 +138,13 @@ namespace Aupli
                     new VolumeControllerLogger(this.logger),
                     new ShutdownControllerLogger(this.logger),
                     new ViewNavigatorLogger(this.logger),
-                    new DisplayBacklightControllerLogger(this.logger)));
+                    new DisplayStateControllerLogger(this.logger)));
 
             this.disposer = new Disposer(
-                userInterfaceModule,
                 controlsModule,
-                await startupModuleTask,
                 gpioConnectionDriverFactory,
-                new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()));
+                new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
+                userInterfaceModule);
 
             this.logger.Verbose("Initialize Playlist Module");
             await playlistModule.InitializeAsync();

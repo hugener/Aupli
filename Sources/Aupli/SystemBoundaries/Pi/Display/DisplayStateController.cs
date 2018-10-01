@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DisplayBackLightController.cs" company="Hukano">
+// <copyright file="DisplayStateController.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -13,36 +13,36 @@ namespace Aupli.SystemBoundaries.Pi.Display
     /// <summary>
     /// Controls the display back light.
     /// </summary>
-    public class DisplayBackLightController
+    public class DisplayStateController
     {
         private readonly IDisplay display;
-        private readonly IDisplayBacklightControllerReporter displayBacklightControllerReporter;
+        private readonly IDisplayStateControllerReporter displayStateControllerReporter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DisplayBackLightController" /> class.
+        /// Initializes a new instance of the <see cref="DisplayStateController" /> class.
         /// </summary>
         /// <param name="idleController">The idle controller.</param>
         /// <param name="display">The text display device.</param>
-        /// <param name="displayBacklightControllerReporter">The display backlight controller reporter.</param>
-        public DisplayBackLightController(IdleController idleController, IDisplay display, IDisplayBacklightControllerReporter displayBacklightControllerReporter)
+        /// <param name="displayStateControllerReporter">The display state controller reporter.</param>
+        public DisplayStateController(IdleController idleController, IDisplay display, IDisplayStateControllerReporter displayStateControllerReporter)
         {
             this.display = display;
-            this.displayBacklightControllerReporter = displayBacklightControllerReporter;
-            this.displayBacklightControllerReporter?.SetSource(this);
+            this.displayStateControllerReporter = displayStateControllerReporter;
+            this.displayStateControllerReporter?.SetSource(this);
             idleController.InputIdle += this.OnIdleControllerInputIdle;
             idleController.Activated += this.OnIdleControllerActive;
         }
 
         private void OnIdleControllerInputIdle(object sender, EventArgs eventArgs)
         {
-            this.display.BacklightEnabled = false;
-            this.displayBacklightControllerReporter?.DisabledBacklight();
+            this.display.IsEnabled = false;
+            this.displayStateControllerReporter?.DisabledDisplay();
         }
 
         private void OnIdleControllerActive(object sender, EventArgs eventArgs)
         {
-            this.display.BacklightEnabled = true;
-            this.displayBacklightControllerReporter?.EnabledBacklight();
+            this.display.IsEnabled = true;
+            this.displayStateControllerReporter?.EnabledDisplay();
         }
     }
 }

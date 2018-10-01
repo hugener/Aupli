@@ -37,7 +37,7 @@ namespace Aupli.SystemBoundaries.Pi.Display
         /// <value>
         ///   <c>true</c> if [backlight enabled]; otherwise, <c>false</c>.
         /// </value>
-        public bool BacklightEnabled
+        public bool IsEnabled
         {
             get => this.hd47780LcdDevice.BacklightEnabled;
             set
@@ -46,9 +46,14 @@ namespace Aupli.SystemBoundaries.Pi.Display
                 {
                     this.hd47780LcdDevice.BacklightEnabled = value;
                 }
-                else if (!value)
+                else
                 {
-                    this.hd47780LcdDevice.Clear();
+                    this.hd47780LcdDevice.DisplayEnabled = value;
+
+                    if (!value)
+                    {
+                        this.hd47780LcdDevice.Clear();
+                    }
                 }
             }
         }

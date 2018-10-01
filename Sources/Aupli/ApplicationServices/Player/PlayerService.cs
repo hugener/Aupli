@@ -11,12 +11,11 @@ namespace Aupli.ApplicationServices.Player
     using Aupli.ApplicationServices.Interface.Player;
     using Aupli.ApplicationServices.RequiredInterface.Player;
     using Aupli.DomainServices.Interface.Playlist;
-    using Sundew.Base.Initialization;
 
     /// <summary>
-    /// The player servicce.
+    /// The player service.
     /// </summary>
-    public class PlayerService : IInitializable, IPlayerService
+    public class PlayerService : IPlayerService
     {
         private readonly IPlaylistSearchService playlistSearchService;
         private readonly ILastPlaylistService lastPlaylistService;

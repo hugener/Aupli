@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aupli.IntegrationTests", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aupli", "Aupli\Aupli.csproj", "{72DD8955-A9CB-48D2-A77F-43408839B4DA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aupli.SplashScreen", "Aupli.SplashScreen\Aupli.SplashScreen.csproj", "{D0E4C713-8A95-4A5A-B094-86429C38F556}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{72DD8955-A9CB-48D2-A77F-43408839B4DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72DD8955-A9CB-48D2-A77F-43408839B4DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72DD8955-A9CB-48D2-A77F-43408839B4DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0E4C713-8A95-4A5A-B094-86429C38F556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0E4C713-8A95-4A5A-B094-86429C38F556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0E4C713-8A95-4A5A-B094-86429C38F556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0E4C713-8A95-4A5A-B094-86429C38F556}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ILifecycleConfiguration.cs" company="Hukano">
+// <copyright file="Pin26Feature.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,24 +8,18 @@
 namespace Aupli.SystemBoundaries.Shared.Lifecycle
 {
     /// <summary>
-    /// Interface for getting the start up configuration.
+    /// Determines the feature provided on pin 26.
     /// </summary>
-    public interface ILifecycleConfiguration
+    public enum Pin26Feature
     {
         /// <summary>
-        /// Gets or sets the name.
+        /// The none
         /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        string Name { get; set; }
+        None,
 
         /// <summary>
-        /// Gets the pin 26 feature.
+        /// The backlight
         /// </summary>
-        /// <value>
-        /// The pin 26 feature.
-        /// </value>
-        Pin26Feature Pin26Feature { get; }
+        Backlight,
     }
 }

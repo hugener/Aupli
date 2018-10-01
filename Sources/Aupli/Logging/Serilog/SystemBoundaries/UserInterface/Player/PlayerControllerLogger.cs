@@ -9,13 +9,14 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player
 {
     using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Player;
+    using Aupli.SystemBoundaries.UserInterface.Player.RequiredInterface;
     using global::Serilog;
     using Sundew.Base;
 
     /// <summary>
     /// Logger for the <see cref="IPlayerControllerReporter"/>.
     /// </summary>
-    /// <seealso cref="Aupli.SystemBoundaries.UserInterface.Player.IPlayerControllerReporter" />
+    /// <seealso cref="IPlayerControllerReporter" />
     public class PlayerControllerLogger : IPlayerControllerReporter
     {
         private ILogger log;

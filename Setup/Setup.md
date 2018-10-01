@@ -77,6 +77,9 @@ listen          = 0.0.0.0:8765
 # Add Aupli.lircd.conf and copy contents into it
 sudo nano /etc/lirc/lircd.conf.d/Aupli.lircd.conf
 
+# Add Aupli.service and copy contents into it
+sudo nano /lib/systemd/system/Aupli.service
+
 sudo systemctl enable Aupli.service
 
 # Update lircd.service

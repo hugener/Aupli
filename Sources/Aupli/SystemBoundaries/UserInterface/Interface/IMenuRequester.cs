@@ -5,18 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.UserInterface
+namespace Aupli.SystemBoundaries.UserInterface.Interface
 {
-    using System;
-
     /// <summary>
     /// Interface for implementing a menu requester.
     /// </summary>
     public interface IMenuRequester
     {
         /// <summary>
-        /// Occurs when [menu requested].
+        /// Requests the menu.
         /// </summary>
-        event EventHandler MenuRequested;
+        void RequestMenu();
     }
 }

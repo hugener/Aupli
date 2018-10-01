@@ -22,20 +22,21 @@ namespace Aupli.SystemBoundaries.Pi.Display
         /// Creates the specified gpio connection driver.
         /// </summary>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
+        /// <param name="hasBacklight">if set to <c>true</c> [has backlight].</param>
         /// <returns>
         /// A <see cref="Hd44780Display" />.
         /// </returns>
-        public IDisplay Create(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        public IDisplay Create(IGpioConnectionDriverFactory gpioConnectionDriverFactory, bool hasBacklight)
         {
-            var hd47780ConnectionSettings = new Hd44780LcdDeviceSettings
+            var hd44780LcdDeviceSettings = new Hd44780LcdDeviceSettings
             {
                 ScreenHeight = 2,
                 ScreenWidth = 16,
                 Encoding = new Hd44780A00Encoding(),
             };
-            var backlight = new ConnectorPin?(ConnectorPin.P1Pin26);
-            var hd47780Connection = new Hd44780LcdDevice(
-                hd47780ConnectionSettings,
+            var backlight = hasBacklight ? new ConnectorPin?(ConnectorPin.P1Pin26) : null;
+            var hd44780LcdDevice = new Hd44780LcdDevice(
+                hd44780LcdDeviceSettings,
                 gpioConnectionDriverFactory,
                 ConnectorPin.P1Pin29,
                 ConnectorPin.P1Pin32,
@@ -45,7 +46,7 @@ namespace Aupli.SystemBoundaries.Pi.Display
                     ConnectorPin.P1Pin35,
                     ConnectorPin.P1Pin37),
                 backlight);
-            return this.textDisplayDevices.Add(new Hd44780Display(hd47780Connection, hd47780ConnectionSettings), hd47780Connection);
+            return this.textDisplayDevices.Add(new Hd44780Display(hd44780LcdDevice, hd44780LcdDeviceSettings), hd44780LcdDevice);
         }
 
         /// <summary>

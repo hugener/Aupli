@@ -22,8 +22,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
     public class PlayerTextView : ITextView
     {
         private static readonly TimeSpan AnimationStartDelay = TimeSpan.FromMilliseconds(3000);
-        private static readonly TimeSpan AnimationInterval = TimeSpan.FromMilliseconds(1000);
-        private static readonly TimeSpan AnimationPauseDelay = TimeSpan.FromMilliseconds(3000);
+        private static readonly TimeSpan AnimationInterval = TimeSpan.FromMilliseconds(900);
+        private static readonly TimeSpan AnimationPauseDelay = TimeSpan.FromMilliseconds(4000);
         private readonly PlayerController playerController;
         private readonly IPlayerStatusUpdater playerStatusUpdater;
         private readonly IVolumeStatus volumeStatus;
@@ -100,7 +100,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             }
             else
             {
-                renderContext.Home();
+                renderContext.SetPosition(0, 0);
                 if (this.playerStatus.State == PlayerState.Unknown || this.playerStatus.State == PlayerState.Stopped)
                 {
                     renderContext.WriteLine("Hold tag above".LimitAndPadRight(renderContext.Size.Width, ' '));
@@ -108,17 +108,17 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
                     return;
                 }
 
-                renderContext.WriteLine(
-                    $"{this.artistTextScroller.GetFrame(this.playerStatus.Artist, renderContext.Size.Width - 6, 0)} {this.GetElapsed()}");
+                var artistAndTrack = $"{this.artistTextScroller.GetFrame(this.playerStatus.Artist, renderContext.Size.Width - 6, 0)} {this.GetElapsed()}";
+                if (this.playerStatus.State == PlayerState.Paused)
+                {
+                    artistAndTrack = artistAndTrack.ReplaceAt(6, PlayerCustomCharacters.Pause);
+                }
+
+                renderContext.WriteLine(artistAndTrack);
+
                 var trackText = $" #{this.playerStatus.Track + 1:D2}";
                 renderContext.WriteLine(
                     $"{this.titleTextScroller.GetFrame(this.playerStatus.Title, renderContext.Size.Width - trackText.Length, 0)}{trackText}");
-            }
-
-            if (this.playerStatus.State == PlayerState.Paused)
-            {
-                renderContext.SetPosition(6, 0);
-                renderContext.WriteLine(PlayerCustomCharacters.Pause);
             }
         }
 

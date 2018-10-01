@@ -8,6 +8,7 @@
     <Version>0.0.1-pre001</Version>
 	<LangVersion>latest</LangVersion>
 	<Company>Hukano</Company>
+	<TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -52,16 +53,17 @@
   <ItemGroup>
     <PackageReference Include="MpcNET.SundewFork" Version="0.0.1-pre005" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.0.3-pre004" />
-    <PackageReference Include="Pi.IO.Interop.SundewFork" Version="0.0.3-pre004" />
-    <PackageReference Include="Pi.IO.SundewFork" Version="0.0.3-pre004" />
-    <PackageReference Include="Pi.System.SundewFork" Version="0.0.3-pre004" />
+    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.0.3-pre005" />
+    <PackageReference Include="Pi.IO.GeneralPurpose.SundewFork" Version="0.0.3-pre006" />
+    <PackageReference Include="Pi.IO.Interop.SundewFork" Version="0.0.3-pre006" />
+    <PackageReference Include="Pi.IO.SundewFork" Version="0.0.3-pre006" />
+    <PackageReference Include="Pi.System.SundewFork" Version="0.0.3-pre006" />
     <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00795" />
-    <PackageReference Include="Sundew.Base" Version="3.2.0-pre024" />
+    <PackageReference Include="Sundew.Base" Version="3.2.0-pre025" />
     <PackageReference Include="Sundew.CommandLine" Version="2.0.0-pre008" />
     <PackageReference Include="Sundew.Pi.ApplicationFramework" Version="0.0.0-pre002" />
     <PackageReference Include="Sundew.Pi.IO.Devices" Version="0.0.0-pre001" />

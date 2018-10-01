@@ -52,9 +52,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         {
             this.invalidater = invalidater;
             this.networkDevices = this.networkDeviceProvider.GetNetworkDevices().Where(
-                x => !object.Equals(x.IpAddress, IPAddress.Loopback)
-                && !object.Equals(x.IpAddress, IPAddress.None)
-                && !object.Equals(x.IpAddress, IPAddress.Any)).ToList();
+                x => !Equals(x.IpAddress, IPAddress.Loopback)
+                && !Equals(x.IpAddress, IPAddress.None)
+                && !Equals(x.IpAddress, IPAddress.Any)).ToList();
             this.timer = invalidater.CreateTimer();
             this.timer.Tick += this.OnTimerTick;
             this.timer.Interval = TimeSpan.FromSeconds(1);

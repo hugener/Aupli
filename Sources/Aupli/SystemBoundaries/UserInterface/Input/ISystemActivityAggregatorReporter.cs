@@ -7,8 +7,8 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Input
 {
+    using System;
     using Aupli.ApplicationServices.RequiredInterface.Player;
-    using global::System;
     using Sundew.Base.Reporting;
 
     /// <summary>
