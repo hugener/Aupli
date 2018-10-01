@@ -8,8 +8,9 @@
 namespace Aupli.DomainServices.Playlist
 {
     using System.Threading.Tasks;
-    using Aupli.DomainServices.Interface.Playlist;
-    using Aupli.DomainServices.RequiredInterface.Playlist;
+    using Aupli.DomainServices.Playlist.Api;
+    using Aupli.DomainServices.Playlist.Ari;
+    using Aupli.DomainServices.Playlist.Shared;
     using Sundew.Base.Initialization;
 
     /// <summary>
@@ -34,7 +35,7 @@ namespace Aupli.DomainServices.Playlist
         /// <value>
         /// The last playlist.
         /// </value>
-        public Shared.Playlist.PlaylistEntity LastPlaylist { get; private set; }
+        public PlaylistEntity LastPlaylist { get; private set; }
 
         /// <summary>
         /// Initializes this instance.
@@ -50,7 +51,7 @@ namespace Aupli.DomainServices.Playlist
         /// </summary>
         /// <param name="playlist">The playlist.</param>
         /// <returns>An async task.</returns>
-        public async Task ChangeLastPlaylistAsync(Shared.Playlist.PlaylistEntity playlist)
+        public async Task ChangeLastPlaylistAsync(PlaylistEntity playlist)
         {
             if (!Equals(this.LastPlaylist, playlist))
             {

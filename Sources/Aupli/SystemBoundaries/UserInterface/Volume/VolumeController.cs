@@ -7,15 +7,16 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Volume
 {
-    using Aupli.ApplicationServices.Volume;
-    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
+    using Aupli.ApplicationServices.Volume.Api;
+    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
 
     /// <summary>
     /// Controls the volume of the MAX 9744 using the KY-040.
     /// </summary>
     public class VolumeController
     {
-        private readonly VolumeService volumeService;
+        private readonly IVolumeService volumeService;
         private readonly IInteractionController interactionController;
         private readonly IVolumeControllerReporter volumeControllerReporter;
 
@@ -25,7 +26,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         /// <param name="volumeService">The volume service.</param>
         /// <param name="interactionController">The interaction controller.</param>
         /// <param name="volumeControllerReporter">The volume controller reporter.</param>
-        public VolumeController(VolumeService volumeService, IInteractionController interactionController, IVolumeControllerReporter volumeControllerReporter)
+        public VolumeController(IVolumeService volumeService, IInteractionController interactionController, IVolumeControllerReporter volumeControllerReporter)
         {
             this.volumeService = volumeService;
             this.interactionController = interactionController;

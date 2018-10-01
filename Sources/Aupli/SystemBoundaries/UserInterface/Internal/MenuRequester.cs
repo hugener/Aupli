@@ -8,12 +8,12 @@
 namespace Aupli.SystemBoundaries.UserInterface.Internal
 {
     using System;
-    using Aupli.SystemBoundaries.UserInterface.Interface;
+    using Aupli.SystemBoundaries.UserInterface.Player.Ari;
 
     /// <summary>
     /// Requests the menu by sending an event.
     /// </summary>
-    /// <seealso cref="Aupli.SystemBoundaries.UserInterface.Interface.IMenuRequester" />
+    /// <seealso cref="IMenuRequester" />
     internal class MenuRequester : IMenuRequester
     {
         /// <summary>

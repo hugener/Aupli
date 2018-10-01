@@ -8,16 +8,16 @@
 namespace Aupli.ApplicationServices.Player
 {
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.Interface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.DomainServices.Interface.Playlist;
+    using Aupli.ApplicationServices.Player.Api;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.DomainServices.Playlist.Api;
 
     /// <summary>
     /// The player service.
     /// </summary>
     public class PlayerService : IPlayerService
     {
-        private readonly IPlaylistSearchService playlistSearchService;
+        private readonly PlaylistSearchService playlistSearchService;
         private readonly ILastPlaylistService lastPlaylistService;
         private readonly IPlaybackControls playbackControls;
         private readonly IPlayerServiceReporter playerServiceReporter;
@@ -30,7 +30,7 @@ namespace Aupli.ApplicationServices.Player
         /// <param name="playbackControls">The playback controls.</param>
         /// <param name="playerServiceReporter">The player service reporter.</param>
         public PlayerService(
-            IPlaylistSearchService playlistSearchService,
+            PlaylistSearchService playlistSearchService,
             ILastPlaylistService lastPlaylistService,
             IPlaybackControls playbackControls,
             IPlayerServiceReporter playerServiceReporter)

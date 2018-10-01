@@ -7,7 +7,7 @@
 
 namespace Aupli.Logging.Serilog.ApplicationServices.Volume
 {
-    using Aupli.ApplicationServices.Volume;
+    using Aupli.ApplicationServices.Volume.Ari;
     using global::Serilog;
     using Sundew.Base;
     using Sundew.Base.Numeric;
@@ -15,7 +15,7 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Volume
     /// <summary>
     /// Logger for <see cref="IVolumeServiceReporter"/>.
     /// </summary>
-    /// <seealso cref="Aupli.ApplicationServices.Volume.IVolumeServiceReporter" />
+    /// <seealso cref="IVolumeServiceReporter" />
     public class VolumeServiceLogger : IVolumeServiceReporter
     {
         private ILogger log;

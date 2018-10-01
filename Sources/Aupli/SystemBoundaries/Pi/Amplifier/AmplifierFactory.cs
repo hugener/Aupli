@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.Amplifier
 {
-    using Aupli.ApplicationServices.RequiredInterface.Amplifier;
+    using Aupli.ApplicationServices.Volume.Ari;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
     using Sundew.Pi.IO.Devices.Amplifiers.Max9744;

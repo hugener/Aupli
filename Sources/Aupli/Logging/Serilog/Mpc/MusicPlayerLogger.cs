@@ -9,7 +9,7 @@ namespace Aupli.Logging.Serilog.Mpc
 {
     using System;
     using System.Threading;
-    using Aupli.SystemBoundaries.RequiredInterface;
+    using Aupli.SystemBoundaries.Ari;
     using global::Serilog;
     using global::Serilog.Events;
     using MpcNET;

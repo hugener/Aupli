@@ -26,11 +26,11 @@ namespace Aupli
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume;
     using Aupli.SystemBoundaries;
     using Aupli.SystemBoundaries.Persistence;
+    using Aupli.SystemBoundaries.Persistence.Api;
     using Aupli.SystemBoundaries.Persistence.Configuration;
-    using Aupli.SystemBoundaries.Persistence.Playlists;
-    using Aupli.SystemBoundaries.Persistence.Volume;
+    using Aupli.SystemBoundaries.Persistence.Configuration.Api;
     using Aupli.SystemBoundaries.UserInterface;
-    using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
+    using Aupli.SystemBoundaries.UserInterface.Ari;
     using Pi.IO.GeneralPurpose;
     using Serilog;
     using Serilog.Events;
@@ -178,12 +178,9 @@ namespace Aupli
         /// Gets the repositories.
         /// </summary>
         /// <returns>The repositories.</returns>
-        protected virtual RepositoriesModule CreateRepositoriesModule()
+        protected virtual IRepositoriesModule CreateRepositoriesModule()
         {
-            return new RepositoriesModule(
-                new VolumeJsonFileRepository("volume.json"),
-                new PlaylistMapJsonFileRepository("playlists.json"),
-                new LastPlaylistJsonFileRepository("last-playlist.json"));
+            return new RepositoriesModule("volume.json", "playlists.json", "last-playlist.json");
         }
     }
 }

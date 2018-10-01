@@ -9,7 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
 {
     using System;
     using System.Collections.Generic;
-    using Aupli.ApplicationServices.Volume;
+    using Aupli.ApplicationServices.Volume.Api;
     using Sundew.Base.Collections;
     using Sundew.Base.Numeric;
     using Sundew.Base.Text;
@@ -22,7 +22,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     public class VolumeTextView : ITextView
     {
         private readonly VolumeController volumeController;
-        private readonly VolumeService volumeService;
+        private readonly IVolumeService volumeService;
         private Percentage volume;
         private bool isMuted;
         private IInvalidater invalidater;
@@ -32,7 +32,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         /// </summary>
         /// <param name="volumeController">The volume controller.</param>
         /// <param name="volumeService">The volume service.</param>
-        public VolumeTextView(VolumeController volumeController, VolumeService volumeService)
+        public VolumeTextView(VolumeController volumeController, IVolumeService volumeService)
         {
             this.volumeController = volumeController;
             this.volumeService = volumeService;

@@ -8,8 +8,8 @@
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Input
 {
     using System;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.SystemBoundaries.UserInterface.Input;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.SystemBoundaries.UserInterface.Input.Ari;
     using global::Serilog;
     using Sundew.Base;
 

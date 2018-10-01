@@ -7,14 +7,14 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
 {
-    using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
+    using Aupli.SystemBoundaries.UserInterface.Ari;
     using global::Serilog;
     using Sundew.Base;
 
     /// <summary>
     /// Logger for <see cref="IViewNavigatorReporter"/>.
     /// </summary>
-    /// <seealso cref="Aupli.SystemBoundaries.UserInterface.RequiredInterface.IViewNavigatorReporter" />
+    /// <seealso cref="IViewNavigatorReporter" />
     public class ViewNavigatorLogger : IViewNavigatorReporter
     {
         private ILogger log;

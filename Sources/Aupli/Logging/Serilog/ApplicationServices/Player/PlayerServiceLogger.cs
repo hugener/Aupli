@@ -7,14 +7,14 @@
 
 namespace Aupli.Logging.Serilog.ApplicationServices.Player
 {
-    using Aupli.ApplicationServices.Player;
+    using Aupli.ApplicationServices.Player.Ari;
     using global::Serilog;
     using Sundew.Base;
 
     /// <summary>
     /// Logger for <see cref="IPlayerServiceReporter"/>.
     /// </summary>
-    /// <seealso cref="Aupli.ApplicationServices.Player.IPlayerServiceReporter" />
+    /// <seealso cref="IPlayerServiceReporter" />
     public class PlayerServiceLogger : IPlayerServiceReporter
     {
         private ILogger log;

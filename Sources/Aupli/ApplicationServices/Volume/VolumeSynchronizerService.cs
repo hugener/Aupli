@@ -8,8 +8,7 @@
 namespace Aupli.ApplicationServices.Volume
 {
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Amplifier;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Sundew.Base.Numeric;
 
     /// <summary>

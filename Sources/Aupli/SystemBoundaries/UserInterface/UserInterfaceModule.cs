@@ -14,11 +14,12 @@ namespace Aupli.SystemBoundaries.UserInterface
     using Aupli.SystemBoundaries.Pi.Interaction;
     using Aupli.SystemBoundaries.Shared.Lifecycle;
     using Aupli.SystemBoundaries.Shared.Timeouts;
+    using Aupli.SystemBoundaries.UserInterface.Api;
+    using Aupli.SystemBoundaries.UserInterface.Ari;
     using Aupli.SystemBoundaries.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Internal;
     using Aupli.SystemBoundaries.UserInterface.Menu;
     using Aupli.SystemBoundaries.UserInterface.Player;
-    using Aupli.SystemBoundaries.UserInterface.RequiredInterface;
     using Aupli.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Volume;
     using global::Pi.IO.GeneralPurpose;
@@ -44,6 +45,9 @@ namespace Aupli.SystemBoundaries.UserInterface
         private readonly Reporters reporters;
         private IdleController idleController;
         private Disposer disposer;
+        private VolumeController volumeController;
+        private ShutdownController shutdownController;
+        private PlayerController playerController;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterfaceModule" /> class.
@@ -77,36 +81,12 @@ namespace Aupli.SystemBoundaries.UserInterface
         }
 
         /// <summary>
-        /// Gets the player controller.
-        /// </summary>
-        /// <value>
-        /// The player controller.
-        /// </value>
-        public PlayerController PlayerController { get; private set; }
-
-        /// <summary>
-        /// Gets the volume controller.
-        /// </summary>
-        /// <value>
-        /// The volume controller.
-        /// </value>
-        public VolumeController VolumeController { get; private set; }
-
-        /// <summary>
-        /// Gets the shutdown controller.
-        /// </summary>
-        /// <value>
-        /// The shutdown controller.
-        /// </value>
-        public ShutdownController ShutdownController { get; private set; }
-
-        /// <summary>
         /// Gets the view navigator.
         /// </summary>
         /// <value>
         /// The view navigator.
         /// </value>
-        public ViewNavigator ViewNavigator { get; private set; }
+        public IViewNavigator ViewNavigator { get; private set; }
 
         /// <summary>
         /// Initializes the asynchronous.
@@ -139,15 +119,15 @@ namespace Aupli.SystemBoundaries.UserInterface
                 this.timeoutConfiguration.SystemTimeout,
                 this.reporters?.IdleControllerReporter);
 
-            this.VolumeController = new VolumeController(this.volumeModule.VolumeService, interactionController, this.reporters?.VolumeControllerReporter);
+            this.volumeController = new VolumeController(this.volumeModule.VolumeService, interactionController, this.reporters?.VolumeControllerReporter);
 
             var menuController = new MenuController(interactionController, textViewNavigator);
 
-            this.ShutdownController = new ShutdownController(
+            this.shutdownController = new ShutdownController(
                 this.idleController, this.controlsModule.SystemControl, this.shutdownParameters.AllowShutdown, this.shutdownParameters.ShutdownCancellationTokenSource, this.reporters?.ShutdownControllerReporter);
 
             var menuRequester = new MenuRequester();
-            this.PlayerController = new PlayerController(
+            this.playerController = new PlayerController(
                 interactionController,
                 this.playerModule.PlayerService,
                 this.controlsModule.MusicPlayer,
@@ -157,9 +137,9 @@ namespace Aupli.SystemBoundaries.UserInterface
             this.ViewNavigator = new ViewNavigator(
                 this.volumeModule.VolumeService,
                 menuRequester,
-                this.ShutdownController,
+                this.shutdownController,
                 textViewNavigator,
-                new ViewFactory(this.controlsModule.MusicPlayer, this.PlayerController, this.VolumeController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
+                new ViewFactory(this.controlsModule.MusicPlayer, this.playerController, this.volumeController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
                 new TimerFactory(),
                 this.reporters?.ViewNavigatorReporter);
 
@@ -181,7 +161,7 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// Creates the display factory.
         /// </summary>
         /// <returns>A Display Factory.</returns>
-        protected virtual DisplayFactory CreateDisplayFactory()
+        protected virtual IDisplayFactory CreateDisplayFactory()
         {
             return new DisplayFactory();
         }

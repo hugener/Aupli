@@ -7,15 +7,15 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume
 {
-    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
-    using Aupli.SystemBoundaries.UserInterface.Volume;
+    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
     using global::Serilog;
     using Sundew.Base;
 
     /// <summary>
     /// Logger for <see cref="IVolumeControllerReporter"/>.
     /// </summary>
-    /// <seealso cref="Aupli.SystemBoundaries.UserInterface.Volume.IVolumeControllerReporter" />
+    /// <seealso cref="IVolumeControllerReporter" />
     public class VolumeControllerLogger : IVolumeControllerReporter
     {
         private ILogger log;

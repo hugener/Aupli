@@ -8,12 +8,10 @@
 namespace Aupli.ApplicationServices
 {
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.Interface.Player;
     using Aupli.ApplicationServices.Player;
-    using Aupli.ApplicationServices.Playlist;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Playlist;
-    using Aupli.DomainServices.Interface.Playlist;
+    using Aupli.ApplicationServices.Player.Api;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.DomainServices.Playlist.Api;
     using Sundew.Base.Initialization;
 
     /// <summary>

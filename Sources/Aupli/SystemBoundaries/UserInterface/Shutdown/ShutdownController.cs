@@ -10,6 +10,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
     using System;
     using System.Threading;
     using Aupli.SystemBoundaries.Shared.System;
+    using Aupli.SystemBoundaries.UserInterface.Shutdown.Api;
+    using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
     using Sundew.Pi.ApplicationFramework.Input;
 
     /// <summary>

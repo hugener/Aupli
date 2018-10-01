@@ -7,11 +7,10 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Player
 {
-    using Aupli.ApplicationServices.Interface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
-    using Aupli.SystemBoundaries.UserInterface.Interface;
-    using Aupli.SystemBoundaries.UserInterface.Player.RequiredInterface;
+    using Aupli.ApplicationServices.Player.Api;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Player.Ari;
 
     /// <summary>
     /// Controls the music using player controls.

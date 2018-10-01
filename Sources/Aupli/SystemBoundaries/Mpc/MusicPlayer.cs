@@ -10,8 +10,8 @@ namespace Aupli.SystemBoundaries.Mpc
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.ApplicationServices.Volume.Ari;
     using MpcNET;
     using MpcNET.Commands.Database;
     using MpcNET.Commands.Playback;
@@ -64,12 +64,25 @@ namespace Aupli.SystemBoundaries.Mpc
         public event EventHandler<VolumeChangedEventArgs> VolumeChanged;
 
         /// <summary>
+        /// Occurs when [audio output status changed].
+        /// </summary>
+        public event EventHandler AudioOutputStatusChanged;
+
+        /// <summary>
         /// Gets the status.
         /// </summary>
         /// <value>
         /// The status.
         /// </value>
         public PlayerStatus Status { get; private set; } = PlayerStatus.NoStatus;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is outputting audio.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is outputting audio; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsOutputtingAudio => this.Status.State != PlayerState.Playing;
 
         /// <summary>
         /// Updates the status asynchronously.
@@ -262,6 +275,7 @@ namespace Aupli.SystemBoundaries.Mpc
                     {
                         this.Status = playerStatus;
                         this.StatusChanged?.Invoke(this, new StatusEventArgs(this.Status));
+                        this.AudioOutputStatusChanged?.Invoke(this, EventArgs.Empty);
                     }
 
                     var newVolume = new Percentage(this.status.Volume / 100d);

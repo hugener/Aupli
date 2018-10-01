@@ -8,8 +8,8 @@
 namespace Aupli.SystemBoundaries.Mpc
 {
     using System;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.ApplicationServices.Volume.Ari;
 
     /// <summary>
     /// Interface for a music player.
@@ -17,7 +17,7 @@ namespace Aupli.SystemBoundaries.Mpc
     /// <seealso cref="IVolumeControl" />
     /// <seealso cref="IPlaybackControls" />
     /// <seealso cref="System.IDisposable" />
-    public interface IMusicPlayer : IVolumeControl, IPlaybackControls, IDisposable
+    public interface IMusicPlayer : IVolumeControl, IPlaybackControls, IAudioOutputStatusUpdater, IDisposable
     {
     }
 }

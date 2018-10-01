@@ -9,8 +9,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
 {
     using System;
     using System.Collections.Generic;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.ApplicationServices.Volume.Api;
     using Sundew.Base.Text;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
     using Sundew.Pi.ApplicationFramework.TextViewRendering.Animation;

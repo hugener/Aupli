@@ -11,7 +11,7 @@ namespace Aupli.SystemBoundaries
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Amplifier;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Mpc;
     using Aupli.SystemBoundaries.Pi.Amplifier;
     using Aupli.SystemBoundaries.Pi.Interaction;
@@ -28,7 +28,7 @@ namespace Aupli.SystemBoundaries
     public class ControlsModule : IInitializable, IDisposable
     {
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
-        private readonly RequiredInterface.IMusicPlayerReporter musicPlayerReporter;
+        private readonly Ari.IMusicPlayerReporter musicPlayerReporter;
         private readonly IAmplifierReporter amplifierReporter;
         private Disposer disposer;
 
@@ -38,7 +38,7 @@ namespace Aupli.SystemBoundaries
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver.</param>
         /// <param name="musicPlayerReporter">The music player reporter.</param>
         /// <param name="amplifierReporter">The amplifier reporter.</param>
-        public ControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory, RequiredInterface.IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
+        public ControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory, Ari.IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
         {
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.musicPlayerReporter = musicPlayerReporter;

@@ -8,29 +8,32 @@
 namespace Aupli.SystemBoundaries.Persistence
 {
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Playlist;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
-    using Sundew.Base.Initialization;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.ApplicationServices.Playlist.Ari;
+    using Aupli.ApplicationServices.Volume.Ari;
+    using Aupli.SystemBoundaries.Persistence.Api;
+    using Aupli.SystemBoundaries.Persistence.Playlists;
+    using Aupli.SystemBoundaries.Persistence.Volume;
 
     /// <summary>
     /// Contains the repositories.
     /// </summary>
-    public class RepositoriesModule : IInitializable
+    public class RepositoriesModule : IRepositoriesModule
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RepositoriesModule"/> class.
+        /// Initializes a new instance of the <see cref="RepositoriesModule" /> class.
         /// </summary>
-        /// <param name="volumeRepository">The volume repository.</param>
-        /// <param name="playlistRepository">The playlist repository.</param>
-        /// <param name="lastPlaylistRepository">The last playlist repository.</param>
+        /// <param name="volumeRepositoryPath">The volume repository path.</param>
+        /// <param name="playlistRepositoryPath">The playlist repository path.</param>
+        /// <param name="lastPlaylistRepositoryPath">The last playlist repository path.</param>
         public RepositoriesModule(
-            IVolumeRepository volumeRepository,
-            IPlaylistRepository playlistRepository,
-            ILastPlaylistRepository lastPlaylistRepository)
+            string volumeRepositoryPath,
+            string playlistRepositoryPath,
+            string lastPlaylistRepositoryPath)
         {
-            this.VolumeRepository = volumeRepository;
-            this.PlaylistRepository = playlistRepository;
-            this.LastPlaylistRepository = lastPlaylistRepository;
+            this.VolumeRepository = new VolumeJsonFileRepository(volumeRepositoryPath);
+            this.PlaylistRepository = new PlaylistMapJsonFileRepository(playlistRepositoryPath);
+            this.LastPlaylistRepository = new LastPlaylistJsonFileRepository(lastPlaylistRepositoryPath);
         }
 
         /// <summary>

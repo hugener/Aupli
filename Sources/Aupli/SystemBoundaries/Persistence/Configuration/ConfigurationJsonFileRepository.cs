@@ -10,6 +10,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Aupli.SystemBoundaries.Persistence.Configuration.Api;
     using Newtonsoft.Json;
     using Sundew.Base.Threading;
 
@@ -20,7 +21,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
     {
         private readonly string configurationFilePath;
 
-        private readonly AsyncLazy<Configuration> configuration;
+        private readonly AsyncLazy<Api.Configuration> configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationJsonFileRepository"/> class.
@@ -29,11 +30,11 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         public ConfigurationJsonFileRepository(string configurationFilePath)
         {
             this.configurationFilePath = configurationFilePath;
-            this.configuration = new AsyncLazy<Configuration>(
+            this.configuration = new AsyncLazy<Api.Configuration>(
                 async () =>
                 {
                     var settings = await File.ReadAllTextAsync(configurationFilePath).ConfigureAwait(false);
-                    return JsonConvert.DeserializeObject<Configuration>(settings);
+                    return JsonConvert.DeserializeObject<Api.Configuration>(settings);
                 }, LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
@@ -41,7 +42,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         /// Gets the settings asynchronous.
         /// </summary>
         /// <returns>A get lifecycle configuration task.</returns>
-        public async Task<Configuration> GetConfigurationAsync()
+        public async Task<Api.Configuration> GetConfigurationAsync()
         {
             return await this.configuration;
         }

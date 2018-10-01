@@ -9,7 +9,7 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
 {
     using System.IO;
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Newtonsoft.Json;
     using Sundew.Base.Numeric;
 

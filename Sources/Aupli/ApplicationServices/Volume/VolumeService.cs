@@ -9,23 +9,20 @@ namespace Aupli.ApplicationServices.Volume
 {
     using System;
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.Interface;
-    using Aupli.ApplicationServices.RequiredInterface.Amplifier;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
-    using Sundew.Base.Initialization;
+    using Aupli.ApplicationServices.Volume.Api;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Sundew.Base.Numeric;
 
     /// <summary>
     /// The volume service.
     /// </summary>
-    /// <seealso cref="Aupli.ApplicationServices.RequiredInterface.Volume.IVolumeStatus" />
-    /// <seealso cref="Aupli.ApplicationServices.Interface.IVolumeChangeNotifier" />
-    public class VolumeService : IVolumeStatus, IVolumeChangeNotifier, IInitializable
+    /// <seealso cref="IVolumeStatus" />
+    /// <seealso cref="IVolumeChangeNotifier" />
+    public class VolumeService : IVolumeService
     {
         private readonly VolumeAdjuster volumeAdjuster;
         private readonly IAmplifier amplifier;
-        private readonly IPlayerStatusUpdater playerStatusUpdater;
+        private readonly IAudioOutputStatusUpdater audioOutputStatusUpdater;
         private readonly IVolumeStatusUpdater volumeStatusUpdater;
         private readonly VolumeSynchronizerService volumeSynchronizerService;
         private readonly IVolumeServiceReporter volumeServiceReporter;
@@ -35,26 +32,26 @@ namespace Aupli.ApplicationServices.Volume
         /// </summary>
         /// <param name="volumeAdjuster">The volume adjuster.</param>
         /// <param name="amplifier">The amplifier.</param>
-        /// <param name="playerStatusUpdater">The player status.</param>
+        /// <param name="audioOutputStatusUpdater">The player status.</param>
         /// <param name="volumeStatusUpdater">The volume status updater.</param>
         /// <param name="volumeSynchronizerService">The volume synchronizer service.</param>
         /// <param name="volumeServiceReporter">The volume controller reporter.</param>
         public VolumeService(
             VolumeAdjuster volumeAdjuster,
             IAmplifier amplifier,
-            IPlayerStatusUpdater playerStatusUpdater,
+            IAudioOutputStatusUpdater audioOutputStatusUpdater,
             IVolumeStatusUpdater volumeStatusUpdater,
             VolumeSynchronizerService volumeSynchronizerService,
             IVolumeServiceReporter volumeServiceReporter)
         {
             this.volumeAdjuster = volumeAdjuster;
             this.amplifier = amplifier;
-            this.playerStatusUpdater = playerStatusUpdater;
+            this.audioOutputStatusUpdater = audioOutputStatusUpdater;
             this.volumeStatusUpdater = volumeStatusUpdater;
             this.volumeSynchronizerService = volumeSynchronizerService;
             this.volumeServiceReporter = volumeServiceReporter;
             this.volumeServiceReporter?.SetSource(this);
-            this.playerStatusUpdater.StatusChanged += this.OnPlayerStatusUpdaterStatusChanged;
+            this.audioOutputStatusUpdater.AudioOutputStatusChanged += this.OnAudioOutputStatusUpdaterStatusChanged;
             this.volumeStatusUpdater.VolumeChanged += this.OnVolumeStatusUpdaterVolumeChanged;
         }
 
@@ -86,7 +83,7 @@ namespace Aupli.ApplicationServices.Volume
         public async Task InitializeAsync()
         {
             await this.volumeSynchronizerService.SetVolumeAsync(Comparison.Min(this.Volume, new Percentage(0.8)));
-            this.SetAmplifierMuteState(this.playerStatusUpdater.Status.State);
+            this.SetAmplifierMuteState(this.audioOutputStatusUpdater.IsOutputtingAudio);
         }
 
         /// <summary>
@@ -108,7 +105,7 @@ namespace Aupli.ApplicationServices.Volume
             var newIsMuted = !this.IsMuted;
 
             await this.volumeSynchronizerService.SetMuteStateAsync(newIsMuted);
-            this.VolumeChanged?.Invoke(this, new VolumeEventArgs(this.Volume, this.IsMuted));
+            this.VolumeChanged?.Invoke(this, EventArgs.Empty);
 
             this.volumeServiceReporter?.ChangeMute(newIsMuted);
         }
@@ -125,15 +122,15 @@ namespace Aupli.ApplicationServices.Volume
 
                 await this.volumeSynchronizerService.SetVolumeAsync(newVolume);
 
-                this.VolumeChanged?.Invoke(this, new VolumeEventArgs(newVolume, this.IsMuted));
+                this.VolumeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        private void OnPlayerStatusUpdaterStatusChanged(object sender, StatusEventArgs e)
+        private void OnAudioOutputStatusUpdaterStatusChanged(object sender, EventArgs e)
         {
             if (!this.IsMuted)
             {
-                this.SetAmplifierMuteState(e.State);
+                this.SetAmplifierMuteState(this.audioOutputStatusUpdater.IsOutputtingAudio);
             }
         }
 
@@ -142,9 +139,9 @@ namespace Aupli.ApplicationServices.Volume
             await this.SetVolumeAsync(e.Volume);
         }
 
-        private void SetAmplifierMuteState(PlayerState state)
+        private void SetAmplifierMuteState(bool isOutputtingAudio)
         {
-            this.amplifier.IsMuted = state != PlayerState.Playing;
+            this.amplifier.IsMuted = !isOutputtingAudio;
         }
     }
 }

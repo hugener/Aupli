@@ -8,10 +8,9 @@
 namespace Aupli.ApplicationServices
 {
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Amplifier;
-    using Aupli.ApplicationServices.RequiredInterface.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Volume;
     using Aupli.ApplicationServices.Volume;
+    using Aupli.ApplicationServices.Volume.Api;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Sundew.Base.Initialization;
     using Sundew.Base.Numeric;
 
@@ -25,7 +24,7 @@ namespace Aupli.ApplicationServices
         /// </summary>
         /// <param name="volumeRepository">The volume repository.</param>
         /// <param name="volumeIncrementStep">The volume increment step.</param>
-        /// <param name="playerStatusUpdater">The player status updater.</param>
+        /// <param name="audioOutputStatusUpdater">The audio output status updater.</param>
         /// <param name="volumeStatusUpdater">The volume status updater.</param>
         /// <param name="amplifier">The amplifier.</param>
         /// <param name="volumeControl">The volume control.</param>
@@ -33,7 +32,7 @@ namespace Aupli.ApplicationServices
         public VolumeModule(
             IVolumeRepository volumeRepository,
             Percentage volumeIncrementStep,
-            IPlayerStatusUpdater playerStatusUpdater,
+            IAudioOutputStatusUpdater audioOutputStatusUpdater,
             IVolumeStatusUpdater volumeStatusUpdater,
             IAmplifier amplifier,
             IVolumeControl volumeControl,
@@ -43,7 +42,7 @@ namespace Aupli.ApplicationServices
             this.VolumeService = new VolumeService(
                 new VolumeAdjuster(volumeIncrementStep),
                 amplifier,
-                playerStatusUpdater,
+                audioOutputStatusUpdater,
                 volumeStatusUpdater,
                 new VolumeSynchronizerService(amplifier, volumeControl, volumeRepository),
                 volumeServiceReporter);
@@ -55,7 +54,7 @@ namespace Aupli.ApplicationServices
         /// <value>
         /// The volume service.
         /// </value>
-        public VolumeService VolumeService { get; }
+        public IVolumeService VolumeService { get; }
 
         /// <summary>
         /// Initializes the asynchronous.

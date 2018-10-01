@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.Amplifier
 {
-    using Aupli.ApplicationServices.RequiredInterface.Amplifier;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Sundew.Base.Numeric;
     using Sundew.Pi.IO.Devices.Amplifiers.Max9744;
 

@@ -8,9 +8,9 @@
 namespace Aupli.DomainServices
 {
     using System.Threading.Tasks;
-    using Aupli.DomainServices.Interface.Playlist;
     using Aupli.DomainServices.Playlist;
-    using Aupli.DomainServices.RequiredInterface.Playlist;
+    using Aupli.DomainServices.Playlist.Api;
+    using Aupli.DomainServices.Playlist.Ari;
     using Sundew.Base.Initialization;
 
     /// <summary>

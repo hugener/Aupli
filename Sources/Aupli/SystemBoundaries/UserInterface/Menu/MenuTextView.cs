@@ -11,8 +11,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using Aupli.SystemBoundaries.Shared.Interaction;
     using Aupli.SystemBoundaries.Shared.System;
-    using Aupli.SystemBoundaries.Shared.UserInterface.Input;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
@@ -23,9 +23,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     /// <seealso cref="ITextView" />
     public class MenuTextView : ITextView
     {
-        private readonly INetworkDeviceProvider networkDeviceProvider;
+        private readonly INetworkDeviceInfoProvider networkDeviceInfoProvider;
         private readonly MenuController menuController;
-        private IReadOnlyList<NetworkDevice> networkDevices;
+        private IReadOnlyList<NetworkDeviceInfo> networkDevices;
         private IInvalidater invalidater;
         private IPAddress ipAddress;
         private int ipAddressIndex;
@@ -35,11 +35,11 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuTextView" /> class.
         /// </summary>
-        /// <param name="networkDeviceProvider">The ip address provider.</param>
+        /// <param name="networkDeviceInfoProvider">The ip address provider.</param>
         /// <param name="menuController">The menu controller.</param>
-        public MenuTextView(INetworkDeviceProvider networkDeviceProvider, MenuController menuController)
+        public MenuTextView(INetworkDeviceInfoProvider networkDeviceInfoProvider, MenuController menuController)
         {
-            this.networkDeviceProvider = networkDeviceProvider;
+            this.networkDeviceInfoProvider = networkDeviceInfoProvider;
             this.menuController = menuController;
             this.menuController.TagInput += this.OnMenuControllerTagInput;
         }
@@ -51,7 +51,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         public void OnShowing(IInvalidater invalidater, ICharacterContext characterContext)
         {
             this.invalidater = invalidater;
-            this.networkDevices = this.networkDeviceProvider.GetNetworkDevices().Where(
+            this.networkDevices = this.networkDeviceInfoProvider.GetNetworkDevices().Where(
                 x => !Equals(x.IpAddress, IPAddress.Loopback)
                 && !Equals(x.IpAddress, IPAddress.None)
                 && !Equals(x.IpAddress, IPAddress.Any)).ToList();

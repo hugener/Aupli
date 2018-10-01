@@ -7,14 +7,14 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
 {
-    using Aupli.SystemBoundaries.UserInterface.Shutdown;
+    using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
     using global::Serilog;
     using Sundew.Base;
 
     /// <summary>
     /// Logger for <see cref="IShutdownControllerReporter"/>.
     /// </summary>
-    /// <seealso cref="Aupli.SystemBoundaries.UserInterface.Shutdown.IShutdownControllerReporter" />
+    /// <seealso cref="IShutdownControllerReporter" />
     public class ShutdownControllerLogger : IShutdownControllerReporter
     {
         private ILogger log;

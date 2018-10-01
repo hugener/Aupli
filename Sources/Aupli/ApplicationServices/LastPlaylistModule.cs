@@ -7,9 +7,9 @@
 
 namespace Aupli.ApplicationServices
 {
-    using Aupli.ApplicationServices.Player;
-    using Aupli.ApplicationServices.RequiredInterface.Playlist;
-    using Aupli.DomainServices.RequiredInterface.Playlist;
+    using Aupli.ApplicationServices.Playlist;
+    using Aupli.ApplicationServices.Playlist.Ari;
+    using Aupli.DomainServices.Playlist.Ari;
 
     /// <summary>
     /// The last playlist module.

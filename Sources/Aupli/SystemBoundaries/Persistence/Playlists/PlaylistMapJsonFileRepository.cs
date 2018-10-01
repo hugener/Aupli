@@ -11,8 +11,8 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using Aupli.ApplicationServices.RequiredInterface.Playlist;
-    using Aupli.DomainServices.Shared.Playlist;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.DomainServices.Playlist.Shared;
     using Newtonsoft.Json;
 
     /// <summary>
