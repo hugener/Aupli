@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.0.3-pre005" />
+    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.0.3-pre006" />
     <PackageReference Include="Pi.IO.GeneralPurpose.SundewFork" Version="0.0.3-pre006" />
     <PackageReference Include="Pi.IO.Interop.SundewFork" Version="0.0.3-pre006" />
     <PackageReference Include="Pi.System.SundewFork" Version="0.0.3-pre006" />

@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.Display
 {
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using global::Pi.IO.Devices.Displays.Hd44780;
     using Sundew.Base.Computation;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;

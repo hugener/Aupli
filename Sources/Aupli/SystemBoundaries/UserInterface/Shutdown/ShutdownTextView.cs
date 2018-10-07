@@ -8,7 +8,8 @@
 namespace Aupli.SystemBoundaries.UserInterface.Shutdown
 {
     using System.Collections.Generic;
-    using Aupli.SystemBoundaries.Shared.Lifecycle;
+    using System.Threading.Tasks;
+    using Aupli.SystemBoundaries.Bridges.Lifecycle;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
     /// <inheritdoc />
@@ -33,8 +34,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         public IEnumerable<object> InputTargets => null;
 
         /// <inheritdoc />
-        public void OnShowing(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
         {
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
@@ -46,8 +48,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         }
 
         /// <inheritdoc />
-        public void OnClosing()
+        public Task OnClosingAsync()
         {
+            return Task.CompletedTask;
         }
     }
 }

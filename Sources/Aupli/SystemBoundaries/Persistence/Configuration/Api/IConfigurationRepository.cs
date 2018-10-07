@@ -19,11 +19,5 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration.Api
         /// </summary>
         /// <returns>A get lifecycle configuration task.</returns>
         Task<Configuration> GetConfigurationAsync();
-
-        /// <summary>
-        /// Saves the configuration asynchronously.
-        /// </summary>
-        /// <returns>A save task.</returns>
-        Task SaveConfigurationAsync();
     }
 }

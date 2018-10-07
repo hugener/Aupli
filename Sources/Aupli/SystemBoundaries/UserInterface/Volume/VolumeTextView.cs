@@ -9,6 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Api;
     using Sundew.Base.Collections;
     using Sundew.Base.Numeric;
@@ -44,9 +45,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         public IEnumerable<object> InputTargets => this.volumeController.ToEnumerable();
 
         /// <inheritdoc />
-        public void OnShowing(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
         {
             this.invalidater = invalidater;
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -66,8 +68,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         }
 
         /// <inheritdoc />
-        public void OnClosing()
+        public Task OnClosingAsync()
         {
+            return Task.CompletedTask;
         }
 
         private void OnVolumeServiceVolumeChanged(object sender, EventArgs e)

@@ -1,6 +1,4 @@
 {
-  "Name": "Laia",
   "IdleTimeout": "00:02:00",
-  "SystemTimeout": "00:04:00",
-  "Pin26Feature": "None"
+  "SystemTimeout": "00:04:00"
 }

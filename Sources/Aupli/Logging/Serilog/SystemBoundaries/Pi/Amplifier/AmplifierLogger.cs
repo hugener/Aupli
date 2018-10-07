@@ -8,6 +8,7 @@
 namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
 {
     using Aupli.SystemBoundaries.Pi.Amplifier;
+    using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using global::Serilog;
     using global::Serilog.Events;
     using Sundew.Base;
@@ -16,7 +17,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
     /// <summary>
     /// Logger reporter for the amplifier.
     /// </summary>
-    /// <seealso cref="Aupli.SystemBoundaries.Pi.Amplifier.IAmplifierReporter" />
+    /// <seealso cref="IAmplifierReporter" />
     public class AmplifierLogger : IAmplifierReporter
     {
         private readonly LogEventLevel logEventLevel;

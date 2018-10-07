@@ -10,9 +10,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     using System;
     using System.Threading;
     using Aupli.ApplicationServices.Volume.Api;
-    using Aupli.SystemBoundaries.Mpc;
-    using Aupli.SystemBoundaries.OperationSystem.Linux;
-    using Aupli.SystemBoundaries.Shared.Lifecycle;
+    using Aupli.SystemBoundaries.Bridges.Lifecycle;
+    using Aupli.SystemBoundaries.Bridges.MusicControl;
+    using Aupli.SystemBoundaries.UserInterface.Internal.Net;
     using Aupli.SystemBoundaries.UserInterface.Menu;
     using Aupli.SystemBoundaries.UserInterface.Player;
     using Aupli.SystemBoundaries.UserInterface.Shutdown;

@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Volume.Ari
 {
-    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using Sundew.Base.Reporting;
 
     /// <summary>

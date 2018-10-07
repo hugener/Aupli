@@ -12,6 +12,8 @@ namespace Aupli.SystemBoundaries.Mpc
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.ApplicationServices.Volume.Ari;
+    using Aupli.SystemBoundaries.Bridges.MusicControl;
+    using Aupli.SystemBoundaries.Mpc.Ari;
     using MpcNET;
     using MpcNET.Commands.Database;
     using MpcNET.Commands.Playback;

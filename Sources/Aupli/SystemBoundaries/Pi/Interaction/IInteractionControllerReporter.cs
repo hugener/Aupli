@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.Interaction
 {
-    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using Sundew.Base.Reporting;
 
     /// <summary>

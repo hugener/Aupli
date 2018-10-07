@@ -9,7 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
 {
     using Aupli.ApplicationServices.Player.Api;
     using Aupli.ApplicationServices.Player.Ari;
-    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
 
     /// <summary>

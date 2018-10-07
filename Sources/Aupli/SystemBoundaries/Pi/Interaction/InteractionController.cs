@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.Interaction
 {
     using System;
-    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using Sundew.Pi.ApplicationFramework.Input;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
     using Sundew.Pi.IO.Devices.RfidTransceivers;

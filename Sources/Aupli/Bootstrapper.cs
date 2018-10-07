@@ -25,6 +25,7 @@ namespace Aupli
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume;
     using Aupli.SystemBoundaries;
+    using Aupli.SystemBoundaries.Api;
     using Aupli.SystemBoundaries.Persistence;
     using Aupli.SystemBoundaries.Persistence.Api;
     using Aupli.SystemBoundaries.Persistence.Configuration;
@@ -64,19 +65,17 @@ namespace Aupli
         /// </returns>
         public async Task StartAsync(CancellationTokenSource shutdownCancellationTokenSource, bool allowShutdown)
         {
-            var configurationTask = Task.Run(async () =>
-            {
-                var configurationRepository2 = this.CreateConfigurationRepository();
-                var configuration2 = await configurationRepository2.GetConfigurationAsync().ConfigureAwait(false);
-                return (configurationRepository2, configuration2);
-            }).ConfigureAwait(false);
-
             this.logger.Verbose("Create GpioConnectionDriverFactory");
             var gpioConnectionDriverFactory = new GpioConnectionDriverFactory(true);
 
-            this.logger.Verbose("Create Repositories");
+            // Create Startup Module
+            this.logger.Verbose("Create Startup module");
+            var startupModule = this.CreateStartupModule(gpioConnectionDriverFactory);
+            this.logger.Verbose("Initialize Startup module");
+            await startupModule.InitializeAsync();
 
             // Create required ApplicationServices-required system boundaries modules
+            this.logger.Verbose("Create Repositories");
             var repositoriesModule = this.CreateRepositoriesModule();
             this.logger.Verbose("Initialize Repositories Module");
             await repositoriesModule.InitializeAsync();
@@ -88,6 +87,12 @@ namespace Aupli
             // Create domain modules
             this.logger.Verbose("Create PlaylistModule");
             var playlistModule = new PlaylistModule(lastPlaylistModule.LastPlaylistChangeHandler);
+
+            this.logger.Verbose("Create Configuration repository");
+            var configurationRepository = this.CreateConfigurationRepository();
+            var configuration = await configurationRepository.GetConfigurationAsync().ConfigureAwait(false);
+
+            // Wait for services to be ready.
 
             // Create application required system boundaries modules
             this.logger.Verbose("Create ControlsModule");
@@ -116,21 +121,18 @@ namespace Aupli
                 new VolumeServiceLogger(this.logger));
 
             await volumeModule.InitializeAsync();
-            var (configurationRepository, configuration) = await configurationTask;
 
             // Create user interface modules
             this.logger.Verbose("Create UserInterface Module");
             var userInterfaceModule = new UserInterfaceModule(
-                gpioConnectionDriverFactory,
+                startupModule,
                 controlsModule,
                 playerModule,
                 volumeModule,
                 new ShutdownParameters(allowShutdown, shutdownCancellationTokenSource),
                 configuration,
-                configuration,
+                startupModule.LifecycleConfiguration,
                 new Reporters(
-                    new TextViewRendererLogger(this.logger),
-                    new InputManagerLogger(this.logger),
                     new InteractionControllerLogger(this.logger),
                     new SystemActivityAggregatorLogger(this.logger),
                     new IdleControllerLogger(this.logger),
@@ -144,15 +146,14 @@ namespace Aupli
                 controlsModule,
                 gpioConnectionDriverFactory,
                 new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
-                userInterfaceModule);
+                userInterfaceModule,
+                startupModule);
 
             this.logger.Verbose("Initialize Playlist Module");
             await playlistModule.InitializeAsync();
             this.logger.Verbose("Initialize UserInterface Module");
             await userInterfaceModule.InitializeAsync();
             await userInterfaceModule.ViewNavigator.NavigateToPlayerViewAsync();
-            this.logger.Verbose("Save config");
-            await configurationRepository.SaveConfigurationAsync();
         }
 
         /// <summary>
@@ -163,6 +164,23 @@ namespace Aupli
         {
             this.disposer.Dispose();
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Creates the startup module.
+        /// </summary>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
+        /// <returns>The startup module.</returns>
+        protected virtual IStartupModule CreateStartupModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        {
+            return new StartupModule(
+                gpioConnectionDriverFactory,
+                "name.val",
+                "pin26-feature.val",
+                "greetings.csv",
+                "last-greeting.val",
+                new TextViewRendererLogger(this.logger),
+                new InputManagerLogger(this.logger));
         }
 
         /// <summary>

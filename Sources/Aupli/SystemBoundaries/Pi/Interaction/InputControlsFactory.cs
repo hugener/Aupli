@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.Interaction
 {
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Pi.IO.Devices.Buttons;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;

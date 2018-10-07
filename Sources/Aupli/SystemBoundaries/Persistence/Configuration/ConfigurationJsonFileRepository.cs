@@ -21,7 +21,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
     {
         private readonly string configurationFilePath;
 
-        private readonly AsyncLazy<Api.Configuration> configuration;
+        private readonly AsyncLazy<Configuration> configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationJsonFileRepository"/> class.
@@ -30,11 +30,11 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         public ConfigurationJsonFileRepository(string configurationFilePath)
         {
             this.configurationFilePath = configurationFilePath;
-            this.configuration = new AsyncLazy<Api.Configuration>(
+            this.configuration = new AsyncLazy<Configuration>(
                 async () =>
                 {
                     var settings = await File.ReadAllTextAsync(configurationFilePath).ConfigureAwait(false);
-                    return JsonConvert.DeserializeObject<Api.Configuration>(settings);
+                    return JsonConvert.DeserializeObject<Configuration>(settings);
                 }, LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
@@ -42,18 +42,9 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
         /// Gets the settings asynchronous.
         /// </summary>
         /// <returns>A get lifecycle configuration task.</returns>
-        public async Task<Api.Configuration> GetConfigurationAsync()
+        public async Task<Configuration> GetConfigurationAsync()
         {
             return await this.configuration;
-        }
-
-        /// <summary>
-        /// Saves the setttings asynchronous.
-        /// </summary>
-        /// <returns>A save task.</returns>
-        public async Task SaveConfigurationAsync()
-        {
-            await File.WriteAllTextAsync(this.configurationFilePath, JsonConvert.SerializeObject(await this.configuration)).ConfigureAwait(false);
         }
     }
 }

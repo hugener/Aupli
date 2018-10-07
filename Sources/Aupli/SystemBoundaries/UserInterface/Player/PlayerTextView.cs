@@ -9,6 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.ApplicationServices.Volume.Api;
     using Sundew.Base.Text;
@@ -61,7 +62,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         /// </summary>
         /// <param name="invalidater">The invalidater.</param>
         /// <param name="characterContext">The character context.</param>
-        public async void OnShowing(IInvalidater invalidater, ICharacterContext characterContext)
+        public async Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
         {
             this.ResetPlayerState();
             PlayerCustomCharacters.SetCharacters(characterContext);
@@ -123,9 +124,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         }
 
         /// <inheritdoc />
-        public void OnClosing()
+        public Task OnClosingAsync()
         {
             this.playerStatusUpdater.StatusChanged -= this.OnPlayerStatusUpdaterStatusChanged;
+            return Task.CompletedTask;
         }
 
         private void OnPlayerStatusUpdaterStatusChanged(object sender, StatusEventArgs e)

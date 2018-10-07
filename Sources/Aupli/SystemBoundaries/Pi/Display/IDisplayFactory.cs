@@ -8,6 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.Display
 {
     using System;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using global::Pi.IO.GeneralPurpose;
 
     /// <summary>

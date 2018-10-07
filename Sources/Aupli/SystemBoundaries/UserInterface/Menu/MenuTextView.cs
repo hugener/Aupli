@@ -11,8 +11,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Aupli.SystemBoundaries.Shared.Interaction;
-    using Aupli.SystemBoundaries.Shared.System;
+    using System.Threading.Tasks;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Menu.Ari;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
@@ -48,10 +49,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         public IEnumerable<object> InputTargets => this.menuController.ToEnumerable();
 
         /// <inheritdoc />
-        public void OnShowing(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
         {
             this.invalidater = invalidater;
-            this.networkDevices = this.networkDeviceInfoProvider.GetNetworkDevices().Where(
+            this.networkDevices = this.networkDeviceInfoProvider.GetNetworkDeviceInfos().Where(
                 x => !Equals(x.IpAddress, IPAddress.Loopback)
                 && !Equals(x.IpAddress, IPAddress.None)
                 && !Equals(x.IpAddress, IPAddress.Any)).ToList();
@@ -59,6 +60,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
             this.timer.Tick += this.OnTimerTick;
             this.timer.Interval = TimeSpan.FromSeconds(1);
             this.timer.Start(TimeSpan.FromSeconds(1));
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
@@ -76,10 +78,11 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         }
 
         /// <inheritdoc />
-        public void OnClosing()
+        public Task OnClosingAsync()
         {
             this.timer.Tick -= this.OnTimerTick;
             this.timer.Stop();
+            return Task.CompletedTask;
         }
 
         private void OnTimerTick(object sender, EventArgs e)

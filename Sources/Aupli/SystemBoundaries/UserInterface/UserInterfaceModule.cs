@@ -10,10 +10,11 @@ namespace Aupli.SystemBoundaries.UserInterface
     using System;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
+    using Aupli.SystemBoundaries.Bridges.Lifecycle;
+    using Aupli.SystemBoundaries.Bridges.Timeouts;
     using Aupli.SystemBoundaries.Pi.Display;
     using Aupli.SystemBoundaries.Pi.Interaction;
-    using Aupli.SystemBoundaries.Shared.Lifecycle;
-    using Aupli.SystemBoundaries.Shared.Timeouts;
     using Aupli.SystemBoundaries.UserInterface.Api;
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using Aupli.SystemBoundaries.UserInterface.Input;
@@ -22,21 +23,18 @@ namespace Aupli.SystemBoundaries.UserInterface
     using Aupli.SystemBoundaries.UserInterface.Player;
     using Aupli.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Volume;
-    using global::Pi.IO.GeneralPurpose;
     using global::Pi.Timers;
     using Sundew.Base.Disposal;
     using Sundew.Base.Initialization;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Navigation;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// A module representing the user interface.
     /// </summary>
     public class UserInterfaceModule : IInitializable, IDisposable
     {
-        private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
-        private readonly ControlsModule controlsModule;
+        private readonly IUserInterfaceBridge userInterfaceBridge;
+        private readonly IControlsModule controlsModule;
         private readonly PlayerModule playerModule;
         private readonly VolumeModule volumeModule;
         private readonly IShutdownParameters shutdownParameters;
@@ -52,7 +50,7 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterfaceModule" /> class.
         /// </summary>
-        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
+        /// <param name="userInterfaceBridge">The user interface framework.</param>
         /// <param name="controlsModule">The controls module.</param>
         /// <param name="playerModule">The player module.</param>
         /// <param name="volumeModule">The volume module.</param>
@@ -61,8 +59,8 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <param name="lifecycleConfiguration">The lifecycle configuration.</param>
         /// <param name="reporters">The reporters.</param>
         public UserInterfaceModule(
-            IGpioConnectionDriverFactory gpioConnectionDriverFactory,
-            ControlsModule controlsModule,
+            IUserInterfaceBridge userInterfaceBridge,
+            IControlsModule controlsModule,
             PlayerModule playerModule,
             VolumeModule volumeModule,
             IShutdownParameters shutdownParameters,
@@ -70,7 +68,7 @@ namespace Aupli.SystemBoundaries.UserInterface
             ILifecycleConfiguration lifecycleConfiguration,
             Reporters reporters = null)
         {
-            this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
+            this.userInterfaceBridge = userInterfaceBridge;
             this.controlsModule = controlsModule;
             this.playerModule = playerModule;
             this.volumeModule = volumeModule;
@@ -94,23 +92,9 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <returns>An async task.</returns>
         public async Task InitializeAsync()
         {
-            // Create display
-            var displayFactory = this.CreateDisplayFactory();
-            var display = displayFactory.Create(this.gpioConnectionDriverFactory, this.lifecycleConfiguration.Pin26Feature == Pin26Feature.Backlight);
-
-            // Create Text Rendering
-            var textViewRendererFactory = new TextViewRendererFactory(display, this.reporters?.TextViewRendererReporter);
-            var textViewRenderer = textViewRendererFactory.Create();
-
-            // Show welcome/loading message
-            var inputManager = new InputManager(this.reporters?.InputManagerReporter);
-            var textViewNavigator = new TextViewNavigator(textViewRenderer, inputManager);
-
-            textViewRenderer.Start();
-
             // Create user interface
             var interactionController =
-                new InteractionController(this.controlsModule.InputControls, inputManager, this.reporters?.InteractionControllerReporter);
+                new InteractionController(this.controlsModule.InputControls, this.userInterfaceBridge.InputManager, this.reporters?.InteractionControllerReporter);
 
             this.idleController = new IdleController(
                 interactionController,
@@ -121,7 +105,7 @@ namespace Aupli.SystemBoundaries.UserInterface
 
             this.volumeController = new VolumeController(this.volumeModule.VolumeService, interactionController, this.reporters?.VolumeControllerReporter);
 
-            var menuController = new MenuController(interactionController, textViewNavigator);
+            var menuController = new MenuController(interactionController, this.userInterfaceBridge.TextViewNavigator);
 
             this.shutdownController = new ShutdownController(
                 this.idleController, this.controlsModule.SystemControl, this.shutdownParameters.AllowShutdown, this.shutdownParameters.ShutdownCancellationTokenSource, this.reporters?.ShutdownControllerReporter);
@@ -138,13 +122,13 @@ namespace Aupli.SystemBoundaries.UserInterface
                 this.volumeModule.VolumeService,
                 menuRequester,
                 this.shutdownController,
-                textViewNavigator,
+                this.userInterfaceBridge.TextViewNavigator,
                 new ViewFactory(this.controlsModule.MusicPlayer, this.playerController, this.volumeController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
                 new TimerFactory(),
                 this.reporters?.ViewNavigatorReporter);
 
-            new DisplayStateController(this.idleController, display, this.reporters?.DisplayStateControllerReporter);
-            this.disposer = new Disposer(this.idleController, this.ViewNavigator, textViewRenderer, displayFactory);
+            new DisplayStateController(this.idleController, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
+            this.disposer = new Disposer(this.idleController, this.ViewNavigator);
             this.idleController.Start();
             await Task.CompletedTask;
         }
@@ -155,15 +139,6 @@ namespace Aupli.SystemBoundaries.UserInterface
         void IDisposable.Dispose()
         {
             this.disposer.Dispose();
-        }
-
-        /// <summary>
-        /// Creates the display factory.
-        /// </summary>
-        /// <returns>A Display Factory.</returns>
-        protected virtual IDisplayFactory CreateDisplayFactory()
-        {
-            return new DisplayFactory();
         }
     }
 }

@@ -12,11 +12,16 @@ namespace Aupli.SystemBoundaries
     using System.Net;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Ari;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
+    using Aupli.SystemBoundaries.Bridges.MusicControl;
+    using Aupli.SystemBoundaries.Bridges.Shutdown;
     using Aupli.SystemBoundaries.Mpc;
+    using Aupli.SystemBoundaries.Mpc.Ari;
     using Aupli.SystemBoundaries.Pi.Amplifier;
+    using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using Aupli.SystemBoundaries.Pi.Interaction;
     using Aupli.SystemBoundaries.Pi.SystemControl;
-    using Aupli.SystemBoundaries.Shared.System;
+    using Aupli.SystemBoundaries.UserInterface.Ari;
     using global::MpcNET;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
@@ -25,10 +30,10 @@ namespace Aupli.SystemBoundaries
     /// <summary>
     /// The user interface module.
     /// </summary>
-    public class ControlsModule : IInitializable, IDisposable
+    public class ControlsModule : IControlsModule, IInitializable, IDisposable
     {
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
-        private readonly Ari.IMusicPlayerReporter musicPlayerReporter;
+        private readonly IMusicPlayerReporter musicPlayerReporter;
         private readonly IAmplifierReporter amplifierReporter;
         private Disposer disposer;
 
@@ -38,7 +43,7 @@ namespace Aupli.SystemBoundaries
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver.</param>
         /// <param name="musicPlayerReporter">The music player reporter.</param>
         /// <param name="amplifierReporter">The amplifier reporter.</param>
-        public ControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory, Ari.IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
+        public ControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory, IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
         {
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.musicPlayerReporter = musicPlayerReporter;

@@ -7,11 +7,10 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Ari
 {
-    using Aupli.SystemBoundaries.UserInterface.Internal;
     using Sundew.Base.Reporting;
 
     /// <summary>
-    /// Reports from the <see cref="ViewNavigator"/>.
+    /// Reports from the <see cref="Aupli.SystemBoundaries.UserInterface.Internal.ViewNavigator"/>.
     /// </summary>
     public interface IViewNavigatorReporter : IReporter
     {

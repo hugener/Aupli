@@ -24,8 +24,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         /// <summary>
         /// Initializes a new instance of the <see cref="Reporters" /> class.
         /// </summary>
-        /// <param name="textViewRendererReporter">The text view renderer reporter.</param>
-        /// <param name="inputManagerReporter">The input manager reporter.</param>
         /// <param name="interactionControllerReporter">The interaction controller reporter.</param>
         /// <param name="systemActivityAggregatorReporter">The system activity aggregator reporter.</param>
         /// <param name="idleControllerReporter">The idle controller reporter.</param>
@@ -35,8 +33,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         /// <param name="viewNavigatorReporter">The view navigator reporter.</param>
         /// <param name="displayStateControllerReporter">The display backlight controller reporter.</param>
         public Reporters(
-            ITextViewRendererReporter textViewRendererReporter,
-            IInputManagerReporter inputManagerReporter,
             IInteractionControllerReporter interactionControllerReporter,
             ISystemActivityAggregatorReporter systemActivityAggregatorReporter,
             IIdleControllerReporter idleControllerReporter,
@@ -46,8 +42,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
             IViewNavigatorReporter viewNavigatorReporter,
             IDisplayStateControllerReporter displayStateControllerReporter)
         {
-            this.TextViewRendererReporter = textViewRendererReporter;
-            this.InputManagerReporter = inputManagerReporter;
             this.InteractionControllerReporter = interactionControllerReporter;
             this.SystemActivityAggregatorReporter = systemActivityAggregatorReporter;
             this.IdleControllerReporter = idleControllerReporter;
@@ -57,22 +51,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
             this.ViewNavigatorReporter = viewNavigatorReporter;
             this.DisplayStateControllerReporter = displayStateControllerReporter;
         }
-
-        /// <summary>
-        /// Gets the text view renderer reporter.
-        /// </summary>
-        /// <value>
-        /// The text view renderer reporter.
-        /// </value>
-        public ITextViewRendererReporter TextViewRendererReporter { get; }
-
-        /// <summary>
-        /// Gets the input manager reporter.
-        /// </summary>
-        /// <value>
-        /// The input manager reporter.
-        /// </value>
-        public IInputManagerReporter InputManagerReporter { get; }
 
         /// <summary>
         /// Gets the interaction controller reporter.

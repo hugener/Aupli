@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.UserInterface.Volume
 {
     using Aupli.ApplicationServices.Volume.Api;
-    using Aupli.SystemBoundaries.Shared.Interaction;
+    using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
 
     /// <summary>
