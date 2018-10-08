@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Interaction
+namespace Aupli.SystemBoundaries.Pi.Input
 {
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using global::Pi.IO.GeneralPurpose;

@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Display
+namespace Aupli.SystemBoundaries.Pi.Display.Api
 {
     using System;
     using Aupli.SystemBoundaries.Bridges.Interaction;

@@ -5,10 +5,9 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.UserInterface.Ari
+namespace Aupli.SystemBoundaries.Bridges.Controls
 {
     using Aupli.SystemBoundaries.Bridges.Interaction;
-    using Aupli.SystemBoundaries.Bridges.MusicControl;
     using Aupli.SystemBoundaries.Bridges.Shutdown;
 
     /// <summary>
@@ -16,14 +15,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
     /// </summary>
     public interface IControlsModule
     {
-        /// <summary>
-        /// Gets the music player.
-        /// </summary>
-        /// <value>
-        /// The music player.
-        /// </value>
-        IMusicPlayer MusicPlayer { get; }
-
         /// <summary>
         /// Gets the system control.
         /// </summary>

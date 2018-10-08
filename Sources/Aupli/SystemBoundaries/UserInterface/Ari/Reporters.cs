@@ -8,13 +8,13 @@
 namespace Aupli.SystemBoundaries.UserInterface.Ari
 {
     using Aupli.SystemBoundaries.Pi.Display;
-    using Aupli.SystemBoundaries.Pi.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Display.Ari;
+    using Aupli.SystemBoundaries.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Input.Ari;
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
     using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
     using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// Contains reporters for the user interface module.

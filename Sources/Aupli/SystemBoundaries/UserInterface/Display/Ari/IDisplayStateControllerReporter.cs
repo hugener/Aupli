@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Display
+namespace Aupli.SystemBoundaries.UserInterface.Display.Ari
 {
     using Sundew.Base.Reporting;
 

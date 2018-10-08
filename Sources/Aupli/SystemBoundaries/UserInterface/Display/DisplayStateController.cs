@@ -5,10 +5,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Display
+namespace Aupli.SystemBoundaries.UserInterface.Display
 {
     using System;
     using Aupli.SystemBoundaries.Bridges.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Display.Ari;
     using Sundew.Pi.ApplicationFramework.Input;
 
     /// <summary>

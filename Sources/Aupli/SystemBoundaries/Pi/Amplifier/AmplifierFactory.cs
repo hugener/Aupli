@@ -8,6 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.Amplifier
 {
     using Aupli.ApplicationServices.Volume.Ari;
+    using Aupli.SystemBoundaries.Pi.Amplifier.Api;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;

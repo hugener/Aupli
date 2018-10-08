@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Mpc.Ari
+namespace Aupli.SystemBoundaries.MusicControl.Ari
 {
     using System;
     using MpcNET;

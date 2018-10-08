@@ -8,6 +8,7 @@
 namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Display
 {
     using Aupli.SystemBoundaries.Pi.Display;
+    using Aupli.SystemBoundaries.UserInterface.Display.Ari;
     using global::Serilog;
     using Sundew.Base;
 

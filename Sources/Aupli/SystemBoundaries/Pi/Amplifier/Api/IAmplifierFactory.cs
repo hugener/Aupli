@@ -5,14 +5,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Amplifier
+namespace Aupli.SystemBoundaries.Pi.Amplifier.Api
 {
     using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using Sundew.Base.Disposal;
 
     /// <summary>
-    /// Interface for implementing an amplifer factory.
+    /// Interface for implementing an amplifier factory.
     /// </summary>
     /// <seealso cref="IAssociatedDisposer{IAmplifier}" />
     public interface IAmplifierFactory : IAssociatedDisposer<IAmplifier>

@@ -8,6 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.SystemControl
 {
     using Aupli.SystemBoundaries.Bridges.Shutdown;
+    using Aupli.SystemBoundaries.Pi.SystemControl.Api;
     using Aupli.SystemBoundaries.Pi.SystemControl.Linux;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;

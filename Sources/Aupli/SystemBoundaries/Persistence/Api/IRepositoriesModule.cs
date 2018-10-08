@@ -10,6 +10,7 @@ namespace Aupli.SystemBoundaries.Persistence.Api
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.ApplicationServices.Playlist.Ari;
     using Aupli.ApplicationServices.Volume.Ari;
+    using Aupli.SystemBoundaries.Persistence.Configuration.Api;
     using Sundew.Base.Initialization;
 
     /// <summary>
@@ -41,5 +42,13 @@ namespace Aupli.SystemBoundaries.Persistence.Api
         /// The last playlist repository.
         /// </value>
         ILastPlaylistRepository LastPlaylistRepository { get; }
+
+        /// <summary>
+        /// Gets the configuration repository.
+        /// </summary>
+        /// <value>
+        /// The configuration repository.
+        /// </value>
+        IConfigurationRepository ConfigurationRepository { get; }
     }
 }

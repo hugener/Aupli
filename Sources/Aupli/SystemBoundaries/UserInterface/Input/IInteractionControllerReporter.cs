@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.Interaction
+namespace Aupli.SystemBoundaries.UserInterface.Input
 {
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Sundew.Base.Reporting;

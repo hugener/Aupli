@@ -5,24 +5,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries
+namespace Aupli.SystemBoundaries.Pi
 {
     using System;
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Ari;
+    using Aupli.SystemBoundaries.Bridges.Controls;
     using Aupli.SystemBoundaries.Bridges.Interaction;
-    using Aupli.SystemBoundaries.Bridges.MusicControl;
     using Aupli.SystemBoundaries.Bridges.Shutdown;
-    using Aupli.SystemBoundaries.Mpc;
-    using Aupli.SystemBoundaries.Mpc.Ari;
     using Aupli.SystemBoundaries.Pi.Amplifier;
+    using Aupli.SystemBoundaries.Pi.Amplifier.Api;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
-    using Aupli.SystemBoundaries.Pi.Interaction;
+    using Aupli.SystemBoundaries.Pi.Input;
     using Aupli.SystemBoundaries.Pi.SystemControl;
-    using Aupli.SystemBoundaries.UserInterface.Ari;
-    using global::MpcNET;
+    using Aupli.SystemBoundaries.Pi.SystemControl.Api;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
     using Sundew.Base.Initialization;
@@ -33,7 +30,6 @@ namespace Aupli.SystemBoundaries
     public class ControlsModule : IControlsModule, IInitializable, IDisposable
     {
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
-        private readonly IMusicPlayerReporter musicPlayerReporter;
         private readonly IAmplifierReporter amplifierReporter;
         private Disposer disposer;
 
@@ -41,22 +37,14 @@ namespace Aupli.SystemBoundaries
         /// Initializes a new instance of the <see cref="ControlsModule" /> class.
         /// </summary>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver.</param>
-        /// <param name="musicPlayerReporter">The music player reporter.</param>
         /// <param name="amplifierReporter">The amplifier reporter.</param>
-        public ControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory, IMusicPlayerReporter musicPlayerReporter, IAmplifierReporter amplifierReporter)
+        public ControlsModule(
+            IGpioConnectionDriverFactory gpioConnectionDriverFactory,
+            IAmplifierReporter amplifierReporter)
         {
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
-            this.musicPlayerReporter = musicPlayerReporter;
             this.amplifierReporter = amplifierReporter;
         }
-
-        /// <summary>
-        /// Gets the music player.
-        /// </summary>
-        /// <value>
-        /// The music player.
-        /// </value>
-        public IMusicPlayer MusicPlayer { get; private set; }
 
         /// <summary>
         /// Gets the amplifier.
@@ -98,8 +86,6 @@ namespace Aupli.SystemBoundaries
             this.Amplifier = amplifierFactory.Create(this.amplifierReporter);
 
             // Create external services
-            var mpcConnection = this.CreateMpcConnection(this.musicPlayerReporter);
-            this.MusicPlayer = new MusicPlayer(mpcConnection, this.musicPlayerReporter);
             this.disposer = new Disposer(
                 systemControlFactory,
                 amplifierFactory,
@@ -114,9 +100,8 @@ namespace Aupli.SystemBoundaries
                         this.InputControls.NextButton.PinConfiguration,
                         this.InputControls.PreviousButton.PinConfiguration,
                         this.InputControls.MenuButton.PinConfiguration,
-                    }.Where(x => x != null)),
-                mpcConnection,
-                this.MusicPlayer);
+                    }.Where(x => x != null)));
+
             return Task.CompletedTask;
         }
 
@@ -157,16 +142,6 @@ namespace Aupli.SystemBoundaries
         protected virtual IAmplifierFactory CreateAmplifierFactory()
         {
             return new AmplifierFactory();
-        }
-
-        /// <summary>
-        /// Creates the MPC connection.
-        /// </summary>
-        /// <param name="mpcConnectionReporter">The music player logger.</param>
-        /// <returns>A mpc connection.</returns>
-        protected virtual IMpcConnection CreateMpcConnection(IMpcConnectionReporter mpcConnectionReporter)
-        {
-            return new MpcConnection(new IPEndPoint(IPAddress.Loopback, 6600), mpcConnectionReporter);
         }
     }
 }

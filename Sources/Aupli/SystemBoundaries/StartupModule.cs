@@ -14,6 +14,9 @@ namespace Aupli.SystemBoundaries
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
     using Aupli.SystemBoundaries.Persistence.Startup;
     using Aupli.SystemBoundaries.Pi.Display;
+    using Aupli.SystemBoundaries.SystemServices;
+    using Aupli.SystemBoundaries.SystemServices.Api;
+    using Aupli.SystemBoundaries.SystemServices.Unix;
     using Aupli.SystemBoundaries.UserInterface.Startup;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
@@ -36,6 +39,7 @@ namespace Aupli.SystemBoundaries
         private readonly IInputManagerReporter inputManagerReporter;
         private ITextViewRenderer textViewRenderer;
         private Disposer disposer;
+        private ISystemServicesAwaiter systemServicesAwaiter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupModule" /> class.
@@ -120,7 +124,17 @@ namespace Aupli.SystemBoundaries
 
             await this.TextViewNavigator.ShowAsync(new StartupTextView(greetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
             this.textViewRenderer.Start();
+
+            this.systemServicesAwaiter = this.CreateServicesAwaiter();
             this.disposer = new Disposer(this.textViewRenderer, displayFactory);
+        }
+
+        /// <summary>
+        /// Waits for dependencies.
+        /// </summary>
+        public Task<bool> WaitForSystemServicesAsync()
+        {
+            return this.systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, TimeSpan.FromMinutes(1));
         }
 
         /// <summary>
@@ -159,6 +173,15 @@ namespace Aupli.SystemBoundaries
             var nameTextFileRepository = new NameTextFileRepository(this.namePath);
             var pin26FeatureTextFileRepository = new Pin26FeatureTextFileRepository(this.pin26FeaturePath);
             return new PrivateLifecycleConfiguration(await nameTextFileRepository.GetNameAsync(), await pin26FeatureTextFileRepository.GetPin26FeatureAsync());
+        }
+
+        /// <summary>
+        /// Creates the services awaiter.
+        /// </summary>
+        /// <returns>A <see cref="UnixSystemServiceStateChecker"/>.</returns>
+        protected virtual ISystemServicesAwaiter CreateServicesAwaiter()
+        {
+            return new SystemServicesAwaiter();
         }
 
         private class PrivateLifecycleConfiguration : ILifecycleConfiguration

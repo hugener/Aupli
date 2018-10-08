@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Mpc
+namespace Aupli.SystemBoundaries.MusicControl
 {
     using System;
     using System.Threading;
@@ -13,7 +13,7 @@ namespace Aupli.SystemBoundaries.Mpc
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Bridges.MusicControl;
-    using Aupli.SystemBoundaries.Mpc.Ari;
+    using Aupli.SystemBoundaries.MusicControl.Ari;
     using MpcNET;
     using MpcNET.Commands.Database;
     using MpcNET.Commands.Playback;

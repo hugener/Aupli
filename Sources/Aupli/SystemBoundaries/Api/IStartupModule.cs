@@ -8,6 +8,7 @@
 namespace Aupli.SystemBoundaries.Api
 {
     using System;
+    using System.Threading.Tasks;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
     using Sundew.Base.Initialization;
@@ -27,5 +28,11 @@ namespace Aupli.SystemBoundaries.Api
         /// The lifecycle configuration.
         /// </value>
         ILifecycleConfiguration LifecycleConfiguration { get; }
+
+        /// <summary>
+        /// Waits for dependencies.
+        /// </summary>
+        /// <returns>An async task that specifies whether system services has been started.</returns>
+        Task<bool> WaitForSystemServicesAsync();
     }
 }

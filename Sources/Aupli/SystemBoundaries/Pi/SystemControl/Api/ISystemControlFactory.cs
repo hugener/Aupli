@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.SystemBoundaries.Pi.SystemControl
+namespace Aupli.SystemBoundaries.Pi.SystemControl.Api
 {
     using System;
     using Aupli.SystemBoundaries.Bridges.Shutdown;

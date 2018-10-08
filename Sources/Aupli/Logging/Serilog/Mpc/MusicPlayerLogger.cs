@@ -9,7 +9,7 @@ namespace Aupli.Logging.Serilog.Mpc
 {
     using System;
     using System.Threading;
-    using Aupli.SystemBoundaries.Mpc.Ari;
+    using Aupli.SystemBoundaries.MusicControl.Ari;
     using global::Serilog;
     using global::Serilog.Events;
     using MpcNET;

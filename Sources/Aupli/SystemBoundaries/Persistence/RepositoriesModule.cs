@@ -12,6 +12,8 @@ namespace Aupli.SystemBoundaries.Persistence
     using Aupli.ApplicationServices.Playlist.Ari;
     using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Persistence.Api;
+    using Aupli.SystemBoundaries.Persistence.Configuration;
+    using Aupli.SystemBoundaries.Persistence.Configuration.Api;
     using Aupli.SystemBoundaries.Persistence.Playlists;
     using Aupli.SystemBoundaries.Persistence.Volume;
 
@@ -26,15 +28,26 @@ namespace Aupli.SystemBoundaries.Persistence
         /// <param name="volumeRepositoryPath">The volume repository path.</param>
         /// <param name="playlistRepositoryPath">The playlist repository path.</param>
         /// <param name="lastPlaylistRepositoryPath">The last playlist repository path.</param>
+        /// <param name="configurationPath">The configuration path.</param>
         public RepositoriesModule(
             string volumeRepositoryPath,
             string playlistRepositoryPath,
-            string lastPlaylistRepositoryPath)
+            string lastPlaylistRepositoryPath,
+            string configurationPath)
         {
             this.VolumeRepository = new VolumeJsonFileRepository(volumeRepositoryPath);
             this.PlaylistRepository = new PlaylistMapJsonFileRepository(playlistRepositoryPath);
             this.LastPlaylistRepository = new LastPlaylistJsonFileRepository(lastPlaylistRepositoryPath);
+            this.ConfigurationRepository = new ConfigurationJsonFileRepository(configurationPath);
         }
+
+        /// <summary>
+        /// Gets the configuration repository.
+        /// </summary>
+        /// <value>
+        /// The configuration repository.
+        /// </value>
+        public IConfigurationRepository ConfigurationRepository { get; }
 
         /// <summary>
         /// Gets the volume repository.

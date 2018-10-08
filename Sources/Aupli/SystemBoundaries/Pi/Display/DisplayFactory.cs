@@ -8,6 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.Display
 {
     using Aupli.SystemBoundaries.Bridges.Interaction;
+    using Aupli.SystemBoundaries.Pi.Display.Api;
     using global::Pi.IO.Devices.Displays.Hd44780;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;

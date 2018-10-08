@@ -10,13 +10,14 @@ namespace Aupli.SystemBoundaries.UserInterface
     using System;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices;
+    using Aupli.SystemBoundaries.Bridges.Controls;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
+    using Aupli.SystemBoundaries.Bridges.MusicControl;
     using Aupli.SystemBoundaries.Bridges.Timeouts;
-    using Aupli.SystemBoundaries.Pi.Display;
-    using Aupli.SystemBoundaries.Pi.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Api;
     using Aupli.SystemBoundaries.UserInterface.Ari;
+    using Aupli.SystemBoundaries.UserInterface.Display;
     using Aupli.SystemBoundaries.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Internal;
     using Aupli.SystemBoundaries.UserInterface.Menu;
@@ -24,7 +25,6 @@ namespace Aupli.SystemBoundaries.UserInterface
     using Aupli.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Volume;
     using global::Pi.Timers;
-    using Sundew.Base.Disposal;
     using Sundew.Base.Initialization;
     using Sundew.Pi.ApplicationFramework.Input;
 
@@ -35,14 +35,13 @@ namespace Aupli.SystemBoundaries.UserInterface
     {
         private readonly IUserInterfaceBridge userInterfaceBridge;
         private readonly IControlsModule controlsModule;
+        private readonly IMusicPlayer musicPlayer;
         private readonly PlayerModule playerModule;
         private readonly VolumeModule volumeModule;
         private readonly IShutdownParameters shutdownParameters;
-        private readonly ITimeoutConfiguration timeoutConfiguration;
         private readonly ILifecycleConfiguration lifecycleConfiguration;
+        private readonly ITimeoutConfiguration timeoutConfiguration;
         private readonly Reporters reporters;
-        private IdleController idleController;
-        private Disposer disposer;
         private VolumeController volumeController;
         private ShutdownController shutdownController;
         private PlayerController playerController;
@@ -52,29 +51,32 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// </summary>
         /// <param name="userInterfaceBridge">The user interface framework.</param>
         /// <param name="controlsModule">The controls module.</param>
+        /// <param name="musicPlayer">The music player.</param>
         /// <param name="playerModule">The player module.</param>
         /// <param name="volumeModule">The volume module.</param>
         /// <param name="shutdownParameters">The shutdown parameters.</param>
-        /// <param name="timeoutConfiguration">The timeout configuration.</param>
         /// <param name="lifecycleConfiguration">The lifecycle configuration.</param>
+        /// <param name="timeoutConfiguration">The timeout configuration.</param>
         /// <param name="reporters">The reporters.</param>
         public UserInterfaceModule(
             IUserInterfaceBridge userInterfaceBridge,
             IControlsModule controlsModule,
+            IMusicPlayer musicPlayer,
             PlayerModule playerModule,
             VolumeModule volumeModule,
             IShutdownParameters shutdownParameters,
-            ITimeoutConfiguration timeoutConfiguration,
             ILifecycleConfiguration lifecycleConfiguration,
+            ITimeoutConfiguration timeoutConfiguration,
             Reporters reporters = null)
         {
             this.userInterfaceBridge = userInterfaceBridge;
             this.controlsModule = controlsModule;
+            this.musicPlayer = musicPlayer;
             this.playerModule = playerModule;
             this.volumeModule = volumeModule;
             this.shutdownParameters = shutdownParameters;
-            this.timeoutConfiguration = timeoutConfiguration;
             this.lifecycleConfiguration = lifecycleConfiguration;
+            this.timeoutConfiguration = timeoutConfiguration;
             this.reporters = reporters;
         }
 
@@ -92,13 +94,11 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <returns>An async task.</returns>
         public async Task InitializeAsync()
         {
-            // Create user interface
             var interactionController =
                 new InteractionController(this.controlsModule.InputControls, this.userInterfaceBridge.InputManager, this.reporters?.InteractionControllerReporter);
-
-            this.idleController = new IdleController(
+            var idleController = new IdleController(
                 interactionController,
-                new SystemActivityAggregator(this.controlsModule.MusicPlayer, this.reporters?.SystemActivityAggregatorReporter),
+                new SystemActivityAggregator(this.musicPlayer, this.reporters?.SystemActivityAggregatorReporter),
                 this.timeoutConfiguration.IdleTimeout,
                 this.timeoutConfiguration.SystemTimeout,
                 this.reporters?.IdleControllerReporter);
@@ -108,13 +108,13 @@ namespace Aupli.SystemBoundaries.UserInterface
             var menuController = new MenuController(interactionController, this.userInterfaceBridge.TextViewNavigator);
 
             this.shutdownController = new ShutdownController(
-                this.idleController, this.controlsModule.SystemControl, this.shutdownParameters.AllowShutdown, this.shutdownParameters.ShutdownCancellationTokenSource, this.reporters?.ShutdownControllerReporter);
+                idleController, this.controlsModule.SystemControl, this.shutdownParameters.AllowShutdown, this.shutdownParameters.ShutdownCancellationTokenSource, this.reporters?.ShutdownControllerReporter);
 
             var menuRequester = new MenuRequester();
             this.playerController = new PlayerController(
                 interactionController,
                 this.playerModule.PlayerService,
-                this.controlsModule.MusicPlayer,
+                this.musicPlayer,
                 menuRequester,
                 this.reporters?.PlayerControllerReporter);
 
@@ -123,13 +123,13 @@ namespace Aupli.SystemBoundaries.UserInterface
                 menuRequester,
                 this.shutdownController,
                 this.userInterfaceBridge.TextViewNavigator,
-                new ViewFactory(this.controlsModule.MusicPlayer, this.playerController, this.volumeController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
+                new ViewFactory(this.musicPlayer, this.playerController, this.volumeController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
                 new TimerFactory(),
                 this.reporters?.ViewNavigatorReporter);
 
-            new DisplayStateController(this.idleController, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
-            this.disposer = new Disposer(this.idleController, this.ViewNavigator);
-            this.idleController.Start();
+            new DisplayStateController(idleController, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
+
+            idleController.Start();
             await Task.CompletedTask;
         }
 
@@ -138,7 +138,7 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// </summary>
         void IDisposable.Dispose()
         {
-            this.disposer.Dispose();
+            this.ViewNavigator.Dispose();
         }
     }
 }

@@ -26,10 +26,10 @@ namespace Aupli
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume;
     using Aupli.SystemBoundaries;
     using Aupli.SystemBoundaries.Api;
+    using Aupli.SystemBoundaries.MusicControl;
     using Aupli.SystemBoundaries.Persistence;
     using Aupli.SystemBoundaries.Persistence.Api;
-    using Aupli.SystemBoundaries.Persistence.Configuration;
-    using Aupli.SystemBoundaries.Persistence.Configuration.Api;
+    using Aupli.SystemBoundaries.Pi;
     using Aupli.SystemBoundaries.UserInterface;
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using Pi.IO.GeneralPurpose;
@@ -88,50 +88,51 @@ namespace Aupli
             this.logger.Verbose("Create PlaylistModule");
             var playlistModule = new PlaylistModule(lastPlaylistModule.LastPlaylistChangeHandler);
 
-            this.logger.Verbose("Create Configuration repository");
-            var configurationRepository = this.CreateConfigurationRepository();
-            var configuration = await configurationRepository.GetConfigurationAsync().ConfigureAwait(false);
-
             // Wait for services to be ready.
+            await startupModule.WaitForSystemServicesAsync();
 
             // Create application required system boundaries modules
             this.logger.Verbose("Create ControlsModule");
             var controlsModule = new ControlsModule(
                 gpioConnectionDriverFactory,
-                new MusicPlayerLogger(this.logger),
                 new AmplifierLogger(this.logger, LogEventLevel.Debug));
-            await controlsModule.InitializeAsync();
+            await controlsModule.InitializeAsync().ConfigureAwait(false);
+
+            // Create music control module.
+            var musicControlModule = new MusicControlModule(new MusicPlayerLogger(this.logger));
+            await musicControlModule.InitializeAsync();
 
             // Create application modules
             this.logger.Verbose("Create PlayerModule");
             var playerModule = new PlayerModule(
                 repositoriesModule.PlaylistRepository,
                 playlistModule.LastPlaylistService,
-                controlsModule.MusicPlayer,
+                musicControlModule.MusicPlayer,
                 new PlayerServiceLogger(this.logger));
 
             this.logger.Verbose("Create Volume Module");
             var volumeModule = new VolumeModule(
                 repositoriesModule.VolumeRepository,
                 new Percentage(0.05),
-                controlsModule.MusicPlayer,
-                controlsModule.MusicPlayer,
+                musicControlModule.MusicPlayer,
+                musicControlModule.MusicPlayer,
                 controlsModule.Amplifier,
-                controlsModule.MusicPlayer,
+                musicControlModule.MusicPlayer,
                 new VolumeServiceLogger(this.logger));
 
-            await volumeModule.InitializeAsync();
+            await volumeModule.InitializeAsync().ConfigureAwait(false);
 
             // Create user interface modules
             this.logger.Verbose("Create UserInterface Module");
             var userInterfaceModule = new UserInterfaceModule(
                 startupModule,
                 controlsModule,
+                musicControlModule.MusicPlayer,
                 playerModule,
                 volumeModule,
                 new ShutdownParameters(allowShutdown, shutdownCancellationTokenSource),
-                configuration,
                 startupModule.LifecycleConfiguration,
+                await repositoriesModule.ConfigurationRepository.GetConfigurationAsync(),
                 new Reporters(
                     new InteractionControllerLogger(this.logger),
                     new SystemActivityAggregatorLogger(this.logger),
@@ -147,12 +148,13 @@ namespace Aupli
                 gpioConnectionDriverFactory,
                 new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
                 userInterfaceModule,
+                musicControlModule,
                 startupModule);
 
             this.logger.Verbose("Initialize Playlist Module");
-            await playlistModule.InitializeAsync();
+            await playlistModule.InitializeAsync().ConfigureAwait(false);
             this.logger.Verbose("Initialize UserInterface Module");
-            await userInterfaceModule.InitializeAsync();
+            await userInterfaceModule.InitializeAsync().ConfigureAwait(false);
             await userInterfaceModule.ViewNavigator.NavigateToPlayerViewAsync();
         }
 
@@ -184,21 +186,12 @@ namespace Aupli
         }
 
         /// <summary>
-        /// Creates the configuration repository.
-        /// </summary>
-        /// <returns>The configuration repository.</returns>
-        protected virtual IConfigurationRepository CreateConfigurationRepository()
-        {
-            return new ConfigurationJsonFileRepository("configuration.json");
-        }
-
-        /// <summary>
         /// Gets the repositories.
         /// </summary>
         /// <returns>The repositories.</returns>
         protected virtual IRepositoriesModule CreateRepositoriesModule()
         {
-            return new RepositoriesModule("volume.json", "playlists.json", "last-playlist.json");
+            return new RepositoriesModule("volume.json", "playlists.json", "last-playlist.json", "configuration.json");
         }
     }
 }

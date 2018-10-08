@@ -1,8 +1,8 @@
 #/lib/systemd/system
 [Unit]
  Description=Aupli
- After=mpd.service lircd.service
-
+ DefaultDependencies=no
+ 
 [Service]
  Type=idle
  WorkingDirectory=/home/pi/Aupli
@@ -10,4 +10,4 @@
  Restart=on-failure
 
 [Install]
- WantedBy=multi-user.target
+ WantedBy=sysinit.target
