@@ -12,7 +12,7 @@ namespace Aupli.ApplicationServices.Volume.Api
     /// <summary>
     /// Provides the status of the volume.
     /// </summary>
-    public interface IVolumeStatus
+    public interface IVolumeStatus : IVolumeChangeNotifier
     {
         /// <summary>
         /// Gets the volume.

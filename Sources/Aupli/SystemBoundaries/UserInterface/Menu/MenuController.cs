@@ -17,14 +17,14 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     public class MenuController
     {
         private readonly IInteractionController interactionController;
-        private readonly TextViewNavigator textViewNavigator;
+        private readonly ITextViewNavigator textViewNavigator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuController" /> class.
         /// </summary>
         /// <param name="interactionController">The interaction controller.</param>
         /// <param name="textViewNavigator">The text view navigator.</param>
-        public MenuController(IInteractionController interactionController, TextViewNavigator textViewNavigator)
+        public MenuController(IInteractionController interactionController, ITextViewNavigator textViewNavigator)
         {
             this.interactionController = interactionController;
             this.textViewNavigator = textViewNavigator;

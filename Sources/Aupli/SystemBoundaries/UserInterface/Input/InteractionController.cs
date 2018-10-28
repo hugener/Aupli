@@ -9,6 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
 {
     using System;
     using Aupli.SystemBoundaries.Bridges.Interaction;
+    using Aupli.SystemBoundaries.UserInterface.Input.Ari;
     using Sundew.Pi.ApplicationFramework.Input;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
     using Sundew.Pi.IO.Devices.RfidTransceivers;
@@ -17,11 +18,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
     /// <summary>
     /// Maps hardware inputs to application input.
     /// </summary>
-    /// <seealso cref="IInputAggregator" />
     public class InteractionController : IInteractionController
     {
         private readonly InputControls inputControls;
-        private readonly InputManager inputManager;
+        private readonly IInputManager inputManager;
         private readonly IInteractionControllerReporter interactionControllerReporter;
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
         /// <param name="inputControls">The input controls.</param>
         /// <param name="inputManager">The input manager.</param>
         /// <param name="interactionControllerReporter">The interaction controller reporter.</param>
-        public InteractionController(InputControls inputControls, InputManager inputManager, IInteractionControllerReporter interactionControllerReporter)
+        public InteractionController(InputControls inputControls, IInputManager inputManager, IInteractionControllerReporter interactionControllerReporter)
         {
             this.inputControls = inputControls;
             this.inputManager = inputManager;
@@ -47,11 +47,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
             this.inputControls.RemoteControl.CommandReceived += this.OnLircConnectionLircCommand;
             this.inputControls.RfidTransceiver.TagDetected += this.OnRfidTransceiverTagDetected;
         }
-
-        /// <summary>
-        /// Occurs when an activity happens.
-        /// </summary>
-        public event EventHandler<EventArgs> ActivityOccured;
 
         /// <summary>
         /// Gets the key input event.
@@ -147,14 +142,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
         {
             var uid = e.Tag.ToString();
             this.interactionControllerReporter?.TagInputEvent(uid);
-            this.ActivityOccured?.Invoke(this, EventArgs.Empty);
             this.inputManager.Raise(this.TagInputEvent, this, new TagInputArgs(uid));
         }
 
         private void RaiseInput(KeyInput keyInput)
         {
             this.interactionControllerReporter?.KeyInputEvent(keyInput);
-            this.ActivityOccured?.Invoke(this, EventArgs.Empty);
             this.inputManager.Raise(this.KeyInputEvent, this, new KeyInputArgs(keyInput));
         }
     }

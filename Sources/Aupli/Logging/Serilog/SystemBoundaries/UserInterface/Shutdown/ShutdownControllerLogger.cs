@@ -68,5 +68,13 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
         {
             this.log.Debug(nameof(this.SystemIdleShutdown));
         }
+
+        /// <summary>
+        /// Shutdowns the by control c.
+        /// </summary>
+        public void ShutdownByCtrlC()
+        {
+            this.log.Information(nameof(this.ShutdownByCtrlC));
+        }
     }
 }

@@ -5,14 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.Logging.Serilog.Mpc
+namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
 {
     using System;
-    using System.Threading;
     using Aupli.SystemBoundaries.MusicControl.Ari;
+    using global::MpcNET;
     using global::Serilog;
     using global::Serilog.Events;
-    using MpcNET;
     using Sundew.Base;
 
     /// <summary>
@@ -62,7 +61,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="playlistName">Name of the playlist.</param>
         public void StartingPlaylist(string playlistName)
         {
-            this.log.Write(this.currentLogLevel, "Starting playlist: {Playlist} | {ThreadId}", playlistName, GetThreadId());
+            this.log.Write(this.currentLogLevel, "Starting playlist: {Playlist}", playlistName);
         }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="playlistName">Name of the playlist.</param>
         public void IgnoredPlaylist(string playlistName)
         {
-            this.log.Write(this.currentLogLevel, "Ignored playlist: {Playlist} | {ThreadId}", string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName, GetThreadId());
+            this.log.Write(this.currentLogLevel, "Ignored playlist: {Playlist}", string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName);
         }
 
         /// <summary>
@@ -81,7 +80,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="connectAttempt">The connect attempt.</param>
         public void Connecting(bool isReconnect, int connectAttempt)
         {
-            this.log.Write(this.currentLogLevel, "{ConnectionMethod}, {Attempt} | {ThreadId}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt, GetThreadId());
+            this.log.Write(this.currentLogLevel, "{ConnectionMethod}, {Attempt}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt);
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="connectAttempt">The connect attempt.</param>
         public void ConnectionAccepted(bool isReconnect, int connectAttempt)
         {
-            this.log.Write(this.currentLogLevel, "Connection Accepted {ConnectionMethod}, {Attempt} | {ThreadId}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt, GetThreadId());
+            this.log.Write(this.currentLogLevel, "Connection Accepted {ConnectionMethod}, {Attempt}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt);
         }
 
         /// <summary>
@@ -102,7 +101,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="connectionInfo">The connection information.</param>
         public void Connected(bool isReconnect, int connectAttempt, string connectionInfo)
         {
-            this.log.Write(this.currentLogLevel, "Connected: {ConnectAttempt} - {ConnectionInfo} | {ThreadId}", connectAttempt, connectionInfo, GetThreadId());
+            this.log.Write(this.currentLogLevel, "Connected: {ConnectAttempt} - {ConnectionInfo}", connectAttempt, connectionInfo);
         }
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="command">The command.</param>
         public void Sending(string command)
         {
-            this.log.Write(this.currentLogLevel, "Sending: {Command} | {ThreadId}", command, GetThreadId());
+            this.log.Write(this.currentLogLevel, "Sending: {Command}", command);
         }
 
         /// <summary>
@@ -122,7 +121,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="exception">The exception.</param>
         public void SendException(string command, int sendAttempt, Exception exception)
         {
-            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt} | {ThreadId} | {Exception}", command, sendAttempt, GetThreadId(), exception);
+            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt} | {Exception}", command, sendAttempt, exception);
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="sendAttempt">The send attempt.</param>
         public void RetrySend(string command, int sendAttempt)
         {
-            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt} | {ThreadId}", command, sendAttempt, GetThreadId());
+            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt}", command, sendAttempt);
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="responseLine">The response line.</param>
         public void ReadResponse(string responseLine)
         {
-            this.log.Write(this.currentLogLevel, "ReadResponse: {Content} | {ThreadId}", responseLine, GetThreadId());
+            this.log.Write(this.currentLogLevel, "ReadResponse: {Content}", responseLine);
         }
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="isExplicitDisconnect">if set to <c>true</c> [is explicit].</param>
         public void Disconnecting(bool isExplicitDisconnect)
         {
-            this.log.Write(this.currentLogLevel, "Disconnecting: {Reason} | {ThreadId}", isExplicitDisconnect ? "explicit" : "implicit", GetThreadId());
+            this.log.Write(this.currentLogLevel, "Disconnecting: {Reason}", isExplicitDisconnect ? "explicit" : "implicit");
         }
 
         /// <summary>
@@ -159,12 +158,7 @@ namespace Aupli.Logging.Serilog.Mpc
         /// <param name="isExplicitDisconnect">if set to <c>true</c> [is explicit].</param>
         public void Disconnected(bool isExplicitDisconnect)
         {
-            this.log.Write(this.currentLogLevel, "Disconnected: {Reason} | {ThreadId}", isExplicitDisconnect ? "explicit" : "implicit", GetThreadId());
-        }
-
-        private static int GetThreadId()
-        {
-            return Thread.CurrentThread.ManagedThreadId;
+            this.log.Write(this.currentLogLevel, "Disconnected: {Reason}", isExplicitDisconnect ? "explicit" : "implicit");
         }
 
         private class LogLevelResetter : IDisposable

@@ -16,7 +16,7 @@ namespace Aupli.ApplicationServices.Volume.Api
     /// <seealso cref="IVolumeStatus" />
     /// <seealso cref="IVolumeChangeNotifier" />
     /// <seealso cref="Sundew.Base.Initialization.IInitializable" />
-    public interface IVolumeService : IVolumeStatus, IVolumeChangeNotifier, IInitializable
+    public interface IVolumeService : IVolumeStatus, IInitializable
     {
         /// <summary>
         /// Changes the volume asynchronous.

@@ -5,9 +5,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Display
+namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Display
 {
-    using Aupli.SystemBoundaries.Pi.Display;
     using Aupli.SystemBoundaries.UserInterface.Display.Ari;
     using global::Serilog;
     using Sundew.Base;

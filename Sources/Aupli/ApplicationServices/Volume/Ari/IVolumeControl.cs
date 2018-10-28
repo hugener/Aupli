@@ -20,13 +20,14 @@ namespace Aupli.ApplicationServices.Volume.Ari
         /// </summary>
         /// <param name="volume">The volume.</param>
         /// <returns>An async task.</returns>
-        Task SetVolumeAsync(Percentage volume);
+        Task<bool> SetVolumeAsync(Percentage volume);
 
         /// <summary>
         /// Sets the state of the mute.
         /// </summary>
-        /// <param name="isMuted">if set to <c>true</c> [is muted].</param>
-        /// <returns>An async task.</returns>
-        Task SetMuteStateAsync(bool isMuted);
+        /// <returns>
+        /// An async task.
+        /// </returns>
+        Task MuteAsync();
     }
 }

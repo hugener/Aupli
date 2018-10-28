@@ -5,10 +5,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Interaction
+namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Input
 {
     using Aupli.SystemBoundaries.Bridges.Interaction;
-    using Aupli.SystemBoundaries.UserInterface.Input;
+    using Aupli.SystemBoundaries.UserInterface.Input.Ari;
     using global::Serilog;
     using Sundew.Base;
 

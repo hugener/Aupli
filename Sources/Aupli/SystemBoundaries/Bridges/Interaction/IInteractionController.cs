@@ -12,8 +12,7 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
     /// <summary>
     /// Interface for managing key and tag input events.
     /// </summary>
-    /// <seealso cref="Sundew.Pi.ApplicationFramework.Input.IInputAggregator" />
-    public interface IInteractionController : IInputAggregator
+    public interface IInteractionController
     {
         /// <summary>
         /// Gets the key input event.
@@ -30,5 +29,10 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
         /// The tag input event.
         /// </value>
         InputEvent<TagInputArgs> TagInputEvent { get; }
+
+        /// <summary>
+        /// Starts this instance.
+        /// </summary>
+        void Start();
     }
 }

@@ -7,6 +7,7 @@
 
 namespace Aupli.ApplicationServices.Volume
 {
+    using System;
     using Sundew.Base.Numeric;
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace Aupli.ApplicationServices.Volume
         {
             var change = isIncrement ? this.incrementStep : -this.incrementStep;
             var newVolume = volume + change;
-            newVolume = newVolume.Limit(0, 1);
+            newVolume = newVolume.Limit(0, 1).Round(2);
             return newVolume;
         }
     }

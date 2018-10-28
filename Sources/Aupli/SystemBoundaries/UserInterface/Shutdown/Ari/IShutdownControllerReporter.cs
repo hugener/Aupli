@@ -34,5 +34,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown.Ari
         /// Systems the idle shutdown.
         /// </summary>
         void SystemIdleShutdown();
+
+        /// <summary>
+        /// Shutdowns the by control c.
+        /// </summary>
+        void ShutdownByCtrlC();
     }
 }

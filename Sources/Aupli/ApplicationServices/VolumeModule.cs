@@ -25,26 +25,24 @@ namespace Aupli.ApplicationServices
         /// <param name="volumeRepository">The volume repository.</param>
         /// <param name="volumeIncrementStep">The volume increment step.</param>
         /// <param name="audioOutputStatusUpdater">The audio output status updater.</param>
-        /// <param name="volumeStatusUpdater">The volume status updater.</param>
         /// <param name="amplifier">The amplifier.</param>
         /// <param name="volumeControl">The volume control.</param>
         /// <param name="volumeServiceReporter">The volume service reporter.</param>
         public VolumeModule(
-            IVolumeRepository volumeRepository,
-            Percentage volumeIncrementStep,
-            IAudioOutputStatusUpdater audioOutputStatusUpdater,
-            IVolumeStatusUpdater volumeStatusUpdater,
             IAmplifier amplifier,
             IVolumeControl volumeControl,
+            IAudioOutputStatusUpdater audioOutputStatusUpdater,
+            IVolumeRepository volumeRepository,
+            Percentage volumeIncrementStep,
             IVolumeServiceReporter volumeServiceReporter)
         {
             // Create application services
             this.VolumeService = new VolumeService(
-                new VolumeAdjuster(volumeIncrementStep),
                 amplifier,
+                volumeControl,
                 audioOutputStatusUpdater,
-                volumeStatusUpdater,
-                new VolumeSynchronizerService(amplifier, volumeControl, volumeRepository),
+                volumeRepository,
+                new VolumeAdjuster(volumeIncrementStep),
                 volumeServiceReporter);
         }
 

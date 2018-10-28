@@ -31,7 +31,7 @@ namespace Aupli.ApplicationServices.Player.Ari
         /// Plays or pauses asynchronously.
         /// </summary>
         /// <returns>An async task.</returns>
-        Task PlayPauseAsync();
+        Task PauseResumeAsync();
 
         /// <summary>
         /// Plays the next song asynchronously.

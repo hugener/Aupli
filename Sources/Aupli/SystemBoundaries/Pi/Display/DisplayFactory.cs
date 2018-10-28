@@ -48,7 +48,7 @@ namespace Aupli.SystemBoundaries.Pi.Display
                     ConnectorPin.P1Pin35,
                     ConnectorPin.P1Pin37),
                 backlight);
-            return this.textDisplayDevices.Add(new Hd44780Display(hd44780LcdDevice, hd44780LcdDeviceSettings), hd44780LcdDevice);
+            return this.textDisplayDevices.Add(new Hd44780Display(hd44780LcdDevice, hd44780LcdDeviceSettings), hd44780LcdDevice, true);
         }
 
         /// <summary>

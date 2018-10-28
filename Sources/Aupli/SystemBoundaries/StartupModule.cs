@@ -16,10 +16,12 @@ namespace Aupli.SystemBoundaries
     using Aupli.SystemBoundaries.Pi.Display;
     using Aupli.SystemBoundaries.SystemServices;
     using Aupli.SystemBoundaries.SystemServices.Api;
+    using Aupli.SystemBoundaries.SystemServices.Ari;
     using Aupli.SystemBoundaries.SystemServices.Unix;
     using Aupli.SystemBoundaries.UserInterface.Startup;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
+    using Sundew.Pi.ApplicationFramework;
     using Sundew.Pi.ApplicationFramework.Input;
     using Sundew.Pi.ApplicationFramework.Navigation;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
@@ -30,6 +32,7 @@ namespace Aupli.SystemBoundaries
     /// <seealso cref="Sundew.Base.Initialization.IInitializable" />
     public class StartupModule : IStartupModule
     {
+        private readonly IApplicationRendering application;
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
         private readonly string namePath;
         private readonly string pin26FeaturePath;
@@ -37,13 +40,15 @@ namespace Aupli.SystemBoundaries
         private readonly string lastGreetingPath;
         private readonly ITextViewRendererReporter textViewRendererReporter;
         private readonly IInputManagerReporter inputManagerReporter;
-        private ITextViewRenderer textViewRenderer;
+        private readonly ISystemServicesAwaiterReporter systemServicesAwaiterReporter;
+        //// private ITextViewRenderer textViewRenderer;
         private Disposer disposer;
         private ISystemServicesAwaiter systemServicesAwaiter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupModule" /> class.
         /// </summary>
+        /// <param name="application">The application.</param>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <param name="namePath">The name path.</param>
         /// <param name="pin26FeaturePath">The pin26 feature path.</param>
@@ -51,15 +56,19 @@ namespace Aupli.SystemBoundaries
         /// <param name="lastGreetingPath">The last greeting path.</param>
         /// <param name="textViewRendererReporter">The text view renderer reporter.</param>
         /// <param name="inputManagerReporter">The input manager reporter.</param>
+        /// <param name="systemServicesAwaiterReporter">The system services awaiter reporter.</param>
         public StartupModule(
+            IApplicationRendering application,
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
             string namePath = "name.val",
             string pin26FeaturePath = "pin26-feature.val",
             string greetingsPath = "greetings.csv",
             string lastGreetingPath = "last-greeting.val",
             ITextViewRendererReporter textViewRendererReporter = null,
-            IInputManagerReporter inputManagerReporter = null)
+            IInputManagerReporter inputManagerReporter = null,
+            ISystemServicesAwaiterReporter systemServicesAwaiterReporter = null)
         {
+            this.application = application;
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.namePath = namePath;
             this.pin26FeaturePath = pin26FeaturePath;
@@ -67,6 +76,7 @@ namespace Aupli.SystemBoundaries
             this.lastGreetingPath = lastGreetingPath;
             this.textViewRendererReporter = textViewRendererReporter;
             this.inputManagerReporter = inputManagerReporter;
+            this.systemServicesAwaiterReporter = systemServicesAwaiterReporter;
         }
 
         /// <summary>
@@ -83,15 +93,7 @@ namespace Aupli.SystemBoundaries
         /// <value>
         /// The text view navigator.
         /// </value>
-        public TextViewNavigator TextViewNavigator { get; private set; }
-
-        /// <summary>
-        /// Gets the input manager.
-        /// </summary>
-        /// <value>
-        /// The input manager.
-        /// </value>
-        public InputManager InputManager { get; private set; }
+        public ITextViewNavigator TextViewNavigator { get; private set; }
 
         /// <summary>
         /// Gets the lifecycle configuration.
@@ -114,6 +116,13 @@ namespace Aupli.SystemBoundaries
             var displayFactory = this.CreateDisplayFactory();
             this.Display = displayFactory.Create(this.gpioConnectionDriverFactory, this.LifecycleConfiguration.Pin26Feature == Pin26Feature.Backlight);
 
+            this.application.InputManagerReporter = this.inputManagerReporter;
+            this.application.TextViewRendererReporter = this.textViewRendererReporter;
+
+            this.TextViewNavigator = this.application.StartRendering(this.Display);
+            await this.TextViewNavigator.ShowAsync(new StartupTextView(greetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
+
+            /*
             // Create Text Rendering
             var textViewRendererFactory = new TextViewRendererFactory(this.Display, this.textViewRendererReporter);
             this.textViewRenderer = textViewRendererFactory.Create();
@@ -123,10 +132,10 @@ namespace Aupli.SystemBoundaries
             this.TextViewNavigator = new TextViewNavigator(this.textViewRenderer, this.InputManager);
 
             await this.TextViewNavigator.ShowAsync(new StartupTextView(greetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
-            this.textViewRenderer.Start();
+            this.textViewRenderer.Start();*/
 
             this.systemServicesAwaiter = this.CreateServicesAwaiter();
-            this.disposer = new Disposer(this.textViewRenderer, displayFactory);
+            this.disposer = new Disposer(displayFactory);
         }
 
         /// <summary>
@@ -181,7 +190,7 @@ namespace Aupli.SystemBoundaries
         /// <returns>A <see cref="UnixSystemServiceStateChecker"/>.</returns>
         protected virtual ISystemServicesAwaiter CreateServicesAwaiter()
         {
-            return new SystemServicesAwaiter();
+            return new SystemServicesAwaiter(this.systemServicesAwaiterReporter);
         }
 
         private class PrivateLifecycleConfiguration : ILifecycleConfiguration

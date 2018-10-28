@@ -7,11 +7,10 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Interaction
 {
-    using Sundew.Pi.ApplicationFramework.Input;
     using Sundew.Pi.ApplicationFramework.Navigation;
 
     /// <summary>
-    /// Bridge interface for display, text view navigation and input manager.
+    /// Bridge for getting the <see cref="IDisplay"/> and <see cref="ITextViewNavigator"/>.
     /// </summary>
     public interface IUserInterfaceBridge
     {
@@ -29,14 +28,6 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
         /// <value>
         /// The text view navigator.
         /// </value>
-        TextViewNavigator TextViewNavigator { get; }
-
-        /// <summary>
-        /// Gets the input manager.
-        /// </summary>
-        /// <value>
-        /// The input manager.
-        /// </value>
-        InputManager InputManager { get; }
+        ITextViewNavigator TextViewNavigator { get; }
     }
 }

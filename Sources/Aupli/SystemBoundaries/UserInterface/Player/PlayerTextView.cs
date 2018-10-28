@@ -24,7 +24,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
     {
         private static readonly TimeSpan AnimationStartDelay = TimeSpan.FromMilliseconds(3000);
         private static readonly TimeSpan AnimationInterval = TimeSpan.FromMilliseconds(900);
-        private static readonly TimeSpan AnimationPauseDelay = TimeSpan.FromMilliseconds(4000);
+        private static readonly TimeSpan AnimationPauseDelay = TimeSpan.FromMilliseconds(3000);
         private readonly PlayerController playerController;
         private readonly IPlayerStatusUpdater playerStatusUpdater;
         private readonly IVolumeStatus volumeStatus;
@@ -62,13 +62,14 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         /// </summary>
         /// <param name="invalidater">The invalidater.</param>
         /// <param name="characterContext">The character context.</param>
-        public async Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
         {
             this.ResetPlayerState();
             PlayerCustomCharacters.SetCharacters(characterContext);
             this.invalidater = invalidater;
             this.playerStatus = this.playerStatusUpdater.Status;
             this.playerStatusUpdater.StatusChanged += this.OnPlayerStatusUpdaterStatusChanged;
+            this.volumeStatus.VolumeChanged += this.OnVolumeStatusVolumeChanged;
             this.artistTextScroller = new TextScroller(
                 invalidater,
                 ScrollMode.Restart,
@@ -81,8 +82,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
                 AnimationStartDelay,
                 AnimationInterval,
                 AnimationPauseDelay);
-            this.muteTextBlinker = new TextBlinker(invalidater, AnimationInterval);
-            await this.playerStatusUpdater.UpdateStatusAsync();
+            this.muteTextBlinker = new TextBlinker(invalidater, AnimationInterval, this.volumeStatus.IsMuted);
+            this.playerStatusUpdater.UpdateStatusAsync();
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -109,7 +111,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
                     return;
                 }
 
-                var artistAndTrack = $"{this.artistTextScroller.GetFrame(this.playerStatus.Artist, renderContext.Size.Width - 6, 0)} {this.GetElapsed()}";
+                var elapsedText = this.GetElapsed();
+                var artistAndTrack = $"{this.artistTextScroller.GetFrame(this.playerStatus.Artist, renderContext.Size.Width - elapsedText.Length - 1)} {elapsedText}";
                 if (this.playerStatus.State == PlayerState.Paused)
                 {
                     artistAndTrack = artistAndTrack.ReplaceAt(6, PlayerCustomCharacters.Pause);
@@ -119,7 +122,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
 
                 var trackText = $" #{this.playerStatus.Track + 1:D2}";
                 renderContext.WriteLine(
-                    $"{this.titleTextScroller.GetFrame(this.playerStatus.Title, renderContext.Size.Width - trackText.Length, 0)}{trackText}");
+                    $"{this.titleTextScroller.GetFrame(this.playerStatus.Title, renderContext.Size.Width - trackText.Length)}{trackText}");
             }
         }
 
@@ -127,7 +130,13 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         public Task OnClosingAsync()
         {
             this.playerStatusUpdater.StatusChanged -= this.OnPlayerStatusUpdaterStatusChanged;
+            this.volumeStatus.VolumeChanged -= this.OnVolumeStatusVolumeChanged;
             return Task.CompletedTask;
+        }
+
+        private void OnVolumeStatusVolumeChanged(object sender, EventArgs e)
+        {
+            this.muteTextBlinker.IsEnabled = this.volumeStatus.IsMuted;
         }
 
         private void OnPlayerStatusUpdaterStatusChanged(object sender, StatusEventArgs e)
@@ -139,7 +148,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         private string GetElapsed()
         {
             var muteText = this.volumeStatus.IsMuted
-                ? this.muteTextBlinker.GetFrame(PlayerCustomCharacters.Mute, 0, 0)
+                ? this.muteTextBlinker.GetFrame(PlayerCustomCharacters.Mute)
                 : ":";
             return $"{this.playerStatus.Elapsed:mm}{muteText}{this.playerStatus.Elapsed:ss}";
         }

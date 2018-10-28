@@ -11,40 +11,63 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Display.Ari;
     using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.Pi.ApplicationFramework.Navigation;
 
     /// <summary>
     /// Controls the display back light.
     /// </summary>
     public class DisplayStateController
     {
+        private readonly ITextViewNavigator textViewNavigator;
         private readonly IDisplay display;
         private readonly IDisplayStateControllerReporter displayStateControllerReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayStateController" /> class.
         /// </summary>
-        /// <param name="idleController">The idle controller.</param>
+        /// <param name="textViewNavigator">The text view navigator.</param>
+        /// <param name="idleMonitor">The idle monitor.</param>
         /// <param name="display">The text display device.</param>
         /// <param name="displayStateControllerReporter">The display state controller reporter.</param>
-        public DisplayStateController(IdleController idleController, IDisplay display, IDisplayStateControllerReporter displayStateControllerReporter)
+        public DisplayStateController(ITextViewNavigator textViewNavigator, IIdleMonitor idleMonitor, IDisplay display, IDisplayStateControllerReporter displayStateControllerReporter)
         {
+            this.textViewNavigator = textViewNavigator;
             this.display = display;
             this.displayStateControllerReporter = displayStateControllerReporter;
             this.displayStateControllerReporter?.SetSource(this);
-            idleController.InputIdle += this.OnIdleControllerInputIdle;
-            idleController.Activated += this.OnIdleControllerActive;
+            idleMonitor.InputIdle += this.OnIdleControllerInputIdle;
+            idleMonitor.Activated += this.OnIdleControllerActivated;
         }
 
-        private void OnIdleControllerInputIdle(object sender, EventArgs eventArgs)
+        private async void OnIdleControllerInputIdle(object sender, EventArgs eventArgs)
         {
-            this.display.IsEnabled = false;
+            if (this.display.HasBacklight)
+            {
+                this.display.BacklightEnabled = false;
+            }
+            else
+            {
+                await this.textViewNavigator.ShowAsync(new DisabledDisplayTextView());
+            }
+
             this.displayStateControllerReporter?.DisabledDisplay();
         }
 
-        private void OnIdleControllerActive(object sender, EventArgs eventArgs)
+        private async void OnIdleControllerActivated(object sender, ActivatedEventArgs eventArgs)
         {
-            this.display.IsEnabled = true;
-            this.displayStateControllerReporter?.EnabledDisplay();
+            if (this.display.HasBacklight)
+            {
+                if (this.display.BacklightEnabled != true)
+                {
+                    this.display.BacklightEnabled = true;
+                    this.displayStateControllerReporter?.EnabledDisplay();
+                }
+            }
+            else if (!eventArgs.IsFirstActivation)
+            {
+                await this.textViewNavigator.NavigateBackAsync();
+                this.displayStateControllerReporter?.EnabledDisplay();
+            }
         }
     }
 }

@@ -9,13 +9,13 @@ namespace Aupli
 {
     using System;
     using System.Diagnostics;
-    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.CommandLine;
     using Serilog;
     using Serilog.Events;
     using Sundew.Base.Computation;
     using Sundew.CommandLine;
+    using Sundew.Pi.ApplicationFramework;
 
     /// <summary>
     /// The main entry point.
@@ -48,26 +48,25 @@ namespace Aupli
             {
                 logger.Information("------------------------------------------");
                 logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
-                using (var cancellationTokenSource = new CancellationTokenSource())
+                var application = new Application();
+                var bootstrapper = new Bootstrapper(application, logger);
+                logger.Verbose("Created Bootstrapper");
+                try
                 {
-                    var bootstrapper = new Bootstrapper(logger);
-                    logger.Verbose("Created Bootstrapper");
-                    try
+                    await bootstrapper.StartAsync(null, result.Value.AllowShutdown);
+                    logger.Information("Started Aupli in {time}", stopwatch.Elapsed);
+                    stopwatch.Stop();
+                    application.Run();
+                    /*while (!cancellationTokenSource.Token.IsCancellationRequested)
                     {
-                        await bootstrapper.StartAsync(cancellationTokenSource, result.Value.AllowShutdown);
-                        logger.Information("Started Aupli in {time}", stopwatch.Elapsed);
-                        stopwatch.Stop();
-                        while (!cancellationTokenSource.Token.IsCancellationRequested)
-                        {
-                            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationTokenSource.Token);
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-
-                    await bootstrapper.StopAsync();
+                        await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationTokenSource.Token);
+                    }*/
                 }
+                catch (OperationCanceledException)
+                {
+                }
+
+                await bootstrapper.StopAsync();
 
                 logger.Information("Stopped Aupli");
             }
@@ -92,7 +91,7 @@ namespace Aupli
             if (options.FileLogOptions != null)
             {
                 var fileLoggingOptions = options.FileLogOptions;
-                logConfiguration = logConfiguration.WriteTo.Async(x => x.File(
+                logConfiguration = logConfiguration.WriteTo.Async(x => x.RollingFile(
                     fileLoggingOptions.LogPath,
                     outputTemplate: "[{Timestamp:HH:mm:ss.fffff} {Level:u3}] <{ThreadId,-5}> {SourceContext,-80:l} | {Message:lj}{NewLine}{Exception}",
                     fileSizeLimitBytes: fileLoggingOptions.MaxLogFileSizeInBytes,

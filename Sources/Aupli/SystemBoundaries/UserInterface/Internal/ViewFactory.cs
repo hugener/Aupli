@@ -37,15 +37,14 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         /// </summary>
         /// <param name="musicPlayer">The music player.</param>
         /// <param name="playerController">The player controller.</param>
-        /// <param name="volumeController">The volume controller.</param>
         /// <param name="volumeService">The volume service.</param>
         /// <param name="menuController">The menu controller.</param>
         /// <param name="lifecycleConfiguration">The lifecycle configuration.</param>
-        public ViewFactory(IMusicPlayer musicPlayer, PlayerController playerController, VolumeController volumeController, IVolumeService volumeService, MenuController menuController, ILifecycleConfiguration lifecycleConfiguration)
+        public ViewFactory(IMusicPlayer musicPlayer, PlayerController playerController, IVolumeService volumeService, MenuController menuController, ILifecycleConfiguration lifecycleConfiguration)
         {
             this.playerView = new Lazy<PlayerTextView>(() => new PlayerTextView(playerController, musicPlayer, volumeService), LazyThreadSafetyMode.ExecutionAndPublication);
             this.menuView = new Lazy<MenuTextView>(() => new MenuTextView(new NetworkDeviceInfoProvider(), menuController));
-            this.volumeView = new Lazy<VolumeTextView>(() => new VolumeTextView(volumeController, volumeService), LazyThreadSafetyMode.ExecutionAndPublication);
+            this.volumeView = new Lazy<VolumeTextView>(() => new VolumeTextView(volumeService), LazyThreadSafetyMode.ExecutionAndPublication);
             this.shutdownView = new Lazy<ShutdownTextView>(() => new ShutdownTextView(lifecycleConfiguration));
         }
 

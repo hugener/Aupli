@@ -57,7 +57,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
                 case KeyInput.PlayPause:
                 case KeyInput.Ok:
                 case KeyInput.Stop:
-                    await this.playbackControls.PlayPauseAsync();
+                    await this.playbackControls.PauseResumeAsync();
                     break;
                 case KeyInput.Next:
                 case KeyInput.Right:

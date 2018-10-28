@@ -25,6 +25,6 @@ namespace Aupli.ApplicationServices.Volume.Ari
         /// <value>
         /// <c>true</c> if this instance is outputting audio; otherwise, <c>false</c>.
         /// </value>
-        bool IsOutputtingAudio { get; }
+        bool IsAudioOutputActive { get; }
     }
 }

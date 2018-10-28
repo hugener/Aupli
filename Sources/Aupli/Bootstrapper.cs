@@ -13,13 +13,13 @@ namespace Aupli
     using Aupli.DomainServices;
     using Aupli.Logging.Serilog.ApplicationServices.Player;
     using Aupli.Logging.Serilog.ApplicationServices.Volume;
-    using Aupli.Logging.Serilog.Mpc;
     using Aupli.Logging.Serilog.Pi.ApplicationFramework.Input;
     using Aupli.Logging.Serilog.Pi.ApplicationFramework.ViewRendering;
+    using Aupli.Logging.Serilog.SystemBoundaries.MusicControl;
     using Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier;
-    using Aupli.Logging.Serilog.SystemBoundaries.Pi.Display;
-    using Aupli.Logging.Serilog.SystemBoundaries.Pi.Interaction;
+    using Aupli.Logging.Serilog.SystemBoundaries.SystemServices;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface;
+    using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Display;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Input;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown;
@@ -37,21 +37,26 @@ namespace Aupli
     using Serilog.Events;
     using Sundew.Base.Disposal;
     using Sundew.Base.Numeric;
+    using Sundew.Pi.ApplicationFramework;
+    using Reporters = Aupli.SystemBoundaries.UserInterface.Ari.Reporters;
 
     /// <summary>
     /// Bootstraps the application.
     /// </summary>
     public class Bootstrapper
     {
+        private readonly IApplication application;
         private readonly ILogger logger;
         private Disposer disposer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
         /// </summary>
+        /// <param name="application">The application.</param>
         /// <param name="logger">The logger.</param>
-        public Bootstrapper(ILogger logger)
+        public Bootstrapper(IApplication application, ILogger logger)
         {
+            this.application = application;
             this.logger = logger;
         }
 
@@ -70,29 +75,32 @@ namespace Aupli
 
             // Create Startup Module
             this.logger.Verbose("Create Startup module");
-            var startupModule = this.CreateStartupModule(gpioConnectionDriverFactory);
+            var startupModule = this.CreateStartupModule(this.application, gpioConnectionDriverFactory);
             this.logger.Verbose("Initialize Startup module");
             await startupModule.InitializeAsync();
 
             // Create required ApplicationServices-required system boundaries modules
-            this.logger.Verbose("Create Repositories");
+            this.logger.Verbose("Create Repositories Module");
             var repositoriesModule = this.CreateRepositoriesModule();
             this.logger.Verbose("Initialize Repositories Module");
             await repositoriesModule.InitializeAsync();
 
             // Create domain required application modules
-            this.logger.Verbose("Create LastPlaylistModule");
+            this.logger.Verbose("Create LastPlaylist Module");
             var lastPlaylistModule = new LastPlaylistModule(repositoriesModule.LastPlaylistRepository);
 
             // Create domain modules
-            this.logger.Verbose("Create PlaylistModule");
+            this.logger.Verbose("Create Playlist Module");
             var playlistModule = new PlaylistModule(lastPlaylistModule.LastPlaylistChangeHandler);
 
             // Wait for services to be ready.
-            await startupModule.WaitForSystemServicesAsync();
+            if (!await startupModule.WaitForSystemServicesAsync())
+            {
+                return;
+            }
 
             // Create application required system boundaries modules
-            this.logger.Verbose("Create ControlsModule");
+            this.logger.Verbose("Create Controls Module");
             var controlsModule = new ControlsModule(
                 gpioConnectionDriverFactory,
                 new AmplifierLogger(this.logger, LogEventLevel.Debug));
@@ -103,7 +111,7 @@ namespace Aupli
             await musicControlModule.InitializeAsync();
 
             // Create application modules
-            this.logger.Verbose("Create PlayerModule");
+            this.logger.Verbose("Create Player Module");
             var playerModule = new PlayerModule(
                 repositoriesModule.PlaylistRepository,
                 playlistModule.LastPlaylistService,
@@ -112,12 +120,11 @@ namespace Aupli
 
             this.logger.Verbose("Create Volume Module");
             var volumeModule = new VolumeModule(
-                repositoriesModule.VolumeRepository,
-                new Percentage(0.05),
-                musicControlModule.MusicPlayer,
-                musicControlModule.MusicPlayer,
                 controlsModule.Amplifier,
                 musicControlModule.MusicPlayer,
+                musicControlModule.MusicPlayer,
+                repositoriesModule.VolumeRepository,
+                new Percentage(0.05),
                 new VolumeServiceLogger(this.logger));
 
             await volumeModule.InitializeAsync().ConfigureAwait(false);
@@ -125,6 +132,7 @@ namespace Aupli
             // Create user interface modules
             this.logger.Verbose("Create UserInterface Module");
             var userInterfaceModule = new UserInterfaceModule(
+                this.application,
                 startupModule,
                 controlsModule,
                 musicControlModule.MusicPlayer,
@@ -136,7 +144,7 @@ namespace Aupli
                 new Reporters(
                     new InteractionControllerLogger(this.logger),
                     new SystemActivityAggregatorLogger(this.logger),
-                    new IdleControllerLogger(this.logger),
+                    new IdleMonitorLogger(this.logger),
                     new PlayerControllerLogger(this.logger),
                     new VolumeControllerLogger(this.logger),
                     new ShutdownControllerLogger(this.logger),
@@ -144,12 +152,12 @@ namespace Aupli
                     new DisplayStateControllerLogger(this.logger)));
 
             this.disposer = new Disposer(
-                controlsModule,
-                gpioConnectionDriverFactory,
                 new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
                 userInterfaceModule,
                 musicControlModule,
-                startupModule);
+                controlsModule,
+                startupModule,
+                gpioConnectionDriverFactory);
 
             this.logger.Verbose("Initialize Playlist Module");
             await playlistModule.InitializeAsync().ConfigureAwait(false);
@@ -164,25 +172,30 @@ namespace Aupli
         /// <returns>An async task.</returns>
         public Task StopAsync()
         {
-            this.disposer.Dispose();
+            this.disposer?.Dispose();
             return Task.CompletedTask;
         }
 
         /// <summary>
         /// Creates the startup module.
         /// </summary>
+        /// <param name="application">The application.</param>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
-        /// <returns>The startup module.</returns>
-        protected virtual IStartupModule CreateStartupModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        /// <returns>
+        /// The startup module.
+        /// </returns>
+        protected virtual IStartupModule CreateStartupModule(IApplication application, IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
             return new StartupModule(
+                application,
                 gpioConnectionDriverFactory,
                 "name.val",
                 "pin26-feature.val",
                 "greetings.csv",
                 "last-greeting.val",
                 new TextViewRendererLogger(this.logger),
-                new InputManagerLogger(this.logger));
+                new InputManagerLogger(this.logger),
+                new SystemServicesAwaiterLogger(this.logger));
         }
 
         /// <summary>

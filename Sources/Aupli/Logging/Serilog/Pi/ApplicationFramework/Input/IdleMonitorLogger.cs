@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IdleControllerLogger.cs" company="Hukano">
+// <copyright file="IdleMonitorLogger.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -12,20 +12,20 @@ namespace Aupli.Logging.Serilog.Pi.ApplicationFramework.Input
     using Sundew.Pi.ApplicationFramework.Input;
 
     /// <summary>
-    /// Logger for the IdleController.
+    /// Logger for the IdleMonitor.
     /// </summary>
-    /// <seealso cref="IIdleControllerReporter" />
-    public class IdleControllerLogger : IIdleControllerReporter
+    /// <seealso cref="Sundew.Pi.ApplicationFramework.Input.IIdleMonitorReporter" />
+    public class IdleMonitorLogger : IIdleMonitorReporter
     {
         private ILogger log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IdleControllerLogger"/> class.
+        /// Initializes a new instance of the <see cref="IdleMonitorLogger"/> class.
         /// </summary>
         /// <param name="logger">The log.</param>
-        public IdleControllerLogger(ILogger logger)
+        public IdleMonitorLogger(ILogger logger)
         {
-            this.log = logger.ForContext<IdleControllerLogger>();
+            this.log = logger.ForContext<InputManagerLogger>();
         }
 
         /// <summary>

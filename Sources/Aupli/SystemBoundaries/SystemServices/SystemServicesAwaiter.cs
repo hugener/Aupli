@@ -24,12 +24,14 @@ namespace Aupli.SystemBoundaries.SystemServices
     {
         private readonly TimeSpan delay;
         private readonly ISystemServiceStateChecker systemServiceStateChecker;
+        private readonly ISystemServicesAwaiterReporter systemServicesAwaiterReporter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SystemServicesAwaiter"/> class.
+        /// Initializes a new instance of the <see cref="SystemServicesAwaiter" /> class.
         /// </summary>
-        public SystemServicesAwaiter()
-            : this(TimeSpan.FromSeconds(1))
+        /// <param name="systemServicesAwaiterReporter">The system services awaiter reporter.</param>
+        public SystemServicesAwaiter(ISystemServicesAwaiterReporter systemServicesAwaiterReporter = null)
+            : this(TimeSpan.FromSeconds(1), systemServicesAwaiterReporter)
         {
         }
 
@@ -37,8 +39,9 @@ namespace Aupli.SystemBoundaries.SystemServices
         /// Initializes a new instance of the <see cref="SystemServicesAwaiter" /> class.
         /// </summary>
         /// <param name="delay">The delay.</param>
-        public SystemServicesAwaiter(TimeSpan delay)
-        : this(delay, GetSystemServiceChecker())
+        /// <param name="systemServicesAwaiterReporter">The system services awaiter reporter.</param>
+        public SystemServicesAwaiter(TimeSpan delay, ISystemServicesAwaiterReporter systemServicesAwaiterReporter = null)
+        : this(delay, GetSystemServiceChecker(), systemServicesAwaiterReporter)
         {
         }
 
@@ -47,10 +50,13 @@ namespace Aupli.SystemBoundaries.SystemServices
         /// </summary>
         /// <param name="delay">The delay interval.</param>
         /// <param name="systemServiceStateChecker">The system service state checker.</param>
-        public SystemServicesAwaiter(TimeSpan delay, ISystemServiceStateChecker systemServiceStateChecker)
+        /// <param name="systemServicesAwaiterReporter">The system services awaiter reporter.</param>
+        public SystemServicesAwaiter(TimeSpan delay, ISystemServiceStateChecker systemServiceStateChecker, ISystemServicesAwaiterReporter systemServicesAwaiterReporter = null)
         {
             this.delay = delay;
             this.systemServiceStateChecker = systemServiceStateChecker;
+            this.systemServicesAwaiterReporter = systemServicesAwaiterReporter;
+            this.systemServicesAwaiterReporter?.SetSource(this);
         }
 
         /// <summary>
@@ -86,6 +92,12 @@ namespace Aupli.SystemBoundaries.SystemServices
             }
         }
 
+        /// <summary>
+        /// Checks the service is started.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An async task.</returns>
         private async Task<bool> CheckServiceIsStarted(string serviceName, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -94,16 +106,23 @@ namespace Aupli.SystemBoundaries.SystemServices
                 {
                     if (this.systemServiceStateChecker.IsServiceRunning(serviceName))
                     {
+                        this.systemServicesAwaiterReporter.ServiceIsRunning(serviceName);
                         return true;
                     }
 
+                    this.systemServicesAwaiterReporter.ServiceIsNotRunning(serviceName);
                     await Task.Delay(this.delay, cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
                 }
+                catch (Exception e)
+                {
+                    this.systemServicesAwaiterReporter.CheckServiceError(serviceName, e);
+                }
             }
 
+            this.systemServicesAwaiterReporter.WaitForServiceTimedOut(serviceName);
             return false;
         }
     }

@@ -11,8 +11,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Api;
-    using Sundew.Base.Collections;
-    using Sundew.Base.Numeric;
     using Sundew.Base.Text;
     using Sundew.Pi.ApplicationFramework.TextViewRendering;
 
@@ -22,27 +20,21 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     /// <seealso cref="ITextView" />
     public class VolumeTextView : ITextView
     {
-        private readonly VolumeController volumeController;
         private readonly IVolumeService volumeService;
-        private Percentage volume;
-        private bool isMuted;
         private IInvalidater invalidater;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeTextView" /> class.
         /// </summary>
-        /// <param name="volumeController">The volume controller.</param>
         /// <param name="volumeService">The volume service.</param>
-        public VolumeTextView(VolumeController volumeController, IVolumeService volumeService)
+        public VolumeTextView(IVolumeService volumeService)
         {
-            this.volumeController = volumeController;
             this.volumeService = volumeService;
             this.volumeService.VolumeChanged += this.OnVolumeServiceVolumeChanged;
-            this.volume = volumeService.Volume;
         }
 
         /// <inheritdoc />
-        public IEnumerable<object> InputTargets => this.volumeController.ToEnumerable();
+        public IEnumerable<object> InputTargets => null;
 
         /// <inheritdoc />
         public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
@@ -58,8 +50,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         public void Render(IRenderContext renderContext)
         {
             renderContext.Home();
-            var line1 = $"Volume: {this.volume.ToString(0),5}{' '.Repeat(renderContext.Size.Width - 5 + 8)}";
-            if (this.isMuted)
+            var line1 = $"Volume: {this.volumeService.Volume.ToString(0),5}{' '.Repeat(renderContext.Size.Width - 5 + 8)}";
+            if (this.volumeService.IsMuted)
             {
                 line1 = "Muted".LimitAndPadRight(renderContext.Size.Width - 5, ' ');
             }
@@ -75,12 +67,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
 
         private void OnVolumeServiceVolumeChanged(object sender, EventArgs e)
         {
-            if (this.isMuted != this.volumeService.IsMuted || this.volume != this.volumeService.Volume)
-            {
-                this.volume = this.volumeService.Volume;
-                this.isMuted = this.volumeService.IsMuted;
-                this.invalidater.Invalidate();
-            }
+            this.invalidater?.Invalidate();
         }
     }
 }

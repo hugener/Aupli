@@ -14,6 +14,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     using Aupli.SystemBoundaries.UserInterface.Api;
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Api;
+    using Aupli.SystemBoundaries.UserInterface.Volume;
     using global::Pi.Timers;
     using Sundew.Pi.ApplicationFramework.Navigation;
 
@@ -22,8 +23,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     /// </summary>
     internal class ViewNavigator : IViewNavigator
     {
-        private readonly TextViewNavigator textViewNavigator;
+        private readonly ITextViewNavigator textViewNavigator;
         private readonly ViewFactory viewFactory;
+        private readonly VolumeController volumeController;
         private readonly IViewNavigatorReporter viewNavigatorReporter;
         private readonly ITimer viewTimeoutTimer;
 
@@ -33,6 +35,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         /// <param name="volumeChangeNotifier">The volume change notifier.</param>
         /// <param name="menuRequester">The menu requester.</param>
         /// <param name="shutdownNotifier">The shutdown notifier.</param>
+        /// <param name="volumeController">The volume controller.</param>
         /// <param name="textViewNavigator">The text view navigator.</param>
         /// <param name="viewFactory">The textView factory.</param>
         /// <param name="timerFactory">The timer factory.</param>
@@ -41,12 +44,14 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
             IVolumeChangeNotifier volumeChangeNotifier,
             MenuRequester menuRequester,
             IShutdownNotifier shutdownNotifier,
-            TextViewNavigator textViewNavigator,
+            VolumeController volumeController,
+            ITextViewNavigator textViewNavigator,
             ViewFactory viewFactory,
             ITimerFactory timerFactory,
             IViewNavigatorReporter viewNavigatorReporter = null)
         {
             this.textViewNavigator = textViewNavigator;
+            this.volumeController = volumeController;
             this.viewFactory = viewFactory;
             this.viewNavigatorReporter = viewNavigatorReporter;
             this.viewNavigatorReporter?.SetSource(this);
@@ -68,8 +73,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         /// <returns>A async task.</returns>
         public async Task NavigateToPlayerViewAsync()
         {
-            this.viewNavigatorReporter?.NavigateToPlayerTextView();
-            await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.PlayerTextView, this.viewFactory.VolumeTextView.InputTargets);
+            await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.PlayerTextView, oldTextView => this.viewNavigatorReporter?.NavigateToPlayerTextView(), this.volumeController);
         }
 
         /// <summary>
@@ -78,8 +82,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         /// <returns>A async task.</returns>
         public async Task NavigateBackAsync()
         {
-            this.viewNavigatorReporter?.NavigateBack();
-            await this.textViewNavigator.NavigateBackAsync();
+            await this.textViewNavigator.NavigateBackAsync(oldViewView => this.viewNavigatorReporter?.NavigateBack());
         }
 
         /// <inheritdoc />
@@ -92,20 +95,17 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         {
             this.viewTimeoutTimer.Stop();
             this.viewTimeoutTimer.Start(TimeSpan.FromMilliseconds(1500));
-            this.viewNavigatorReporter?.NavigateToVolumeTextView();
-            await this.textViewNavigator.NavigateToAsync(this.viewFactory.VolumeTextView);
+            await this.textViewNavigator.ShowAsync(this.viewFactory.VolumeTextView, oldTextView => this.viewNavigatorReporter?.NavigateToVolumeTextView());
         }
 
         private async void OnShutdownNotifierShuttingDown(object sender, EventArgs e)
         {
-            this.viewNavigatorReporter?.NavigateToShutdownTextView();
-            await this.textViewNavigator.NavigateToAsync(this.viewFactory.ShutdownTextView);
+            await this.textViewNavigator.NavigateToAsync(this.viewFactory.ShutdownTextView, oldTextView => this.viewNavigatorReporter?.NavigateToShutdownTextView());
         }
 
         private async void OnMenuRequesterMenuRequested(object sender, EventArgs e)
         {
-            this.viewNavigatorReporter?.NavigateToMenuTextView();
-            await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.MenuTextView);
+            await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.MenuTextView, oldTextView => this.viewNavigatorReporter?.NavigateToMenuTextView());
         }
     }
 }

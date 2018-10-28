@@ -26,7 +26,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         /// </summary>
         /// <param name="interactionControllerReporter">The interaction controller reporter.</param>
         /// <param name="systemActivityAggregatorReporter">The system activity aggregator reporter.</param>
-        /// <param name="idleControllerReporter">The idle controller reporter.</param>
+        /// <param name="idleMonitorReporter">The idle controller reporter.</param>
         /// <param name="playerControllerReporter">The player controller reporter.</param>
         /// <param name="volumeControllerReporter">The volume controller reporter.</param>
         /// <param name="shutdownControllerReporter">The shutdown controller reporter.</param>
@@ -35,7 +35,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         public Reporters(
             IInteractionControllerReporter interactionControllerReporter,
             ISystemActivityAggregatorReporter systemActivityAggregatorReporter,
-            IIdleControllerReporter idleControllerReporter,
+            IIdleMonitorReporter idleMonitorReporter,
             IPlayerControllerReporter playerControllerReporter,
             IVolumeControllerReporter volumeControllerReporter,
             IShutdownControllerReporter shutdownControllerReporter,
@@ -44,7 +44,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         {
             this.InteractionControllerReporter = interactionControllerReporter;
             this.SystemActivityAggregatorReporter = systemActivityAggregatorReporter;
-            this.IdleControllerReporter = idleControllerReporter;
+            this.IdleMonitorReporter = idleMonitorReporter;
             this.PlayerControllerReporter = playerControllerReporter;
             this.VolumeControllerReporter = volumeControllerReporter;
             this.ShutdownControllerReporter = shutdownControllerReporter;
@@ -74,7 +74,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         /// <value>
         /// The idle controller reporter.
         /// </value>
-        public IIdleControllerReporter IdleControllerReporter { get; }
+        public IIdleMonitorReporter IdleMonitorReporter { get; }
 
         /// <summary>
         /// Gets the player controller reporter.

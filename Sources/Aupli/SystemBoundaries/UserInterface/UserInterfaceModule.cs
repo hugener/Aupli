@@ -26,6 +26,7 @@ namespace Aupli.SystemBoundaries.UserInterface
     using Aupli.SystemBoundaries.UserInterface.Volume;
     using global::Pi.Timers;
     using Sundew.Base.Initialization;
+    using Sundew.Pi.ApplicationFramework;
     using Sundew.Pi.ApplicationFramework.Input;
 
     /// <summary>
@@ -33,6 +34,7 @@ namespace Aupli.SystemBoundaries.UserInterface
     /// </summary>
     public class UserInterfaceModule : IInitializable, IDisposable
     {
+        private readonly IApplication application;
         private readonly IUserInterfaceBridge userInterfaceBridge;
         private readonly IControlsModule controlsModule;
         private readonly IMusicPlayer musicPlayer;
@@ -49,6 +51,7 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterfaceModule" /> class.
         /// </summary>
+        /// <param name="application">The application.</param>
         /// <param name="userInterfaceBridge">The user interface framework.</param>
         /// <param name="controlsModule">The controls module.</param>
         /// <param name="musicPlayer">The music player.</param>
@@ -59,6 +62,7 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <param name="timeoutConfiguration">The timeout configuration.</param>
         /// <param name="reporters">The reporters.</param>
         public UserInterfaceModule(
+            IApplication application,
             IUserInterfaceBridge userInterfaceBridge,
             IControlsModule controlsModule,
             IMusicPlayer musicPlayer,
@@ -69,6 +73,7 @@ namespace Aupli.SystemBoundaries.UserInterface
             ITimeoutConfiguration timeoutConfiguration,
             Reporters reporters = null)
         {
+            this.application = application;
             this.userInterfaceBridge = userInterfaceBridge;
             this.controlsModule = controlsModule;
             this.musicPlayer = musicPlayer;
@@ -95,20 +100,21 @@ namespace Aupli.SystemBoundaries.UserInterface
         public async Task InitializeAsync()
         {
             var interactionController =
-                new InteractionController(this.controlsModule.InputControls, this.userInterfaceBridge.InputManager, this.reporters?.InteractionControllerReporter);
-            var idleController = new IdleController(
-                interactionController,
+                new InteractionController(this.controlsModule.InputControls, this.application.InputManager, this.reporters?.InteractionControllerReporter);
+
+            this.application.IdleMonitorReporter = this.reporters?.IdleMonitorReporter;
+            var idleMonitor = this.application.CreateIdleMonitoring(
+                this.application.InputManager,
                 new SystemActivityAggregator(this.musicPlayer, this.reporters?.SystemActivityAggregatorReporter),
                 this.timeoutConfiguration.IdleTimeout,
-                this.timeoutConfiguration.SystemTimeout,
-                this.reporters?.IdleControllerReporter);
+                this.timeoutConfiguration.SystemTimeout);
 
             this.volumeController = new VolumeController(this.volumeModule.VolumeService, interactionController, this.reporters?.VolumeControllerReporter);
 
             var menuController = new MenuController(interactionController, this.userInterfaceBridge.TextViewNavigator);
 
             this.shutdownController = new ShutdownController(
-                idleController, this.controlsModule.SystemControl, this.shutdownParameters.AllowShutdown, this.shutdownParameters.ShutdownCancellationTokenSource, this.reporters?.ShutdownControllerReporter);
+                idleMonitor, this.controlsModule.SystemControl, this.application, this.shutdownParameters.AllowShutdown, this.shutdownParameters.ShutdownCancellationTokenSource, this.reporters?.ShutdownControllerReporter);
 
             var menuRequester = new MenuRequester();
             this.playerController = new PlayerController(
@@ -122,14 +128,15 @@ namespace Aupli.SystemBoundaries.UserInterface
                 this.volumeModule.VolumeService,
                 menuRequester,
                 this.shutdownController,
+                this.volumeController,
                 this.userInterfaceBridge.TextViewNavigator,
-                new ViewFactory(this.musicPlayer, this.playerController, this.volumeController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
+                new ViewFactory(this.musicPlayer, this.playerController, this.volumeModule.VolumeService, menuController, this.lifecycleConfiguration),
                 new TimerFactory(),
                 this.reporters?.ViewNavigatorReporter);
 
-            new DisplayStateController(idleController, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
+            new DisplayStateController(this.userInterfaceBridge.TextViewNavigator, idleMonitor, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
 
-            idleController.Start();
+            interactionController.Start();
             await Task.CompletedTask;
         }
 
