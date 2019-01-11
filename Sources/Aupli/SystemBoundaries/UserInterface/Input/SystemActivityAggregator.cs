@@ -10,7 +10,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
     using System;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.SystemBoundaries.UserInterface.Input.Ari;
-    using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Reports activity from the music player.

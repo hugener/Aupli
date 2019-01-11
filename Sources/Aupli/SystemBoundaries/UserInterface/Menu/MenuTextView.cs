@@ -16,7 +16,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     using Aupli.SystemBoundaries.UserInterface.Menu.Ari;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// View for showing the menu.
@@ -58,8 +58,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
                 && !Equals(x.IpAddress, IPAddress.Any)).ToList();
             this.timer = invalidater.CreateTimer();
             this.timer.Tick += this.OnTimerTick;
-            this.timer.Interval = TimeSpan.FromSeconds(1);
-            this.timer.Start(TimeSpan.FromSeconds(1));
+            this.timer.Start(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
             return Task.CompletedTask;
         }
 

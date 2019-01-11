@@ -65,6 +65,15 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         }
 
         /// <summary>
+        /// Called when [status exception].
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        public void OnStatusException(Exception exception)
+        {
+            this.log.Write(this.currentLogLevel, "Status Exception: {Exception}", exception);
+        }
+
+        /// <summary>
         /// Ignoreds the playlist.
         /// </summary>
         /// <param name="playlistName">Name of the playlist.</param>

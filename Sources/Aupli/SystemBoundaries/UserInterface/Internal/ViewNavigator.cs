@@ -15,8 +15,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Api;
     using Aupli.SystemBoundaries.UserInterface.Volume;
-    using global::Pi.Timers;
-    using Sundew.Pi.ApplicationFramework.Navigation;
+    using Sundew.Base.Threading;
+    using Sundew.TextView.ApplicationFramework.Navigation;
 
     /// <summary>
     /// Navigator for the various views.
@@ -25,6 +25,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     {
         private readonly ITextViewNavigator textViewNavigator;
         private readonly ViewFactory viewFactory;
+        private readonly ITimerFactory timerFactory;
         private readonly VolumeController volumeController;
         private readonly IViewNavigatorReporter viewNavigatorReporter;
         private readonly ITimer viewTimeoutTimer;
@@ -53,13 +54,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
             this.textViewNavigator = textViewNavigator;
             this.volumeController = volumeController;
             this.viewFactory = viewFactory;
+            this.timerFactory = timerFactory;
             this.viewNavigatorReporter = viewNavigatorReporter;
             this.viewNavigatorReporter?.SetSource(this);
             this.viewTimeoutTimer = timerFactory.Create();
-            this.viewTimeoutTimer.Interval = Timeout.InfiniteTimeSpan;
-            this.viewTimeoutTimer.Tick += async (s, e) =>
+            this.viewTimeoutTimer.Tick += async timer =>
             {
-                this.viewTimeoutTimer.Stop();
                 await this.NavigateBackAsync();
             };
             volumeChangeNotifier.VolumeChanged += this.OnVolumeControllerVolumeChanged;
@@ -85,16 +85,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
             await this.textViewNavigator.NavigateBackAsync(oldViewView => this.viewNavigatorReporter?.NavigateBack());
         }
 
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            global::Pi.Timers.Timer.Dispose(this.viewTimeoutTimer);
-        }
-
         private async void OnVolumeControllerVolumeChanged(object sender, EventArgs e)
         {
-            this.viewTimeoutTimer.Stop();
-            this.viewTimeoutTimer.Start(TimeSpan.FromMilliseconds(1500));
+            this.viewTimeoutTimer.StartOnce(TimeSpan.FromMilliseconds(1500));
             await this.textViewNavigator.ShowAsync(this.viewFactory.VolumeTextView, oldTextView => this.viewNavigatorReporter?.NavigateToVolumeTextView());
         }
 

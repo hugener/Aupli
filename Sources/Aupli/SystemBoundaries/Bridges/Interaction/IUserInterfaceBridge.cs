@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Interaction
 {
-    using Sundew.Pi.ApplicationFramework.Navigation;
+    using Sundew.TextView.ApplicationFramework.Navigation;
 
     /// <summary>
     /// Bridge for getting the <see cref="IDisplay"/> and <see cref="ITextViewNavigator"/>.

@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Interaction
 {
+    using System;
     using Sundew.Pi.IO.Devices.Buttons;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
     using Sundew.Pi.IO.Devices.RfidTransceivers;
@@ -27,6 +28,7 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
         /// <param name="rfidTransceiver">The rfid transceiver.</param>
         /// <param name="remoteControl">The lirc connection.</param>
         /// <param name="rotaryEncoder">The ky040 connection.</param>
+        /// <param name="buttonsGpioConnection">The buttons gpio connection.</param>
         public InputControls(
             IButtonDevice playPauseButton,
             IButtonDevice nextButton,
@@ -34,7 +36,8 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
             IButtonDevice menuButton,
             IRfidConnection rfidTransceiver,
             ILircDevice remoteControl,
-            IRotaryEncoderDevice rotaryEncoder)
+            IRotaryEncoderDevice rotaryEncoder,
+            IDisposable buttonsGpioConnection)
         {
             this.PlayPauseButton = playPauseButton;
             this.NextButton = nextButton;
@@ -43,6 +46,7 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
             this.RfidTransceiver = rfidTransceiver;
             this.RemoteControl = remoteControl;
             this.RotaryEncoder = rotaryEncoder;
+            this.ButtonsGpioConnection = buttonsGpioConnection;
         }
 
         /// <summary>
@@ -100,5 +104,13 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
         /// The ky040 connection.
         /// </value>
         public IRotaryEncoderDevice RotaryEncoder { get; }
+
+        /// <summary>
+        /// Gets the buttons.
+        /// </summary>
+        /// <value>
+        /// The buttons.
+        /// </value>
+        public IDisposable ButtonsGpioConnection { get; }
     }
 }

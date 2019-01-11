@@ -9,7 +9,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
 {
     using System;
     using Aupli.SystemBoundaries.Bridges.Interaction;
-    using Sundew.Pi.ApplicationFramework.Navigation;
+    using Sundew.TextView.ApplicationFramework.Navigation;
 
     /// <summary>
     /// Controller for handling the menu.

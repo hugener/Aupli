@@ -13,8 +13,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.ApplicationServices.Volume.Api;
     using Sundew.Base.Text;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering.Animation;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering.Animation;
 
     /// <summary>
     /// A textView for displaying information from the music player.

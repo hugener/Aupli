@@ -7,14 +7,12 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Api
 {
-    using System;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Interface for navigating between views.
     /// </summary>
-    /// <seealso cref="System.IDisposable" />
-    public interface IViewNavigator : IDisposable
+    public interface IViewNavigator
     {
         /// <summary>
         /// Navigates to player view asynchronous.

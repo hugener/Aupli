@@ -22,12 +22,11 @@ namespace Aupli.SystemBoundaries.Pi
     using Aupli.SystemBoundaries.Pi.SystemControl.Api;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
-    using Sundew.Base.Initialization;
 
     /// <summary>
     /// The user interface module.
     /// </summary>
-    public class ControlsModule : IControlsModule, IInitializable, IDisposable
+    public class ControlsModule : IControlsModule
     {
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
         private readonly IAmplifierReporter amplifierReporter;
@@ -92,15 +91,7 @@ namespace Aupli.SystemBoundaries.Pi
                 this.InputControls.RemoteControl,
                 this.InputControls.RfidTransceiver,
                 this.InputControls.RotaryEncoder,
-                new GpioConnection(
-                    this.gpioConnectionDriverFactory,
-                    new[]
-                    {
-                        this.InputControls.PlayPauseButton.PinConfiguration,
-                        this.InputControls.NextButton.PinConfiguration,
-                        this.InputControls.PreviousButton.PinConfiguration,
-                        this.InputControls.MenuButton.PinConfiguration,
-                    }.Where(x => x != null)));
+                this.InputControls.ButtonsGpioConnection);
 
             return Task.CompletedTask;
         }

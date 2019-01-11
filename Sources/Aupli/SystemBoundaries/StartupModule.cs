@@ -8,12 +8,14 @@
 namespace Aupli.SystemBoundaries
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.SystemBoundaries.Api;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
     using Aupli.SystemBoundaries.Persistence.Startup;
     using Aupli.SystemBoundaries.Pi.Display;
+    using Aupli.SystemBoundaries.Pi.Display.Api;
     using Aupli.SystemBoundaries.SystemServices;
     using Aupli.SystemBoundaries.SystemServices.Api;
     using Aupli.SystemBoundaries.SystemServices.Ari;
@@ -21,10 +23,10 @@ namespace Aupli.SystemBoundaries
     using Aupli.SystemBoundaries.UserInterface.Startup;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
-    using Sundew.Pi.ApplicationFramework;
-    using Sundew.Pi.ApplicationFramework.Input;
-    using Sundew.Pi.ApplicationFramework.Navigation;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework;
+    using Sundew.TextView.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework.Navigation;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// Represents the startup module.
@@ -41,7 +43,6 @@ namespace Aupli.SystemBoundaries
         private readonly ITextViewRendererReporter textViewRendererReporter;
         private readonly IInputManagerReporter inputManagerReporter;
         private readonly ISystemServicesAwaiterReporter systemServicesAwaiterReporter;
-        //// private ITextViewRenderer textViewRenderer;
         private Disposer disposer;
         private ISystemServicesAwaiter systemServicesAwaiter;
 
@@ -122,18 +123,6 @@ namespace Aupli.SystemBoundaries
             this.TextViewNavigator = this.application.StartRendering(this.Display);
             await this.TextViewNavigator.ShowAsync(new StartupTextView(greetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
 
-            /*
-            // Create Text Rendering
-            var textViewRendererFactory = new TextViewRendererFactory(this.Display, this.textViewRendererReporter);
-            this.textViewRenderer = textViewRendererFactory.Create();
-
-            // Show welcome/loading message
-            this.InputManager = new InputManager(this.inputManagerReporter);
-            this.TextViewNavigator = new TextViewNavigator(this.textViewRenderer, this.InputManager);
-
-            await this.TextViewNavigator.ShowAsync(new StartupTextView(greetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
-            this.textViewRenderer.Start();*/
-
             this.systemServicesAwaiter = this.CreateServicesAwaiter();
             this.disposer = new Disposer(displayFactory);
         }
@@ -143,7 +132,7 @@ namespace Aupli.SystemBoundaries
         /// </summary>
         public Task<bool> WaitForSystemServicesAsync()
         {
-            return this.systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, TimeSpan.FromMinutes(1));
+            return this.systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, Timeout.InfiniteTimeSpan);
         }
 
         /// <summary>
@@ -159,7 +148,7 @@ namespace Aupli.SystemBoundaries
         /// Creates the display factory.
         /// </summary>
         /// <returns>The display factory.</returns>
-        protected virtual DisplayFactory CreateDisplayFactory()
+        protected virtual IDisplayFactory CreateDisplayFactory()
         {
             return new DisplayFactory();
         }

@@ -14,7 +14,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
     using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
-    using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Contains reporters for the user interface module.

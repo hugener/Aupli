@@ -7,7 +7,6 @@
 
 namespace Aupli
 {
-    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices;
     using Aupli.DomainServices;
@@ -26,6 +25,7 @@ namespace Aupli
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume;
     using Aupli.SystemBoundaries;
     using Aupli.SystemBoundaries.Api;
+    using Aupli.SystemBoundaries.Bridges.Controls;
     using Aupli.SystemBoundaries.MusicControl;
     using Aupli.SystemBoundaries.Persistence;
     using Aupli.SystemBoundaries.Persistence.Api;
@@ -37,8 +37,7 @@ namespace Aupli
     using Serilog.Events;
     using Sundew.Base.Disposal;
     using Sundew.Base.Numeric;
-    using Sundew.Pi.ApplicationFramework;
-    using Reporters = Aupli.SystemBoundaries.UserInterface.Ari.Reporters;
+    using Sundew.TextView.ApplicationFramework;
 
     /// <summary>
     /// Bootstraps the application.
@@ -63,15 +62,14 @@ namespace Aupli
         /// <summary>
         /// Starts the asynchronous.
         /// </summary>
-        /// <param name="shutdownCancellationTokenSource">The shutdown cancellation token source.</param>
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
         /// <returns>
         /// An async task.
         /// </returns>
-        public async Task StartAsync(CancellationTokenSource shutdownCancellationTokenSource, bool allowShutdown)
+        public async Task StartAsync(bool allowShutdown)
         {
             this.logger.Verbose("Create GpioConnectionDriverFactory");
-            var gpioConnectionDriverFactory = new GpioConnectionDriverFactory(true);
+            var gpioConnectionDriverFactory = this.CreateGpioConnectionDriverFactory();
 
             // Create Startup Module
             this.logger.Verbose("Create Startup module");
@@ -101,13 +99,11 @@ namespace Aupli
 
             // Create application required system boundaries modules
             this.logger.Verbose("Create Controls Module");
-            var controlsModule = new ControlsModule(
-                gpioConnectionDriverFactory,
-                new AmplifierLogger(this.logger, LogEventLevel.Debug));
+            var controlsModule = this.CreateControlsModule(gpioConnectionDriverFactory);
             await controlsModule.InitializeAsync().ConfigureAwait(false);
 
             // Create music control module.
-            var musicControlModule = new MusicControlModule(new MusicPlayerLogger(this.logger));
+            var musicControlModule = this.CreateMusicControlModule();
             await musicControlModule.InitializeAsync();
 
             // Create application modules
@@ -138,7 +134,7 @@ namespace Aupli
                 musicControlModule.MusicPlayer,
                 playerModule,
                 volumeModule,
-                new ShutdownParameters(allowShutdown, shutdownCancellationTokenSource),
+                allowShutdown,
                 startupModule.LifecycleConfiguration,
                 await repositoriesModule.ConfigurationRepository.GetConfigurationAsync(),
                 new Reporters(
@@ -199,12 +195,42 @@ namespace Aupli
         }
 
         /// <summary>
+        /// Creates the gpio connection driver factory.
+        /// </summary>
+        /// <returns>A <see cref="GpioConnectionDriverFactory"/>.</returns>
+        protected virtual IGpioConnectionDriverFactory CreateGpioConnectionDriverFactory()
+        {
+            return new GpioConnectionDriverFactory(true);
+        }
+
+        /// <summary>
         /// Gets the repositories.
         /// </summary>
         /// <returns>The repositories.</returns>
         protected virtual IRepositoriesModule CreateRepositoriesModule()
         {
             return new RepositoriesModule("volume.json", "playlists.json", "last-playlist.json", "configuration.json");
+        }
+
+        /// <summary>
+        /// Creates the controls module.
+        /// </summary>
+        /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
+        /// <returns>A <see cref="ControlsModule"/>.</returns>
+        protected virtual IControlsModule CreateControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        {
+            return new ControlsModule(
+                gpioConnectionDriverFactory,
+                new AmplifierLogger(this.logger, LogEventLevel.Debug));
+        }
+
+        /// <summary>
+        /// Creates the music control module.
+        /// </summary>
+        /// <returns>A <see cref="MusicControlModule"/>.</returns>
+        protected virtual MusicControlModule CreateMusicControlModule()
+        {
+            return new MusicControlModule(new MusicPlayerLogger(this.logger));
         }
     }
 }

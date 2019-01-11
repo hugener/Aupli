@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Player
 {
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     internal static class PlayerCustomCharacters
     {

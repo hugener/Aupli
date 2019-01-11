@@ -10,7 +10,7 @@ namespace Aupli.Logging.Serilog.Pi.ApplicationFramework.ViewRendering
     using System;
     using global::Serilog;
     using Sundew.Base;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// Logger for the <see cref="TextViewRenderer"/>.

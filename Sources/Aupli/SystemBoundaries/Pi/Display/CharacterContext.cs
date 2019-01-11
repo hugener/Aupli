@@ -8,7 +8,7 @@
 namespace Aupli.SystemBoundaries.Pi.Display
 {
     using global::Pi.IO.Devices.Displays.Hd44780;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// Builder for custom charactors on a Hd44780 LCD display.

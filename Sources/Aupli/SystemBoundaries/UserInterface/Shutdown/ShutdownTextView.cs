@@ -10,7 +10,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <inheritdoc />
     /// <summary>

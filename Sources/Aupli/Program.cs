@@ -15,7 +15,7 @@ namespace Aupli
     using Serilog.Events;
     using Sundew.Base.Computation;
     using Sundew.CommandLine;
-    using Sundew.Pi.ApplicationFramework;
+    using Sundew.TextView.ApplicationFramework;
 
     /// <summary>
     /// The main entry point.
@@ -49,25 +49,16 @@ namespace Aupli
                 logger.Information("------------------------------------------");
                 logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
                 var application = new Application();
+
                 var bootstrapper = new Bootstrapper(application, logger);
                 logger.Verbose("Created Bootstrapper");
-                try
-                {
-                    await bootstrapper.StartAsync(null, result.Value.AllowShutdown);
-                    logger.Information("Started Aupli in {time}", stopwatch.Elapsed);
-                    stopwatch.Stop();
-                    application.Run();
-                    /*while (!cancellationTokenSource.Token.IsCancellationRequested)
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationTokenSource.Token);
-                    }*/
-                }
-                catch (OperationCanceledException)
-                {
-                }
+                await bootstrapper.StartAsync(result.Value.AllowShutdown);
+                logger.Information("Started Aupli in {time}", stopwatch.Elapsed);
+                stopwatch.Stop();
+
+                application.Run();
 
                 await bootstrapper.StopAsync();
-
                 logger.Information("Stopped Aupli");
             }
             catch (Exception e)

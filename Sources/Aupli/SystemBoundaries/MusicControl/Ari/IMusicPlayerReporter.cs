@@ -26,5 +26,11 @@ namespace Aupli.SystemBoundaries.MusicControl.Ari
         /// </summary>
         /// <param name="playlistName">Name of the playlist.</param>
         void StartingPlaylist(string playlistName);
+
+        /// <summary>
+        /// Called when [status exception].
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        void OnStatusException(Exception exception);
     }
 }

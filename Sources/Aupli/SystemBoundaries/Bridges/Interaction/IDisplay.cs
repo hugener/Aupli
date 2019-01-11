@@ -7,12 +7,12 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Interaction
 {
-    using Sundew.Pi.ApplicationFramework.DeviceInterface;
+    using Sundew.TextView.ApplicationFramework.DeviceInterface;
 
     /// <summary>
     /// Interface for implementing a display.
     /// </summary>
-    /// <seealso cref="Sundew.Pi.ApplicationFramework.DeviceInterface.ITextDisplayDevice" />
+    /// <seealso cref="Sundew.TextView.ApplicationFramework.DeviceInterface.ITextDisplayDevice" />
     public interface IDisplay : ITextDisplayDevice
     {
         /// <summary>

@@ -22,6 +22,7 @@ namespace Aupli.SystemBoundaries.MusicControl
     using Sundew.Base.Equality;
     using Sundew.Base.Numeric;
     using Sundew.Base.Threading;
+    using Sundew.Base.Threading.Jobs;
 
     /// <summary>
     /// Aupli music player.
@@ -30,12 +31,11 @@ namespace Aupli.SystemBoundaries.MusicControl
     {
         private static readonly TimeSpan DefaultCommandDelay = TimeSpan.FromMilliseconds(5);
         private readonly AsyncLock mpcCommandLock = new AsyncLock();
-        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly AutoResetEventAsync updateStatusSleepEvent = new AutoResetEventAsync(false);
         private readonly AutoResetEventAsync statusUpdatedEvent = new AutoResetEventAsync(false);
         private readonly IMpcConnection mpcConnection;
         private readonly IMusicPlayerReporter musicPlayerReporter;
-        private readonly Task musicPlayerTask;
+        private readonly ContinuousJob musicPlayerStatusJob;
 
         private string currentPlaylist;
         private MpdStatus lastMpdStatus;
@@ -52,11 +52,8 @@ namespace Aupli.SystemBoundaries.MusicControl
             this.mpcConnection = mpcConnection;
             this.musicPlayerReporter = musicPlayerReporter;
             this.musicPlayerReporter?.SetSource(this);
-            this.musicPlayerTask = new TaskFactory().StartNew(
-                this.GetStatus,
-                this.cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Current);
+            this.musicPlayerStatusJob = new ContinuousJob(this.GetStatus, e => musicPlayerReporter?.OnStatusException(e));
+            this.musicPlayerStatusJob.Start();
         }
 
         /// <summary>
@@ -160,7 +157,7 @@ namespace Aupli.SystemBoundaries.MusicControl
             {
                 if (playlistName != null)
                 {
-                    this.musicPlayerReporter.StartingPlaylist(playlistName);
+                    this.musicPlayerReporter?.StartingPlaylist(playlistName);
                     await this.mpcConnection.SendAsync(new StopCommand());
                     await this.mpcConnection.SendAsync(new ClearCommand());
                     var loadResult = await this.mpcConnection.SendAsync(new LoadCommand(playlistName));
@@ -237,9 +234,7 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// <inheritdoc />
         public void Dispose()
         {
-            this.cancellationTokenSource?.Cancel();
-            this.musicPlayerTask?.Wait();
-            this.cancellationTokenSource?.Dispose();
+            this.musicPlayerStatusJob.Dispose();
         }
 
         private static PlayerState GetPlayerState(MpdState mpdState)
@@ -328,54 +323,44 @@ namespace Aupli.SystemBoundaries.MusicControl
             }
         }
 
-        private async void GetStatus()
+        private async Task GetStatus(CancellationToken cancellationToken)
         {
-            try
+            var musicPlayerEventArgs = MusicPlayerEventArgs.EmptyEventArgs;
+            using (var lockResult = await this.mpcCommandLock.TryLockAsync(cancellationToken))
             {
-                var cancellationToken = this.cancellationTokenSource.Token;
-                while (!cancellationToken.IsCancellationRequested)
+                if (lockResult)
                 {
-                    var musicPlayerEventArgs = MusicPlayerEventArgs.EmptyEventArgs;
-                    using (var lockResult = await this.mpcCommandLock.TryLockAsync(cancellationToken))
+                    using (this.musicPlayerReporter?.EnterStatusRefresh())
                     {
-                        if (lockResult)
-                        {
-                            using (this.musicPlayerReporter.EnterStatusRefresh())
-                            {
-                                musicPlayerEventArgs = await this.ExecuteCurrentSongAndStatusCommandAsync();
-                                cancellationToken.ThrowIfCancellationRequested();
-                            }
-                        }
-                    }
-
-                    if (musicPlayerEventArgs.VolumeChangedEventArgs != null)
-                    {
-                        this.VolumeChanged?.Invoke(this, musicPlayerEventArgs.VolumeChangedEventArgs);
-                    }
-
-                    if (musicPlayerEventArgs.AudioOutputEventArgs != null)
-                    {
-                        this.AudioOutputStatusChanged?.Invoke(this, musicPlayerEventArgs.AudioOutputEventArgs);
-                    }
-
-                    if (musicPlayerEventArgs.StatusEventArgs != null)
-                    {
-                        this.StatusChanged?.Invoke(this, musicPlayerEventArgs.StatusEventArgs);
-                    }
-
-                    if (!musicPlayerEventArgs.Equals(MusicPlayerEventArgs.EmptyEventArgs))
-                    {
-                        this.statusUpdatedEvent.Set();
-                    }
-
-                    if (await this.updateStatusSleepEvent.WaitAsync(TimeSpan.FromMilliseconds(1000), cancellationToken))
-                    {
-                        await Task.Delay(DefaultCommandDelay, cancellationToken);
+                        musicPlayerEventArgs = await this.ExecuteCurrentSongAndStatusCommandAsync();
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
                 }
             }
-            catch (OperationCanceledException)
+
+            if (musicPlayerEventArgs.VolumeChangedEventArgs != null)
             {
+                this.VolumeChanged?.Invoke(this, musicPlayerEventArgs.VolumeChangedEventArgs);
+            }
+
+            if (musicPlayerEventArgs.AudioOutputEventArgs != null)
+            {
+                this.AudioOutputStatusChanged?.Invoke(this, musicPlayerEventArgs.AudioOutputEventArgs);
+            }
+
+            if (musicPlayerEventArgs.StatusEventArgs != null)
+            {
+                this.StatusChanged?.Invoke(this, musicPlayerEventArgs.StatusEventArgs);
+            }
+
+            if (!musicPlayerEventArgs.Equals(MusicPlayerEventArgs.EmptyEventArgs))
+            {
+                this.statusUpdatedEvent.Set();
+            }
+
+            if (await this.updateStatusSleepEvent.WaitAsync(TimeSpan.FromMilliseconds(1000), cancellationToken))
+            {
+                await Task.Delay(DefaultCommandDelay, cancellationToken);
             }
         }
 

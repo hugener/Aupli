@@ -9,12 +9,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// An empty text view for when the display is off.
     /// </summary>
-    /// <seealso cref="Sundew.Pi.ApplicationFramework.TextViewRendering.ITextView" />
+    /// <seealso cref="Sundew.TextView.ApplicationFramework.TextViewRendering.ITextView" />
     public class DisabledDisplayTextView : ITextView
     {
         /// <summary>

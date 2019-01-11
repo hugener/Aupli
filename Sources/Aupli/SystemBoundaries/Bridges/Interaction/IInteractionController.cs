@@ -7,7 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Interaction
 {
-    using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Interface for managing key and tag input events.

@@ -7,13 +7,16 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Controls
 {
+    using System;
+    using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.Bridges.Shutdown;
+    using Sundew.Base.Initialization;
 
     /// <summary>
     /// Required interface with various controls for user interface module.
     /// </summary>
-    public interface IControlsModule
+    public interface IControlsModule : IInitializable, IDisposable
     {
         /// <summary>
         /// Gets the system control.
@@ -30,5 +33,13 @@ namespace Aupli.SystemBoundaries.Bridges.Controls
         /// The input controls.
         /// </value>
         InputControls InputControls { get; }
+
+        /// <summary>
+        /// Gets the amplifier.
+        /// </summary>
+        /// <value>
+        /// The amplifier.
+        /// </value>
+        IAmplifier Amplifier { get; }
     }
 }

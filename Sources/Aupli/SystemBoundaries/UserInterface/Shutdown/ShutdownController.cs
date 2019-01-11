@@ -8,12 +8,11 @@
 namespace Aupli.SystemBoundaries.UserInterface.Shutdown
 {
     using System;
-    using System.Threading;
     using Aupli.SystemBoundaries.Bridges.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Api;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
-    using Sundew.Pi.ApplicationFramework;
-    using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Handles the shutdown process.
@@ -24,7 +23,6 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         private readonly ISystemControl systemControl;
         private readonly IApplicationExit applicationExit;
         private readonly bool allowShutdown;
-        private readonly CancellationTokenSource shutdownTokenSource;
         private readonly IShutdownControllerReporter shutdownControllerReporter;
 
         /// <summary>
@@ -34,33 +32,24 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         /// <param name="systemControl">The shutdown button.</param>
         /// <param name="applicationExit">The application exit.</param>
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
-        /// <param name="shutdownTokenSource">The shutdown token source.</param>
         /// <param name="shutdownControllerReporter">The shutdown controller reporter.</param>
         public ShutdownController(
             IIdleMonitor idleMonitor,
             ISystemControl systemControl,
             IApplicationExit applicationExit,
             bool allowShutdown,
-            CancellationTokenSource shutdownTokenSource,
             IShutdownControllerReporter shutdownControllerReporter = null)
         {
             this.idleMonitor = idleMonitor;
             this.systemControl = systemControl;
             this.applicationExit = applicationExit;
             this.allowShutdown = allowShutdown;
-            this.shutdownTokenSource = shutdownTokenSource;
             this.shutdownControllerReporter = shutdownControllerReporter;
             this.shutdownControllerReporter?.SetSource(this);
             this.idleMonitor.SystemIdle += this.OnIdleControllerSystemIdle;
             this.systemControl.ShuttingDown += this.OnShutdownControlShuttingDown;
             this.applicationExit.ExitRequest += this.OnApplicationExitRequest;
             this.applicationExit.Exiting += this.OnApplicationExiting;
-            /*Console.CancelKeyPress += (sender, eventArgs) =>
-            {
-                eventArgs.Cancel = true;
-                this.shutdownControllerReporter?.ShutdownByCtrlC();
-                this.Shutdown();
-            };*/
         }
 
         /// <summary>

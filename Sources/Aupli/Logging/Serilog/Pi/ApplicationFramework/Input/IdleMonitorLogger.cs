@@ -9,12 +9,12 @@ namespace Aupli.Logging.Serilog.Pi.ApplicationFramework.Input
 {
     using global::Serilog;
     using Sundew.Base;
-    using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Logger for the IdleMonitor.
     /// </summary>
-    /// <seealso cref="Sundew.Pi.ApplicationFramework.Input.IIdleMonitorReporter" />
+    /// <seealso cref="Sundew.TextView.ApplicationFramework.Input.IIdleMonitorReporter" />
     public class IdleMonitorLogger : IIdleMonitorReporter
     {
         private ILogger log;

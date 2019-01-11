@@ -10,10 +10,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
     using System;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Input.Ari;
-    using Sundew.Pi.ApplicationFramework.Input;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
     using Sundew.Pi.IO.Devices.RfidTransceivers;
     using Sundew.Pi.IO.Devices.RotaryEncoders;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Maps hardware inputs to application input.

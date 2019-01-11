@@ -12,7 +12,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Api;
     using Sundew.Base.Text;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// View for displaying the current volume.

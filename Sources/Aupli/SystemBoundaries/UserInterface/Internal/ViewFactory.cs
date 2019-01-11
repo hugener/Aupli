@@ -17,7 +17,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     using Aupli.SystemBoundaries.UserInterface.Player;
     using Aupli.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Volume;
-    using Sundew.Pi.ApplicationFramework.TextViewRendering;
+    using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
     /// <summary>
     /// Factory for creating views.

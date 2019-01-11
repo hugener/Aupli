@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.Input
 {
+    using System.Linq;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Pi.IO.Devices.Buttons;
@@ -33,13 +34,22 @@ namespace Aupli.SystemBoundaries.Pi.Input
             var nextButton = new PullDownButtonDevice(ConnectorPin.P1Pin18);
             var previousButton = new PullDownButtonDevice(ConnectorPin.P1Pin16);
             var menuButton = new PullDownButtonDevice(ConnectorPin.P1Pin13);
-            var rfidTransceiver = new Mfrc522Connection("/dev/spidev0.0", ConnectorPin.P1Pin22);
+            var rfidTransceiver = new Mfrc522Connection("/dev/spidev0.0", ConnectorPin.P1Pin22, gpioConnectionDriverFactory);
             var ky040Connection = new Ky040Device(
                 ConnectorPin.P1Pin36,
                 ConnectorPin.P1Pin38,
                 ConnectorPin.P1Pin40,
                 gpioConnectionDriverFactory,
                 null);
+            var buttonsGpioConnection = new GpioConnection(
+                gpioConnectionDriverFactory,
+                new[]
+                {
+                    playPauseButton.PinConfiguration,
+                    nextButton.PinConfiguration,
+                    previousButton.PinConfiguration,
+                    menuButton.PinConfiguration,
+                }.Where(x => x != null));
 
             return new InputControls(
                 playPauseButton,
@@ -48,7 +58,8 @@ namespace Aupli.SystemBoundaries.Pi.Input
                 menuButton,
                 rfidTransceiver,
                 lircConnection,
-                ky040Connection);
+                ky040Connection,
+                buttonsGpioConnection);
         }
     }
 }

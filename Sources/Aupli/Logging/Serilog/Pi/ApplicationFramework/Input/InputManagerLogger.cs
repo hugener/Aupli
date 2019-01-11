@@ -11,12 +11,12 @@ namespace Aupli.Logging.Serilog.Pi.ApplicationFramework.Input
     using System.Linq;
     using global::Serilog;
     using Sundew.Base;
-    using Sundew.Pi.ApplicationFramework.Input;
+    using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Logger for <see cref="InputManager" />.
     /// </summary>
-    /// <seealso cref="Sundew.Pi.ApplicationFramework.Input.IInputManagerReporter" />
+    /// <seealso cref="Sundew.TextView.ApplicationFramework.Input.IInputManagerReporter" />
     /// <seealso cref="IInputManagerReporter" />
     public class InputManagerLogger : IInputManagerReporter
     {

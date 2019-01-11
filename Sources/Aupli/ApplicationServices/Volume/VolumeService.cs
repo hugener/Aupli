@@ -155,28 +155,26 @@ namespace Aupli.ApplicationServices.Volume
             this.amplifier.IsMuted = !isAudioOutputActive;
         }
 
-        private async Task<bool> SetVolumeAllAsync(Percentage volume)
+        private async Task SetVolumeAllAsync(Percentage volume)
         {
             this.volumeRepository.Volume = volume;
             this.amplifier.SetVolume(volume);
+            await this.volumeControl.SetVolumeAsync(volume);
             await this.volumeRepository.SaveAsync();
-            return await this.volumeControl.SetVolumeAsync(volume);
         }
 
-        private Task SetMuteStateAsync(bool isMuted)
+        private async Task SetMuteStateAsync(bool isMuted)
         {
             this.IsMuted = isMuted;
             this.amplifier.IsMuted = isMuted;
             if (isMuted)
             {
-                this.volumeControl.MuteAsync();
+                await this.volumeControl.MuteAsync();
             }
             else
             {
-                this.volumeControl.SetVolumeAsync(this.volumeRepository.Volume);
+                await this.volumeControl.SetVolumeAsync(this.volumeRepository.Volume);
             }
-
-            return Task.CompletedTask;
         }
     }
 }
