@@ -53,7 +53,6 @@ namespace Aupli.SystemBoundaries.MusicControl
             this.musicPlayerReporter = musicPlayerReporter;
             this.musicPlayerReporter?.SetSource(this);
             this.musicPlayerStatusJob = new ContinuousJob(this.GetStatus, e => musicPlayerReporter?.OnStatusException(e));
-            this.musicPlayerStatusJob.Start();
         }
 
         /// <summary>
@@ -70,6 +69,14 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// Occurs when [audio output status changed].
         /// </summary>
         public event EventHandler AudioOutputStatusChanged;
+
+        /// <summary>
+        /// Gets or sets the status automatic refresh period.
+        /// </summary>
+        /// <value>
+        /// The status automatic refresh period.
+        /// </value>
+        public TimeSpan StatusAutoRefreshPeriod { get; set; } = TimeSpan.FromMilliseconds(1000);
 
         /// <summary>
         /// Gets the status.
@@ -93,9 +100,12 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// <returns>An async task.</returns>
         public async Task UpdateStatusAsync()
         {
-            this.statusUpdatedEvent.Reset();
-            this.updateStatusSleepEvent.Set();
-            await this.statusUpdatedEvent.WaitAsync();
+            if (!this.musicPlayerStatusJob.Start())
+            {
+                this.statusUpdatedEvent.Reset();
+                this.updateStatusSleepEvent.Set();
+                await this.statusUpdatedEvent.WaitAsync();
+            }
         }
 
         /// <summary>
@@ -358,7 +368,7 @@ namespace Aupli.SystemBoundaries.MusicControl
                 this.statusUpdatedEvent.Set();
             }
 
-            if (await this.updateStatusSleepEvent.WaitAsync(TimeSpan.FromMilliseconds(1000), cancellationToken))
+            if (await this.updateStatusSleepEvent.WaitAsync(this.StatusAutoRefreshPeriod, cancellationToken))
             {
                 await Task.Delay(DefaultCommandDelay, cancellationToken);
             }

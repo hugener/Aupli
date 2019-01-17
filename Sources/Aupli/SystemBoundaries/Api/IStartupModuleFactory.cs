@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IStartupModule.cs" company="Hukano">
+// <copyright file="IStartupModuleFactory.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -7,21 +7,24 @@
 
 namespace Aupli.SystemBoundaries.Api
 {
-    using Aupli.SystemBoundaries.Bridges.Interaction;
-    using Aupli.SystemBoundaries.Bridges.Lifecycle;
+    using System;
+    using Sundew.Base.Initialization;
+    using Sundew.Base.Threading;
 
     /// <summary>
-    /// Interface for the startup module.
+    /// Public interface for the startup module.
     /// </summary>
     /// <seealso cref="Aupli.SystemBoundaries.Bridges.Interaction.IUserInterfaceBridge" />
-    public interface IStartupModule : IUserInterfaceBridge
+    /// <seealso cref="Sundew.Base.Initialization.IInitializable" />
+    /// <seealso cref="System.IDisposable" />
+    public interface IStartupModuleFactory : IInitializable, IDisposable
     {
         /// <summary>
-        /// Gets the lifecycle configuration.
+        /// Gets the startup module data.
         /// </summary>
         /// <value>
-        /// The lifecycle configuration.
+        /// The startup module data.
         /// </value>
-        ILifecycleConfiguration LifecycleConfiguration { get; }
+        IAsyncLazy<IStartupModule> StartupModule { get; }
     }
 }

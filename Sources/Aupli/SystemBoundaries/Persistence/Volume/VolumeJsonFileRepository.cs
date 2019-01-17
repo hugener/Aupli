@@ -7,10 +7,10 @@
 
 namespace Aupli.SystemBoundaries.Persistence.Volume
 {
+    using System.Globalization;
     using System.IO;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Ari;
-    using Newtonsoft.Json;
     using Sundew.Base.Numeric;
     using Sundew.Base.Threading;
 
@@ -23,6 +23,7 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
         private readonly AsyncLock lockObject = new AsyncLock();
         private readonly string filePath;
         private Percentage volume;
+        private Task saveTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeJsonFileRepository"/> class.
@@ -67,8 +68,7 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
             using (await this.lockObject.LockAsync())
             {
                 this.volume =
-                    JsonConvert.DeserializeObject<Percentage>(await File.ReadAllTextAsync(this.filePath)
-                        .ConfigureAwait(false));
+                    new Percentage(double.Parse(await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false)));
             }
         }
 
@@ -80,9 +80,15 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
         {
             using (await this.lockObject.LockAsync())
             {
-                await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.volume))
-                        .ConfigureAwait(false);
+                this.saveTask = this.saveTask?.ContinueWith(async task => await this.PrivateSaveAsync()) ??
+                                Task.Run(async () => await this.PrivateSaveAsync());
             }
+        }
+
+        private async Task PrivateSaveAsync()
+        {
+            await File.WriteAllTextAsync(this.filePath, this.volume.Value.ToString(CultureInfo.InvariantCulture))
+                .ConfigureAwait(false);
         }
     }
 }

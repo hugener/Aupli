@@ -23,9 +23,9 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Sundew.TextView.ApplicationFramework.Input;
     using Sundew.TextView.ApplicationFramework.TextViewRendering;
 
-    public class TestStartupModule : StartupModule
+    public class TestStartupModuleFactory : StartupModuleFactory
     {
-        public TestStartupModule(
+        public TestStartupModuleFactory(
             IApplicationRendering application,
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
             string namePath = "name.val",
@@ -33,9 +33,8 @@ namespace Aupli.IntegrationTests.Bootstrapping
             string greetingsPath = "greetings.csv",
             string lastGreetingPath = "last-greeting.val",
             ITextViewRendererReporter textViewRendererReporter = null,
-            IInputManagerReporter inputManagerReporter = null,
-            ISystemServicesAwaiterReporter systemServicesAwaiterReporter = null)
-            : base(application, gpioConnectionDriverFactory, namePath, pin26FeaturePath, greetingsPath, lastGreetingPath, textViewRendererReporter, inputManagerReporter, systemServicesAwaiterReporter)
+            IInputManagerReporter inputManagerReporter = null)
+            : base(application, gpioConnectionDriverFactory, namePath, pin26FeaturePath, greetingsPath, lastGreetingPath, textViewRendererReporter, inputManagerReporter)
         {
         }
 
@@ -50,13 +49,6 @@ namespace Aupli.IntegrationTests.Bootstrapping
         protected override IGreetingProvider CreateGreetingProvider()
         {
             return Substitute.For<IGreetingProvider>();
-        }
-
-        protected override ISystemServicesAwaiter CreateServicesAwaiter()
-        {
-            var systemServicesAwaiter = Substitute.For<ISystemServicesAwaiter>();
-            systemServicesAwaiter.WaitForServicesAsync(Arg.Any<IEnumerable<string>>(), Arg.Any<TimeSpan>()).Returns(Task.FromResult(true));
-            return systemServicesAwaiter;
         }
 
         protected override Task<ILifecycleConfiguration> GetLifecycleConfigurationAsync()

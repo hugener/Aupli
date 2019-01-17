@@ -10,10 +10,12 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.DomainServices.Playlist.Shared;
     using Newtonsoft.Json;
+    using Sundew.Base.Threading;
 
     /// <summary>
     /// Persists an loads a map of the available playlists.
@@ -21,7 +23,8 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     public class PlaylistMapJsonFileRepository : IPlaylistRepository
     {
         private readonly string filePath;
-        private Dictionary<string, PlaylistEntity> playlists = new Dictionary<string, PlaylistEntity>();
+
+        private readonly AsyncLazy<Dictionary<string, PlaylistEntity>> playlists;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaylistMapJsonFileRepository"/> class.
@@ -30,19 +33,13 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         public PlaylistMapJsonFileRepository(string filePath)
         {
             this.filePath = filePath;
-        }
-
-        /// <summary>
-        /// Initializes the asynchronous.
-        /// </summary>
-        /// <returns>
-        /// An async task.
-        /// </returns>
-        public async Task InitializeAsync()
-        {
             this.playlists =
-                JsonConvert.DeserializeObject<Dictionary<string, string>>(await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false))
-                    .ToDictionary(pair => pair.Key, pair => new PlaylistEntity(pair.Key, pair.Value));
+                new AsyncLazy<Dictionary<string, PlaylistEntity>>(
+                    async () => JsonConvert
+                        .DeserializeObject<Dictionary<string, string>>(await File.ReadAllTextAsync(this.filePath)
+                            .ConfigureAwait(false))
+                        .ToDictionary(pair => pair.Key, pair => new PlaylistEntity(pair.Key, pair.Value)),
+                    true);
         }
 
         /// <summary>
@@ -52,14 +49,15 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// <returns>
         /// The entity.
         /// </returns>
-        public Task<PlaylistEntity> GetPlaylistAsync(string id)
+        public async Task<PlaylistEntity> GetPlaylistAsync(string id)
         {
-            if (this.playlists.TryGetValue(id, out var playlist))
+            var playlists = await this.playlists;
+            if (playlists.TryGetValue(id, out var playlist))
             {
-                return Task.FromResult(playlist);
+                return playlist;
             }
 
-            return Task.FromResult(default(PlaylistEntity));
+            return default;
         }
 
         /// <summary>
@@ -68,7 +66,8 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// <returns>A async task.</returns>
         public async Task SaveAsync()
         {
-            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(this.playlists.ToDictionary(x => x.Key, x => x.Value.Name))).ConfigureAwait(false);
+            var playlists = await this.playlists;
+            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(playlists.ToDictionary(x => x.Key, x => x.Value.Name))).ConfigureAwait(false);
         }
     }
 }

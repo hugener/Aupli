@@ -36,7 +36,6 @@ namespace Aupli.ApplicationServices
             Percentage volumeIncrementStep,
             IVolumeServiceReporter volumeServiceReporter)
         {
-            // Create application services
             this.VolumeService = new VolumeService(
                 amplifier,
                 volumeControl,

@@ -36,7 +36,7 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
             IButtonDevice menuButton,
             IRfidConnection rfidTransceiver,
             ILircDevice remoteControl,
-            IRotaryEncoderDevice rotaryEncoder,
+            IRotaryEncoderWithButtonDevice rotaryEncoder,
             IDisposable buttonsGpioConnection)
         {
             this.PlayPauseButton = playPauseButton;
@@ -103,7 +103,7 @@ namespace Aupli.SystemBoundaries.Bridges.Interaction
         /// <value>
         /// The ky040 connection.
         /// </value>
-        public IRotaryEncoderDevice RotaryEncoder { get; }
+        public IRotaryEncoderWithButtonDevice RotaryEncoder { get; }
 
         /// <summary>
         /// Gets the buttons.

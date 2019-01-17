@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IControlsModule.cs" company="Hukano">
+// <copyright file="IControlsModuleFactory.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -7,14 +7,13 @@
 
 namespace Aupli.SystemBoundaries.Bridges.Controls
 {
-    using Aupli.ApplicationServices.Volume.Ari;
-    using Aupli.SystemBoundaries.Bridges.Interaction;
-    using Aupli.SystemBoundaries.Bridges.Shutdown;
+    using System;
+    using Sundew.Base.Threading;
 
     /// <summary>
     /// Required interface with various controls for user interface module.
     /// </summary>
-    public interface IControlsModule
+    public interface IControlsModuleFactory : IDisposable
     {
         /// <summary>
         /// Gets the system control.
@@ -22,22 +21,6 @@ namespace Aupli.SystemBoundaries.Bridges.Controls
         /// <value>
         /// The system control.
         /// </value>
-        ISystemControl SystemControl { get; }
-
-        /// <summary>
-        /// Gets the input controls.
-        /// </summary>
-        /// <value>
-        /// The input controls.
-        /// </value>
-        InputControls InputControls { get; }
-
-        /// <summary>
-        /// Gets the amplifier.
-        /// </summary>
-        /// <value>
-        /// The amplifier.
-        /// </value>
-        IAmplifier Amplifier { get; }
+        IAsyncLazy<IControlsModule> ControlsModule { get; }
     }
 }

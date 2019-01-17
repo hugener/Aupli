@@ -27,7 +27,7 @@ namespace Aupli.IntegrationTests
             var bootstrapper = new TestBootstrapper(new Application(), this.logger);
             await bootstrapper.StartAsync(true);
 
-            bootstrapper.ControlsModule.InputControls.RfidTransceiver.TagDetected += Raise.EventWith(new TagDetectedEventArgs(new Uid(0, 0, 0, 0)));
+            (await bootstrapper.ControlsModuleFactory.ControlsModule).InputControls.RfidTransceiver.TagDetected += Raise.EventWith(new TagDetectedEventArgs(new Uid(0, 0, 0, 0)));
 
             await bootstrapper.MusicControlModule.MpcConnection.Received(1).SendAsync(Arg.Any<PlayCommand>());
         }

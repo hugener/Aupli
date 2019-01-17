@@ -12,6 +12,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     using Aupli.ApplicationServices.Playlist.Ari;
     using Aupli.DomainServices.Playlist.Shared;
     using Newtonsoft.Json;
+    using Sundew.Base.Threading;
 
     /// <summary>
     /// Repository for storing the last playlist.
@@ -20,6 +21,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     public class LastPlaylistJsonFileRepository : ILastPlaylistRepository
     {
         private readonly string filePath;
+        private readonly AsyncLazy<PlaylistEntity> playlistLazy;
         private PlaylistEntity playlist;
 
         /// <summary>
@@ -29,17 +31,9 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         public LastPlaylistJsonFileRepository(string filePath)
         {
             this.filePath = filePath;
-        }
-
-        /// <summary>
-        /// Initializes the asynchronous.
-        /// </summary>
-        /// <returns>
-        /// An async task.
-        /// </returns>
-        public async Task InitializeAsync()
-        {
-            this.playlist = JsonConvert.DeserializeObject<PlaylistEntity>(await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false));
+            this.playlistLazy = new AsyncLazy<PlaylistEntity>(async () =>
+                JsonConvert.DeserializeObject<PlaylistEntity>(await File.ReadAllTextAsync(this.filePath)
+                    .ConfigureAwait(false)));
         }
 
         /// <summary>
@@ -48,9 +42,9 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// <returns>
         /// The entity.
         /// </returns>
-        public Task<PlaylistEntity> GetLastPlaylistAsync()
+        public async Task<PlaylistEntity> GetLastPlaylistAsync()
         {
-            return Task.FromResult(this.playlist);
+            return await this.playlistLazy;
         }
 
         /// <summary>

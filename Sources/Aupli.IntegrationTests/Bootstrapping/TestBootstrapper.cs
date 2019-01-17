@@ -29,11 +29,11 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         public IGpioConnectionDriverFactory GpioConnectionDriverFactory { get; private set; }
 
-        public IStartupModule StartupModule { get; private set; }
+        public IStartupModuleFactory StartupModuleFactory { get; private set; }
 
         public IRepositoriesModule RepositoriesModule { get; private set; }
 
-        public TestControlsModule ControlsModule { get; private set; }
+        public TestControlsModuleFactory ControlsModuleFactory { get; private set; }
 
         public TestMusicControlModule MusicControlModule { get; private set; }
 
@@ -43,10 +43,10 @@ namespace Aupli.IntegrationTests.Bootstrapping
             return this.GpioConnectionDriverFactory;
         }
 
-        protected override IStartupModule CreateStartupModule(IApplication application, IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        protected override IStartupModuleFactory CreateStartupModule(IApplication application, IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
-            this.StartupModule = new TestStartupModule(application, gpioConnectionDriverFactory);
-            return this.StartupModule;
+            this.StartupModuleFactory = new TestStartupModuleFactory(application, gpioConnectionDriverFactory);
+            return this.StartupModuleFactory;
         }
 
         protected override IRepositoriesModule CreateRepositoriesModule()
@@ -61,10 +61,10 @@ namespace Aupli.IntegrationTests.Bootstrapping
             return this.RepositoriesModule;
         }
 
-        protected override IControlsModule CreateControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        protected override IControlsModuleFactory CreateControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
-            this.ControlsModule = new TestControlsModule(gpioConnectionDriverFactory, null);
-            return this.ControlsModule;
+            this.ControlsModuleFactory = new TestControlsModuleFactory(gpioConnectionDriverFactory, null);
+            return this.ControlsModuleFactory;
         }
 
         protected override MusicControlModule CreateMusicControlModule()

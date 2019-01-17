@@ -21,9 +21,9 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Sundew.Pi.IO.Devices.RfidTransceivers;
     using Sundew.Pi.IO.Devices.RotaryEncoders;
 
-    public class TestControlsModule : ControlsModule
+    public class TestControlsModuleFactory : ControlsModuleFactory
     {
-        public TestControlsModule(
+        public TestControlsModuleFactory(
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
             IAmplifierReporter amplifierReporter)
             : base(gpioConnectionDriverFactory, amplifierReporter)
@@ -46,7 +46,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
                 Substitute.For<IButtonDevice>(),
                 Substitute.For<IRfidConnection>(),
                 Substitute.For<ILircDevice>(),
-                Substitute.For<IRotaryEncoderDevice>(),
+                Substitute.For<IRotaryEncoderWithButtonDevice>(),
                 Substitute.For<IDisposable>());
         }
 

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ControlsModule.cs" company="Hukano">
+// <copyright file="ControlsModuleFactory.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,8 +8,6 @@
 namespace Aupli.SystemBoundaries.Pi
 {
     using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Bridges.Controls;
     using Aupli.SystemBoundaries.Bridges.Interaction;
@@ -22,87 +20,64 @@ namespace Aupli.SystemBoundaries.Pi
     using Aupli.SystemBoundaries.Pi.SystemControl.Api;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
+    using Sundew.Base.Threading;
 
     /// <summary>
     /// The user interface module.
     /// </summary>
-    public class ControlsModule : IControlsModule
+    public class ControlsModuleFactory : IControlsModuleFactory
     {
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
         private readonly IAmplifierReporter amplifierReporter;
-        private Disposer disposer;
+        private readonly AsyncLazy<IControlsModule, PrivateControlModule> controlsModule;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ControlsModule" /> class.
+        /// Initializes a new instance of the <see cref="ControlsModuleFactory" /> class.
         /// </summary>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver.</param>
         /// <param name="amplifierReporter">The amplifier reporter.</param>
-        public ControlsModule(
+        public ControlsModuleFactory(
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
             IAmplifierReporter amplifierReporter)
         {
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.amplifierReporter = amplifierReporter;
+            this.controlsModule = new AsyncLazy<IControlsModule, PrivateControlModule>(() =>
+            {
+                // Create Hardware
+                var inputControls = this.CreateInputControls(this.gpioConnectionDriverFactory);
+
+                var systemControlFactory = this.CreateSystemControlFactory();
+                var systemControl = systemControlFactory.Create(this.gpioConnectionDriverFactory);
+
+                var amplifierFactory = this.CreateAmplifierFactory();
+                var amplifier = amplifierFactory.Create(this.amplifierReporter);
+
+                var disposer = new Disposer(
+                    systemControlFactory,
+                    amplifierFactory,
+                    inputControls.RemoteControl,
+                    inputControls.RfidTransceiver,
+                    inputControls.RotaryEncoder,
+                    inputControls.ButtonsGpioConnection);
+                return new PrivateControlModule(inputControls, systemControl, amplifier, disposer);
+            });
         }
 
         /// <summary>
-        /// Gets the amplifier.
-        /// </summary>
-        /// <value>
-        /// The amplifier.
-        /// </value>
-        public IAmplifier Amplifier { get; private set; }
-
-        /// <summary>
-        /// Gets the system control.
+        /// Gets the controls module.
         /// </summary>
         /// <value>
         /// The system control.
         /// </value>
-        public ISystemControl SystemControl { get; private set; }
-
-        /// <summary>
-        /// Gets the input controls.
-        /// </summary>
-        /// <value>
-        /// The input controls.
-        /// </value>
-        public InputControls InputControls { get; private set; }
-
-        /// <summary>
-        /// Initializes the asynchronous.
-        /// </summary>
-        /// <returns>An async task.</returns>
-        public Task InitializeAsync()
-        {
-            // Create Hardware
-            this.InputControls = this.CreateInputControls(this.gpioConnectionDriverFactory);
-
-            var systemControlFactory = this.CreateSystemControlFactory();
-            this.SystemControl = systemControlFactory.Create(this.gpioConnectionDriverFactory);
-
-            var amplifierFactory = this.CreateAmplifierFactory();
-            this.Amplifier = amplifierFactory.Create(this.amplifierReporter);
-
-            // Create external services
-            this.disposer = new Disposer(
-                systemControlFactory,
-                amplifierFactory,
-                this.InputControls.RemoteControl,
-                this.InputControls.RfidTransceiver,
-                this.InputControls.RotaryEncoder,
-                this.InputControls.ButtonsGpioConnection);
-
-            return Task.CompletedTask;
-        }
+        public IAsyncLazy<IControlsModule> ControlsModule { get; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         void IDisposable.Dispose()
         {
-            this.disposer?.Dispose();
-            this.disposer = null;
+            this.controlsModule.GetValueOrDefault()?.Disposer.Dispose();
         }
 
         /// <summary>
@@ -133,6 +108,25 @@ namespace Aupli.SystemBoundaries.Pi
         protected virtual IAmplifierFactory CreateAmplifierFactory()
         {
             return new AmplifierFactory();
+        }
+
+        private class PrivateControlModule : IControlsModule
+        {
+            public PrivateControlModule(InputControls inputControls, ISystemControl systemControl, IAmplifier amplifier, IDisposable disposer)
+            {
+                this.Amplifier = amplifier;
+                this.SystemControl = systemControl;
+                this.InputControls = inputControls;
+                this.Disposer = disposer;
+            }
+
+            public InputControls InputControls { get; }
+
+            public ISystemControl SystemControl { get; }
+
+            public IAmplifier Amplifier { get; }
+
+            public IDisposable Disposer { get; }
         }
     }
 }

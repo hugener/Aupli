@@ -79,8 +79,6 @@ namespace Aupli.SystemBoundaries.Persistence
         /// <returns>An async task.</returns>
         public async Task InitializeAsync()
         {
-            await this.PlaylistRepository.InitializeAsync();
-            await this.LastPlaylistRepository.InitializeAsync();
             await this.VolumeRepository.InitializeAsync();
         }
     }

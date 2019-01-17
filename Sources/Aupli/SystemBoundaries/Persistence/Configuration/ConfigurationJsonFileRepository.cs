@@ -35,7 +35,7 @@ namespace Aupli.SystemBoundaries.Persistence.Configuration
                 {
                     var settings = await File.ReadAllTextAsync(configurationFilePath).ConfigureAwait(false);
                     return JsonConvert.DeserializeObject<Configuration>(settings);
-                }, LazyThreadSafetyMode.ExecutionAndPublication);
+                }, true);
         }
 
         /// <summary>

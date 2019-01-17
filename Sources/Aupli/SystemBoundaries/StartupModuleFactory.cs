@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StartupModule.cs" company="Hukano">
+// <copyright file="StartupModuleFactory.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,7 +8,6 @@
 namespace Aupli.SystemBoundaries
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.SystemBoundaries.Api;
     using Aupli.SystemBoundaries.Bridges.Interaction;
@@ -16,13 +15,10 @@ namespace Aupli.SystemBoundaries
     using Aupli.SystemBoundaries.Persistence.Startup;
     using Aupli.SystemBoundaries.Pi.Display;
     using Aupli.SystemBoundaries.Pi.Display.Api;
-    using Aupli.SystemBoundaries.SystemServices;
-    using Aupli.SystemBoundaries.SystemServices.Api;
-    using Aupli.SystemBoundaries.SystemServices.Ari;
-    using Aupli.SystemBoundaries.SystemServices.Unix;
     using Aupli.SystemBoundaries.UserInterface.Startup;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
+    using Sundew.Base.Threading;
     using Sundew.TextView.ApplicationFramework;
     using Sundew.TextView.ApplicationFramework.Input;
     using Sundew.TextView.ApplicationFramework.Navigation;
@@ -31,8 +27,9 @@ namespace Aupli.SystemBoundaries
     /// <summary>
     /// Represents the startup module.
     /// </summary>
+    /// <seealso cref="Aupli.SystemBoundaries.Api.IStartupModuleFactory" />
     /// <seealso cref="Sundew.Base.Initialization.IInitializable" />
-    public class StartupModule : IStartupModule
+    public class StartupModuleFactory : IStartupModuleFactory
     {
         private readonly IApplicationRendering application;
         private readonly IGpioConnectionDriverFactory gpioConnectionDriverFactory;
@@ -42,12 +39,10 @@ namespace Aupli.SystemBoundaries
         private readonly string lastGreetingPath;
         private readonly ITextViewRendererReporter textViewRendererReporter;
         private readonly IInputManagerReporter inputManagerReporter;
-        private readonly ISystemServicesAwaiterReporter systemServicesAwaiterReporter;
-        private Disposer disposer;
-        private ISystemServicesAwaiter systemServicesAwaiter;
+        private readonly AsyncLazy<IStartupModule, StartupModuleData> startupModule;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StartupModule" /> class.
+        /// Initializes a new instance of the <see cref="SystemBoundaries.StartupModuleFactory" /> class.
         /// </summary>
         /// <param name="application">The application.</param>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
@@ -57,8 +52,7 @@ namespace Aupli.SystemBoundaries
         /// <param name="lastGreetingPath">The last greeting path.</param>
         /// <param name="textViewRendererReporter">The text view renderer reporter.</param>
         /// <param name="inputManagerReporter">The input manager reporter.</param>
-        /// <param name="systemServicesAwaiterReporter">The system services awaiter reporter.</param>
-        public StartupModule(
+        public StartupModuleFactory(
             IApplicationRendering application,
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
             string namePath = "name.val",
@@ -66,8 +60,7 @@ namespace Aupli.SystemBoundaries
             string greetingsPath = "greetings.csv",
             string lastGreetingPath = "last-greeting.val",
             ITextViewRendererReporter textViewRendererReporter = null,
-            IInputManagerReporter inputManagerReporter = null,
-            ISystemServicesAwaiterReporter systemServicesAwaiterReporter = null)
+            IInputManagerReporter inputManagerReporter = null)
         {
             this.application = application;
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
@@ -77,32 +70,31 @@ namespace Aupli.SystemBoundaries
             this.lastGreetingPath = lastGreetingPath;
             this.textViewRendererReporter = textViewRendererReporter;
             this.inputManagerReporter = inputManagerReporter;
-            this.systemServicesAwaiterReporter = systemServicesAwaiterReporter;
+            this.startupModule = new AsyncLazy<IStartupModule, StartupModuleData>(
+                async () =>
+                {
+                    var lifecycleConfiguration = await this.GetLifecycleConfigurationAsync();
+                    var greetingProvider = this.CreateGreetingProvider();
+
+                    var displayFactory = this.CreateDisplayFactory();
+                    var display = displayFactory.Create(
+                        this.gpioConnectionDriverFactory,
+                        lifecycleConfiguration.Pin26Feature == Pin26Feature.Backlight);
+
+                    this.application.InputManagerReporter = this.inputManagerReporter;
+                    this.application.TextViewRendererReporter = this.textViewRendererReporter;
+
+                    var textViewNavigator = this.application.StartRendering(display);
+                    var disposer = new Disposer(displayFactory);
+                    return new StartupModuleData(display, textViewNavigator, lifecycleConfiguration, greetingProvider, disposer);
+                });
         }
 
         /// <summary>
-        /// Gets the display.
+        /// Gets the <see cref="IStartupModule"/>.
         /// </summary>
-        /// <value>
-        /// The display.
-        /// </value>
-        public IDisplay Display { get; private set; }
-
-        /// <summary>
-        /// Gets the text view navigator.
-        /// </summary>
-        /// <value>
-        /// The text view navigator.
-        /// </value>
-        public ITextViewNavigator TextViewNavigator { get; private set; }
-
-        /// <summary>
-        /// Gets the lifecycle configuration.
-        /// </summary>
-        /// <value>
-        /// The lifecycle configuration.
-        /// </value>
-        public ILifecycleConfiguration LifecycleConfiguration { get; private set; }
+        /// <returns>A task with the startup data.</returns>
+        public IAsyncLazy<IStartupModule> StartupModule => this.startupModule;
 
         /// <summary>
         /// Initializes the asynchronous.
@@ -110,29 +102,8 @@ namespace Aupli.SystemBoundaries
         /// <returns>An async task.</returns>
         public async Task InitializeAsync()
         {
-            this.LifecycleConfiguration = await this.GetLifecycleConfigurationAsync();
-            var greetingProvider = this.CreateGreetingProvider();
-
-            // Create display
-            var displayFactory = this.CreateDisplayFactory();
-            this.Display = displayFactory.Create(this.gpioConnectionDriverFactory, this.LifecycleConfiguration.Pin26Feature == Pin26Feature.Backlight);
-
-            this.application.InputManagerReporter = this.inputManagerReporter;
-            this.application.TextViewRendererReporter = this.textViewRendererReporter;
-
-            this.TextViewNavigator = this.application.StartRendering(this.Display);
-            await this.TextViewNavigator.ShowAsync(new StartupTextView(greetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
-
-            this.systemServicesAwaiter = this.CreateServicesAwaiter();
-            this.disposer = new Disposer(displayFactory);
-        }
-
-        /// <summary>
-        /// Waits for dependencies.
-        /// </summary>
-        public Task<bool> WaitForSystemServicesAsync()
-        {
-            return this.systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, Timeout.InfiniteTimeSpan);
+            var values = await this.startupModule;
+            await values.TextViewNavigator.ShowAsync(new StartupTextView(values.GreetingProvider, values.LifecycleConfiguration)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -140,8 +111,7 @@ namespace Aupli.SystemBoundaries
         /// </summary>
         void IDisposable.Dispose()
         {
-            this.disposer?.Dispose();
-            this.disposer = null;
+            this.startupModule.GetValueOrDefault()?.Disposer.Dispose();
         }
 
         /// <summary>
@@ -173,15 +143,6 @@ namespace Aupli.SystemBoundaries
             return new PrivateLifecycleConfiguration(await nameTextFileRepository.GetNameAsync(), await pin26FeatureTextFileRepository.GetPin26FeatureAsync());
         }
 
-        /// <summary>
-        /// Creates the services awaiter.
-        /// </summary>
-        /// <returns>A <see cref="UnixSystemServiceStateChecker"/>.</returns>
-        protected virtual ISystemServicesAwaiter CreateServicesAwaiter()
-        {
-            return new SystemServicesAwaiter(this.systemServicesAwaiterReporter);
-        }
-
         private class PrivateLifecycleConfiguration : ILifecycleConfiguration
         {
             public PrivateLifecycleConfiguration(string name, Pin26Feature pin26Feature)
@@ -193,6 +154,33 @@ namespace Aupli.SystemBoundaries
             public string Name { get; }
 
             public Pin26Feature Pin26Feature { get; }
+        }
+
+        private class StartupModuleData : IStartupModule
+        {
+            public StartupModuleData(
+                IDisplay display,
+                ITextViewNavigator textViewNavigator,
+                ILifecycleConfiguration lifecycleConfiguration,
+                IGreetingProvider greetingProvider,
+                IDisposable disposer)
+            {
+                this.Display = display;
+                this.TextViewNavigator = textViewNavigator;
+                this.LifecycleConfiguration = lifecycleConfiguration;
+                this.GreetingProvider = greetingProvider;
+                this.Disposer = disposer;
+            }
+
+            public IDisplay Display { get; }
+
+            public ITextViewNavigator TextViewNavigator { get; }
+
+            public ILifecycleConfiguration LifecycleConfiguration { get; }
+
+            public IGreetingProvider GreetingProvider { get; }
+
+            public IDisposable Disposer { get; }
         }
     }
 }

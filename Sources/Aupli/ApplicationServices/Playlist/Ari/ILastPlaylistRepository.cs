@@ -9,12 +9,11 @@ namespace Aupli.ApplicationServices.Playlist.Ari
 {
     using System.Threading.Tasks;
     using Aupli.DomainServices.Playlist.Shared;
-    using Sundew.Base.Initialization;
 
     /// <summary>
     /// Interface for persisting the last playlist.
     /// </summary>
-    public interface ILastPlaylistRepository : IInitializable
+    public interface ILastPlaylistRepository
     {
         /// <summary>
         /// Gets the by identifier.

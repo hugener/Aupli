@@ -29,6 +29,7 @@ namespace Aupli
         /// <returns>An exit code.</returns>
         public static async Task<int> Main(string[] args)
         {
+            var startTime = new TimeSpan(Environment.TickCount);
             var stopwatch = Stopwatch.StartNew();
             var commandLineParser = new CommandLineParser<Options, int>();
             commandLineParser.WithArguments(
@@ -47,13 +48,13 @@ namespace Aupli
             try
             {
                 logger.Information("------------------------------------------");
-                logger.Information("Starting Aupli: {Args}", string.Join(" ", args));
+                logger.Information("Starting Aupli: {Args}, start time: {startTime}", string.Join(" ", args), startTime);
                 var application = new Application();
 
                 var bootstrapper = new Bootstrapper(application, logger);
                 logger.Verbose("Created Bootstrapper");
                 await bootstrapper.StartAsync(result.Value.AllowShutdown);
-                logger.Information("Started Aupli in {time}", stopwatch.Elapsed);
+                logger.Information("Started Aupli in {time}, total startup time: {totalStartupTime}", stopwatch.Elapsed, new TimeSpan(Environment.TickCount));
                 stopwatch.Stop();
 
                 application.Run();

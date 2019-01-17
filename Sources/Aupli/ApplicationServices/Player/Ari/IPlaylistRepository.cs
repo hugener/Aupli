@@ -9,12 +9,11 @@ namespace Aupli.ApplicationServices.Player.Ari
 {
     using System.Threading.Tasks;
     using Aupli.DomainServices.Playlist.Shared;
-    using Sundew.Base.Initialization;
 
     /// <summary>
     /// The playlist repository.
     /// </summary>
-    public interface IPlaylistRepository : IInitializable
+    public interface IPlaylistRepository
     {
         /// <summary>
         /// Gets the by identifier.

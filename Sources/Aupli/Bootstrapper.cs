@@ -73,15 +73,16 @@ namespace Aupli
 
             // Create Startup Module
             this.logger.Verbose("Create Startup module");
-            var startupModule = this.CreateStartupModule(this.application, gpioConnectionDriverFactory);
+            var startupModuleFactory = this.CreateStartupModule(this.application, gpioConnectionDriverFactory);
+            var startupModule = await startupModuleFactory.StartupModule;
             this.logger.Verbose("Initialize Startup module");
-            await startupModule.InitializeAsync();
+            await startupModuleFactory.InitializeAsync().ConfigureAwait(false);
 
             // Create required ApplicationServices-required system boundaries modules
             this.logger.Verbose("Create Repositories Module");
             var repositoriesModule = this.CreateRepositoriesModule();
             this.logger.Verbose("Initialize Repositories Module");
-            await repositoriesModule.InitializeAsync();
+            var repositoriesModuleTask = repositoriesModule.InitializeAsync();
 
             // Create domain required application modules
             this.logger.Verbose("Create LastPlaylist Module");
@@ -91,28 +92,19 @@ namespace Aupli
             this.logger.Verbose("Create Playlist Module");
             var playlistModule = new PlaylistModule(lastPlaylistModule.LastPlaylistChangeHandler);
 
-            // Wait for services to be ready.
-            if (!await startupModule.WaitForSystemServicesAsync())
-            {
-                return;
-            }
-
             // Create application required system boundaries modules
             this.logger.Verbose("Create Controls Module");
-            var controlsModule = this.CreateControlsModule(gpioConnectionDriverFactory);
-            await controlsModule.InitializeAsync().ConfigureAwait(false);
+            var controlsModuleFactory = this.CreateControlsModule(gpioConnectionDriverFactory);
+            var controlsModule = await controlsModuleFactory.ControlsModule;
 
             // Create music control module.
             var musicControlModule = this.CreateMusicControlModule();
-            await musicControlModule.InitializeAsync();
+            await musicControlModule.InitializeAsync().ConfigureAwait(false);
 
             // Create application modules
             this.logger.Verbose("Create Player Module");
-            var playerModule = new PlayerModule(
-                repositoriesModule.PlaylistRepository,
-                playlistModule.LastPlaylistService,
-                musicControlModule.MusicPlayer,
-                new PlayerServiceLogger(this.logger));
+            var playerModule = this.CreatePlayerModule(repositoriesModule, playlistModule, musicControlModule);
+            await playerModule.InitializeAsync().ConfigureAwait(false);
 
             this.logger.Verbose("Create Volume Module");
             var volumeModule = new VolumeModule(
@@ -122,7 +114,7 @@ namespace Aupli
                 repositoriesModule.VolumeRepository,
                 new Percentage(0.05),
                 new VolumeServiceLogger(this.logger));
-
+            await repositoriesModuleTask;
             await volumeModule.InitializeAsync().ConfigureAwait(false);
 
             // Create user interface modules
@@ -151,8 +143,8 @@ namespace Aupli
                 new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
                 userInterfaceModule,
                 musicControlModule,
-                controlsModule,
-                startupModule,
+                controlsModuleFactory,
+                startupModuleFactory,
                 gpioConnectionDriverFactory);
 
             this.logger.Verbose("Initialize Playlist Module");
@@ -180,9 +172,9 @@ namespace Aupli
         /// <returns>
         /// The startup module.
         /// </returns>
-        protected virtual IStartupModule CreateStartupModule(IApplication application, IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        protected virtual IStartupModuleFactory CreateStartupModule(IApplication application, IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
-            return new StartupModule(
+            return new StartupModuleFactory(
                 application,
                 gpioConnectionDriverFactory,
                 "name.val",
@@ -190,8 +182,7 @@ namespace Aupli
                 "greetings.csv",
                 "last-greeting.val",
                 new TextViewRendererLogger(this.logger),
-                new InputManagerLogger(this.logger),
-                new SystemServicesAwaiterLogger(this.logger));
+                new InputManagerLogger(this.logger));
         }
 
         /// <summary>
@@ -209,17 +200,17 @@ namespace Aupli
         /// <returns>The repositories.</returns>
         protected virtual IRepositoriesModule CreateRepositoriesModule()
         {
-            return new RepositoriesModule("volume.json", "playlists.json", "last-playlist.json", "configuration.json");
+            return new RepositoriesModule("volume.val", "playlists.json", "last-playlist.json", "configuration.json");
         }
 
         /// <summary>
         /// Creates the controls module.
         /// </summary>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
-        /// <returns>A <see cref="ControlsModule"/>.</returns>
-        protected virtual IControlsModule CreateControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
+        /// <returns>A <see cref="ControlsModuleFactory"/>.</returns>
+        protected virtual IControlsModuleFactory CreateControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
-            return new ControlsModule(
+            return new ControlsModuleFactory(
                 gpioConnectionDriverFactory,
                 new AmplifierLogger(this.logger, LogEventLevel.Debug));
         }
@@ -231,6 +222,23 @@ namespace Aupli
         protected virtual MusicControlModule CreateMusicControlModule()
         {
             return new MusicControlModule(new MusicPlayerLogger(this.logger));
+        }
+
+        /// <summary>
+        /// Creates the player module.
+        /// </summary>
+        /// <param name="repositoriesModule">The repositories module.</param>
+        /// <param name="playlistModule">The playlist module.</param>
+        /// <param name="musicControlModule">The music control module.</param>
+        /// <returns>A <see cref="PlayerModule"/>.</returns>
+        protected virtual PlayerModule CreatePlayerModule(IRepositoriesModule repositoriesModule, PlaylistModule playlistModule, MusicControlModule musicControlModule)
+        {
+            return new PlayerModule(
+                repositoriesModule.PlaylistRepository,
+                playlistModule.LastPlaylistService,
+                musicControlModule.MusicPlayer,
+                new SystemServicesAwaiterLogger(this.logger),
+                new PlayerServiceLogger(this.logger));
         }
     }
 }
