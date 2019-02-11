@@ -7,29 +7,37 @@
 
 namespace Aupli.IntegrationTests
 {
+    using System;
     using System.Threading.Tasks;
     using Bootstrapping;
-    using global::NSubstitute;
+    using DomainServices.Playlist.Shared;
     using global::Serilog;
     using global::Sundew.Pi.IO.Devices.RfidTransceivers;
     using global::Sundew.Pi.IO.Devices.RfidTransceivers.Mfrc522;
     using MpcNET.Commands.Playback;
     using Sundew.TextView.ApplicationFramework;
+    using Telerik.JustMock;
+    using Telerik.JustMock.Helpers;
     using Xunit;
 
     public class StartPlaybackFeature
     {
-        private readonly ILogger logger = Substitute.For<ILogger>();
+        private readonly ILogger logger = Mock.Create<ILogger>();
 
         [Fact]
         public async Task Given_TagIsDetectedAndPlaylistExists_Then_PlayCommandShouldBeSent()
         {
             var bootstrapper = new TestBootstrapper(new Application(), this.logger);
             await bootstrapper.StartAsync(true);
+            Mock.Arrange(() => bootstrapper.RepositoriesModule.PlaylistRepository.GetPlaylistAsync("1234"))
+                .Returns(Task.FromResult(new PlaylistEntity("1234", "Numbers")));
+            var rfidTransceiver =
+                (await bootstrapper.ControlsModuleFactory.ControlsModule).InputControls.RfidTransceiver;
 
-            (await bootstrapper.ControlsModuleFactory.ControlsModule).InputControls.RfidTransceiver.TagDetected += Raise.EventWith(new TagDetectedEventArgs(new Uid(0, 0, 0, 0)));
+            rfidTransceiver.Raise(x => x.TagDetected += null, new TagDetectedEventArgs(new Uid(1, 2, 3, 4)));
 
-            await bootstrapper.MusicControlModule.MpcConnection.Received(1).SendAsync(Arg.Any<PlayCommand>());
+            Mock.Assert(() => bootstrapper.MusicControlModule.MpcConnection.SendAsync(Arg.IsAny<PlayCommand>()),
+                Occurs.Once());
         }
     }
 }

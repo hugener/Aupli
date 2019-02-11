@@ -52,7 +52,7 @@ namespace Aupli.DomainServices.Playlist.Shared
         /// </returns>
         public bool Equals(PlaylistEntity other)
         {
-            return EqualityHelper.Equals(this, other, rhs => this.Name.Equals(rhs.Name));
+            return EqualityHelper.Equals(this, other, rhs => Equals(this.Name, rhs.Name));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Aupli.DomainServices.Playlist.Shared
         /// </returns>
         public override int GetHashCode()
         {
-            return EqualityHelper.GetHashCode(this.Name);
+            return EqualityHelper.GetHashCode(this.Name.GetHashCodeOrDefault());
         }
 
         /// <summary>

@@ -70,7 +70,7 @@ namespace Aupli.SystemBoundaries.Pi
         /// <value>
         /// The system control.
         /// </value>
-        public IAsyncLazy<IControlsModule> ControlsModule { get; }
+        public IAsyncLazy<IControlsModule> ControlsModule => this.controlsModule;
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

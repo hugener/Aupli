@@ -9,16 +9,19 @@
 namespace Aupli.IntegrationTests.Bootstrapping
 {
     using System;
+    using System.Threading.Tasks;
     using SystemBoundaries.Api;
     using SystemBoundaries.Bridges.Controls;
     using SystemBoundaries.MusicControl;
     using SystemBoundaries.Persistence.Api;
     using SystemBoundaries.Persistence.Configuration.Api;
-    using global::NSubstitute;
-    using NSubstitute;
+    using ApplicationServices;
+    using DomainServices;
+    using JustMock;
     using Pi.IO.GeneralPurpose;
     using Serilog;
     using Sundew.TextView.ApplicationFramework;
+    using Telerik.JustMock;
 
     public class TestBootstrapper : Bootstrapper
     {
@@ -39,7 +42,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IGpioConnectionDriverFactory CreateGpioConnectionDriverFactory()
         {
-            this.GpioConnectionDriverFactory = Substitute.For<IGpioConnectionDriverFactory>();
+            this.GpioConnectionDriverFactory = Mock.Create<IGpioConnectionDriverFactory>();
             return this.GpioConnectionDriverFactory;
         }
 
@@ -51,13 +54,10 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IRepositoriesModule CreateRepositoriesModule()
         {
-            this.RepositoriesModule = Substitute.For<IRepositoriesModule>();
-            var configurationRepository = this.RepositoriesModule.ConfigurationRepository.ReturnsSubstitute();
-            configurationRepository.GetConfigurationAsync()
-                .Returns(new Configuration(TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(4)));
-            this.RepositoriesModule.LastPlaylistRepository.ReturnsSubstitute();
-            this.RepositoriesModule.PlaylistRepository.ReturnsSubstitute();
-            this.RepositoriesModule.VolumeRepository.ReturnsSubstitute();
+            this.RepositoriesModule = Mock.Create<IRepositoriesModule>();
+            var configurationRepository =this.RepositoriesModule.ConfigurationRepository;
+            Mock.Arrange(() => configurationRepository.GetConfigurationAsync())
+                .Returns(Task.FromResult(new Configuration(TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(4))));
             return this.RepositoriesModule;
         }
 
@@ -71,6 +71,11 @@ namespace Aupli.IntegrationTests.Bootstrapping
         {
             this.MusicControlModule = new TestMusicControlModule(null);
             return this.MusicControlModule;
+        }
+
+        protected override PlayerModule CreatePlayerModule(IRepositoriesModule repositoriesModule, PlaylistModule playlistModule, MusicControlModule musicControlModule)
+        {
+            return new TestPlayerModule(repositoriesModule.PlaylistRepository, playlistModule.LastPlaylistService, musicControlModule.MusicPlayer, null, null);
         }
     }
 }

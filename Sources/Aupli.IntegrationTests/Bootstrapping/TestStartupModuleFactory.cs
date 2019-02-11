@@ -7,21 +7,17 @@
 
 namespace Aupli.IntegrationTests.Bootstrapping
 {
-    using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using SystemBoundaries;
     using SystemBoundaries.Bridges.Lifecycle;
     using SystemBoundaries.Pi.Display.Api;
-    using SystemBoundaries.SystemServices.Api;
-    using SystemBoundaries.SystemServices.Ari;
-    using global::NSubstitute;
-    using NSubstitute;
+    using JustMock;
     using Pi.IO.GeneralPurpose;
     using Sundew.Base.Computation;
     using Sundew.TextView.ApplicationFramework;
     using Sundew.TextView.ApplicationFramework.Input;
     using Sundew.TextView.ApplicationFramework.TextViewRendering;
+    using Telerik.JustMock;
 
     public class TestStartupModuleFactory : StartupModuleFactory
     {
@@ -40,20 +36,20 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IDisplayFactory CreateDisplayFactory()
         {
-            var displayFactory = Substitute.For<IDisplayFactory>();
-            var display = displayFactory.Create(Arg.Any<IGpioConnectionDriverFactory>(), Arg.Any<bool>()).ReturnsSubstitute();
-            display.TryCreateCharacterContext().Returns(Result.Success(Substitute.For<ICharacterContext>()));
+            var displayFactory = Mock.Create<IDisplayFactory>();
+            var display = Mock.Arrange(() => displayFactory.Create(Arg.IsAny<IGpioConnectionDriverFactory>(), Arg.AnyBool)).ReturnsMock();
+            Mock.Arrange(() => display.TryCreateCharacterContext()).Returns(Result.Success(Mock.Create<ICharacterContext>()));
             return displayFactory;
         }
 
         protected override IGreetingProvider CreateGreetingProvider()
         {
-            return Substitute.For<IGreetingProvider>();
+            return Mock.Create<IGreetingProvider>();
         }
 
         protected override Task<ILifecycleConfiguration> GetLifecycleConfigurationAsync()
         {
-            var lifeCycleConfiguration = Substitute.For<ILifecycleConfiguration>();
+            var lifeCycleConfiguration = Mock.Create<ILifecycleConfiguration>();
             return Task.FromResult(lifeCycleConfiguration);
         }
     }

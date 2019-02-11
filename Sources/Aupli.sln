@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aupli", "Aupli\Aupli.csproj", "{72DD8955-A9CB-48D2-A77F-43408839B4DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aupli.IntegrationTests", "Aupli.IntegrationTests\Aupli.IntegrationTests.csproj", "{3EEB7813-3D5D-4B53-84EB-68642FF3C706}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aupli.IntegrationTests", "Aupli.IntegrationTests\Aupli.IntegrationTests.csproj", "{3EEB7813-3D5D-4B53-84EB-68642FF3C706}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

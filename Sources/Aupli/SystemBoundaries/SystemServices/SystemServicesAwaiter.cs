@@ -15,6 +15,7 @@ namespace Aupli.SystemBoundaries.SystemServices
     using Aupli.SystemBoundaries.SystemServices.Api;
     using Aupli.SystemBoundaries.SystemServices.Ari;
     using Aupli.SystemBoundaries.SystemServices.Unix;
+    using Aupli.SystemBoundaries.SystemServices.Windows;
 
     /// <summary>
     /// Waits until all specified services are running.
@@ -87,8 +88,12 @@ namespace Aupli.SystemBoundaries.SystemServices
             {
                 case PlatformID.Unix:
                     return new UnixSystemServiceStateChecker();
+                case PlatformID.Win32NT:
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                    return new WindowsSystemServiceStateChecker();
                 default:
-                    throw new NotSupportedException("Currently only Unix is supported.");
+                    throw new NotSupportedException($"{Environment.OSVersion.Platform} is not supported.");
             }
         }
 

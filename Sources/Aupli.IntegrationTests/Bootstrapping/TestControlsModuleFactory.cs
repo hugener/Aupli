@@ -13,13 +13,13 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using SystemBoundaries.Pi.Amplifier.Api;
     using SystemBoundaries.Pi.Amplifier.Ari;
     using SystemBoundaries.Pi.SystemControl.Api;
-    using global::NSubstitute;
-    using NSubstitute;
+    using JustMock;
     using Pi.IO.GeneralPurpose;
     using Sundew.Pi.IO.Devices.Buttons;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
     using Sundew.Pi.IO.Devices.RfidTransceivers;
     using Sundew.Pi.IO.Devices.RotaryEncoders;
+    using Telerik.JustMock;
 
     public class TestControlsModuleFactory : ControlsModuleFactory
     {
@@ -30,31 +30,17 @@ namespace Aupli.IntegrationTests.Bootstrapping
         {
         }
 
-        protected override IAmplifierFactory CreateAmplifierFactory()
-        {
-            var amplifier = Substitute.For<IAmplifierFactory>();
-            amplifier.Create(Arg.Any<IAmplifierReporter>()).ReturnsSubstitute();
-            return amplifier;
-        }
-
         protected override InputControls CreateInputControls(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
             return new InputControls(
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IRfidConnection>(),
-                Substitute.For<ILircDevice>(),
-                Substitute.For<IRotaryEncoderWithButtonDevice>(),
-                Substitute.For<IDisposable>());
-        }
-
-        protected override ISystemControlFactory CreateSystemControlFactory()
-        {
-            var systemControlFactory = Substitute.For<ISystemControlFactory>();
-            systemControlFactory.Create(Arg.Any<IGpioConnectionDriverFactory>()).ReturnsSubstitute();
-            return systemControlFactory;
+                Mock.Create<IButtonDevice>(),
+                Mock.Create<IButtonDevice>(),
+                Mock.Create<IButtonDevice>(),
+                Mock.Create<IButtonDevice>(),
+                Mock.Create<IRfidConnection>(),
+                Mock.Create<ILircDevice>(),
+                Mock.Create<IRotaryEncoderWithButtonDevice>(),
+                Mock.Create<IDisposable>());
         }
     }
 }
