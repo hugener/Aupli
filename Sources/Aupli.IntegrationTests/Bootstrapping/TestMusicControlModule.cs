@@ -7,14 +7,14 @@
 
 namespace Aupli.IntegrationTests.Bootstrapping
 {
-    using SystemBoundaries.MusicControl;
-    using SystemBoundaries.MusicControl.Ari;
+    using Aupli.SystemBoundaries.MusicControl;
+    using Aupli.SystemBoundaries.MusicControl.Ari;
+    using global::NSubstitute;
     using MpcNET;
-    using Telerik.JustMock;
 
     public class TestMusicControlModule : MusicControlModule
     {
-        public TestMusicControlModule(IMusicPlayerReporter musicPlayerReporter) 
+        public TestMusicControlModule(IMusicPlayerReporter musicPlayerReporter)
             : base(musicPlayerReporter)
         {
         }
@@ -23,7 +23,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IMpcConnection CreateMpcConnection(IMpcConnectionReporter mpcConnectionReporter)
         {
-            this.MpcConnection = Mock.Create<IMpcConnection>();
+            this.MpcConnection = Substitute.For<IMpcConnection>();
             return this.MpcConnection;
         }
     }

@@ -10,24 +10,24 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using SystemBoundaries.SystemServices.Api;
-    using SystemBoundaries.SystemServices.Ari;
-    using ApplicationServices;
-    using ApplicationServices.Player.Ari;
-    using DomainServices.Playlist.Api;
-    using Telerik.JustMock;
+    using Aupli.ApplicationServices;
+    using Aupli.ApplicationServices.Player.Ari;
+    using Aupli.DomainServices.Playlist.Api;
+    using Aupli.SystemBoundaries.SystemServices.Api;
+    using Aupli.SystemBoundaries.SystemServices.Ari;
+    using global::NSubstitute;
 
     public class TestPlayerModule : PlayerModule
     {
-        public TestPlayerModule(IPlaylistRepository playlistRepository, ILastPlaylistService lastPlaylistService, IPlaybackControls playbackControls, ISystemServicesAwaiterReporter systemServicesAwaiterReporter, IPlayerServiceReporter playerServiceReporter) 
+        public TestPlayerModule(IPlaylistRepository playlistRepository, ILastPlaylistService lastPlaylistService, IPlaybackControls playbackControls, ISystemServicesAwaiterReporter systemServicesAwaiterReporter, IPlayerServiceReporter playerServiceReporter)
             : base(playlistRepository, lastPlaylistService, playbackControls, systemServicesAwaiterReporter, playerServiceReporter)
         {
         }
 
         protected override ISystemServicesAwaiter CreateServicesAwaiter()
         {
-            var systemServicesAwaiter = Mock.Create<ISystemServicesAwaiter>();
-            Mock.Arrange(() => systemServicesAwaiter.WaitForServicesAsync(Arg.IsAny<IEnumerable<string>>(), Timeout.InfiniteTimeSpan)).Returns(Task.FromResult(true));
+            var systemServicesAwaiter = Substitute.For<ISystemServicesAwaiter>();
+            systemServicesAwaiter.WaitForServicesAsync(Arg.Any<IEnumerable<string>>(), Timeout.InfiniteTimeSpan).Returns(Task.FromResult(true));
             return systemServicesAwaiter;
         }
     }

@@ -1,27 +1,25 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Bootstrapper.cs" company="Hukano">
+// <copyright file="TestBootstrapper.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace Aupli.IntegrationTests.Bootstrapping
 {
     using System;
     using System.Threading.Tasks;
-    using SystemBoundaries.Api;
-    using SystemBoundaries.Bridges.Controls;
-    using SystemBoundaries.MusicControl;
-    using SystemBoundaries.Persistence.Api;
-    using SystemBoundaries.Persistence.Configuration.Api;
-    using ApplicationServices;
-    using DomainServices;
-    using JustMock;
+    using Aupli.ApplicationServices;
+    using Aupli.DomainServices;
+    using Aupli.SystemBoundaries.Api;
+    using Aupli.SystemBoundaries.Bridges.Controls;
+    using Aupli.SystemBoundaries.MusicControl;
+    using Aupli.SystemBoundaries.Persistence.Api;
+    using Aupli.SystemBoundaries.Persistence.Configuration.Api;
+    using global::NSubstitute;
     using Pi.IO.GeneralPurpose;
     using Serilog;
     using Sundew.TextView.ApplicationFramework;
-    using Telerik.JustMock;
 
     public class TestBootstrapper : Bootstrapper
     {
@@ -42,7 +40,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IGpioConnectionDriverFactory CreateGpioConnectionDriverFactory()
         {
-            this.GpioConnectionDriverFactory = Mock.Create<IGpioConnectionDriverFactory>();
+            this.GpioConnectionDriverFactory = Substitute.For<IGpioConnectionDriverFactory>();
             return this.GpioConnectionDriverFactory;
         }
 
@@ -54,9 +52,9 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IRepositoriesModule CreateRepositoriesModule()
         {
-            this.RepositoriesModule = Mock.Create<IRepositoriesModule>();
-            var configurationRepository =this.RepositoriesModule.ConfigurationRepository;
-            Mock.Arrange(() => configurationRepository.GetConfigurationAsync())
+            this.RepositoriesModule = Substitute.For<IRepositoriesModule>();
+            var configurationRepository = this.RepositoriesModule.ConfigurationRepository;
+            configurationRepository.GetConfigurationAsync()
                 .Returns(Task.FromResult(new Configuration(TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(4))));
             return this.RepositoriesModule;
         }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TestStartupModule.cs" company="Hukano">
+// <copyright file="TestStartupModuleFactory.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,16 +8,16 @@
 namespace Aupli.IntegrationTests.Bootstrapping
 {
     using System.Threading.Tasks;
-    using SystemBoundaries;
-    using SystemBoundaries.Bridges.Lifecycle;
-    using SystemBoundaries.Pi.Display.Api;
-    using JustMock;
+    using Aupli.IntegrationTests.NSubstitute;
+    using Aupli.SystemBoundaries;
+    using Aupli.SystemBoundaries.Bridges.Lifecycle;
+    using Aupli.SystemBoundaries.Pi.Display.Api;
+    using global::NSubstitute;
     using Pi.IO.GeneralPurpose;
     using Sundew.Base.Computation;
     using Sundew.TextView.ApplicationFramework;
     using Sundew.TextView.ApplicationFramework.Input;
     using Sundew.TextView.ApplicationFramework.TextViewRendering;
-    using Telerik.JustMock;
 
     public class TestStartupModuleFactory : StartupModuleFactory
     {
@@ -36,20 +36,20 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IDisplayFactory CreateDisplayFactory()
         {
-            var displayFactory = Mock.Create<IDisplayFactory>();
-            var display = Mock.Arrange(() => displayFactory.Create(Arg.IsAny<IGpioConnectionDriverFactory>(), Arg.AnyBool)).ReturnsMock();
-            Mock.Arrange(() => display.TryCreateCharacterContext()).Returns(Result.Success(Mock.Create<ICharacterContext>()));
+            var displayFactory = Substitute.For<IDisplayFactory>();
+            var display = displayFactory.Create(Arg.Any<IGpioConnectionDriverFactory>(), Arg.Any<bool>());
+            display.TryCreateCharacterContext().Returns(Result.Success(Substitute.For<ICharacterContext>()));
             return displayFactory;
         }
 
         protected override IGreetingProvider CreateGreetingProvider()
         {
-            return Mock.Create<IGreetingProvider>();
+            return Substitute.For<IGreetingProvider>();
         }
 
         protected override Task<ILifecycleConfiguration> GetLifecycleConfigurationAsync()
         {
-            var lifeCycleConfiguration = Mock.Create<ILifecycleConfiguration>();
+            var lifeCycleConfiguration = Substitute.For<ILifecycleConfiguration>();
             return Task.FromResult(lifeCycleConfiguration);
         }
     }
