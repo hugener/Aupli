@@ -5,16 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Aupli.Logging.Serilog.Pi.ApplicationFramework.Input
+namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
 {
     using global::Serilog;
-    using Sundew.Base;
-    using Sundew.TextView.ApplicationFramework.Input;
+    using global::Sundew.Base;
+    using global::Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
     /// Logger for the IdleMonitor.
     /// </summary>
-    /// <seealso cref="Sundew.TextView.ApplicationFramework.Input.IIdleMonitorReporter" />
+    /// <seealso cref="IIdleMonitorReporter" />
     public class IdleMonitorLogger : IIdleMonitorReporter
     {
         private ILogger log;

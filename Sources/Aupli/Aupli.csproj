@@ -1,18 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
 	<AssemblyVersion>0.0.1.0</AssemblyVersion>
     <FileVersion>0.0.1.0</FileVersion>
     <Version>0.0.1-pre001</Version>
-	<LangVersion>latest</LangVersion>
+	<LangVersion>8</LangVersion>
 	<Company>Hukano</Company>
 	<TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.1\Aupli.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\(TargetFramework)\Aupli.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
@@ -67,13 +67,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MpcNET.SundewFork" Version="0.0.1-pre008" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.0.3-pre014" />
-    <PackageReference Include="Pi.IO.GeneralPurpose.SundewFork" Version="0.0.3-pre014" />
-    <PackageReference Include="Pi.IO.Interop.SundewFork" Version="0.0.3-pre014" />
-    <PackageReference Include="Pi.IO.SundewFork" Version="0.0.3-pre014" />
-    <PackageReference Include="Pi.System.SundewFork" Version="0.0.3-pre014" />
+    <PackageReference Include="MpcNET.SundewFork" Version="0.0.1-pre009" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3-beta1" />
+    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.0.3-pre018" />
+    <PackageReference Include="Pi.IO.GeneralPurpose.SundewFork" Version="0.0.3-pre018" />
+    <PackageReference Include="Pi.IO.Interop.SundewFork" Version="0.0.3-pre018" />
+    <PackageReference Include="Pi.IO.SundewFork" Version="0.0.3-pre018" />
+    <PackageReference Include="Pi.System.SundewFork" Version="0.0.3-pre018" />
     <PackageReference Include="Serilog" Version="2.8.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
@@ -83,11 +83,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Sundew.Base" Version="3.3.8" />
+    <PackageReference Include="Sundew.Base" Version="4.0.0-pre002" />
     <PackageReference Include="Sundew.CommandLine" Version="3.0.1" />
-    <PackageReference Include="Sundew.Pi.IO.Devices" Version="0.0.0-pre006" />
-    <PackageReference Include="Sundew.TextView.ApplicationFramework" Version="0.0.0-pre009" />
-    <PackageReference Include="Sundew.TextView.Pi.Drivers" Version="0.0.0-pre008" />
+    <PackageReference Include="Sundew.Pi.IO.Devices" Version="0.0.0-pre012" />
+    <PackageReference Include="Sundew.TextView.ApplicationFramework" Version="0.0.0-pre022" />
+    <PackageReference Include="Sundew.TextView.Pi.Drivers" Version="0.0.0-pre014" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 

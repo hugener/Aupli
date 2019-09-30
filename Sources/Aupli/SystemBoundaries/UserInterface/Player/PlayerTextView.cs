@@ -55,7 +55,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         /// <value>
         /// The input targets.
         /// </value>
-        public IEnumerable<object> InputTargets => new[] { this.playerController };
+        public IEnumerable<object> InputTargets
+        {
+            get { yield return this.playerController; }
+        }
 
         /// <summary>
         /// Called before the text view is shown.

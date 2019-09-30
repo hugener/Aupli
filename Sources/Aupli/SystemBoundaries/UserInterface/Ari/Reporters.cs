@@ -7,13 +7,12 @@
 
 namespace Aupli.SystemBoundaries.UserInterface.Ari
 {
-    using Aupli.SystemBoundaries.Pi.Display;
     using Aupli.SystemBoundaries.UserInterface.Display.Ari;
-    using Aupli.SystemBoundaries.UserInterface.Input;
     using Aupli.SystemBoundaries.UserInterface.Input.Ari;
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
     using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
+    using Sundew.Base.Disposal;
     using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>
@@ -21,9 +20,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
     /// </summary>
     public class Reporters
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Reporters" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Reporters"/> class.</summary>
         /// <param name="interactionControllerReporter">The interaction controller reporter.</param>
         /// <param name="systemActivityAggregatorReporter">The system activity aggregator reporter.</param>
         /// <param name="idleMonitorReporter">The idle controller reporter.</param>
@@ -32,6 +29,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         /// <param name="shutdownControllerReporter">The shutdown controller reporter.</param>
         /// <param name="viewNavigatorReporter">The view navigator reporter.</param>
         /// <param name="displayStateControllerReporter">The display backlight controller reporter.</param>
+        /// <param name="disposableReporter">The disposable reporter.</param>
         public Reporters(
             IInteractionControllerReporter interactionControllerReporter,
             ISystemActivityAggregatorReporter systemActivityAggregatorReporter,
@@ -40,7 +38,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
             IVolumeControllerReporter volumeControllerReporter,
             IShutdownControllerReporter shutdownControllerReporter,
             IViewNavigatorReporter viewNavigatorReporter,
-            IDisplayStateControllerReporter displayStateControllerReporter)
+            IDisplayStateControllerReporter displayStateControllerReporter,
+            IDisposableReporter disposableReporter)
         {
             this.InteractionControllerReporter = interactionControllerReporter;
             this.SystemActivityAggregatorReporter = systemActivityAggregatorReporter;
@@ -50,6 +49,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
             this.ShutdownControllerReporter = shutdownControllerReporter;
             this.ViewNavigatorReporter = viewNavigatorReporter;
             this.DisplayStateControllerReporter = displayStateControllerReporter;
+            this.DisposableReporter = disposableReporter;
         }
 
         /// <summary>
@@ -115,5 +115,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Ari
         /// The display backlight controller reporter.
         /// </value>
         public IDisplayStateControllerReporter DisplayStateControllerReporter { get; }
+
+        /// <summary>Gets the disposable reporter.</summary>
+        /// <value>The disposable reporter.</value>
+        public IDisposableReporter DisposableReporter { get; }
     }
 }

@@ -9,8 +9,8 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Volume
 {
     using Aupli.ApplicationServices.Volume.Ari;
     using global::Serilog;
-    using Sundew.Base;
-    using Sundew.Base.Numeric;
+    using global::Sundew.Base;
+    using global::Sundew.Base.Numeric;
 
     /// <summary>
     /// Logger for <see cref="IVolumeServiceReporter"/>.

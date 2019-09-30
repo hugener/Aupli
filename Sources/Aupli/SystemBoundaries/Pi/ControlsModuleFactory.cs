@@ -31,29 +31,29 @@ namespace Aupli.SystemBoundaries.Pi
         private readonly IAmplifierReporter amplifierReporter;
         private readonly AsyncLazy<IControlsModule, PrivateControlModule> controlsModule;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ControlsModuleFactory" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ControlsModuleFactory"/> class.</summary>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver.</param>
         /// <param name="amplifierReporter">The amplifier reporter.</param>
+        /// <param name="disposableReporter">The disposable reporter.</param>
         public ControlsModuleFactory(
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
-            IAmplifierReporter amplifierReporter)
+            IAmplifierReporter amplifierReporter,
+            IDisposableReporter disposableReporter)
         {
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
             this.amplifierReporter = amplifierReporter;
             this.controlsModule = new AsyncLazy<IControlsModule, PrivateControlModule>(() =>
             {
                 // Create Hardware
-                var inputControls = this.CreateInputControls(this.gpioConnectionDriverFactory);
-
                 var systemControlFactory = this.CreateSystemControlFactory();
+                var inputControls = this.CreateInputControls(this.gpioConnectionDriverFactory);
                 var systemControl = systemControlFactory.Create(this.gpioConnectionDriverFactory);
 
                 var amplifierFactory = this.CreateAmplifierFactory();
                 var amplifier = amplifierFactory.Create(this.amplifierReporter);
 
                 var disposer = new Disposer(
+                    disposableReporter,
                     systemControlFactory,
                     amplifierFactory,
                     inputControls.RemoteControl,

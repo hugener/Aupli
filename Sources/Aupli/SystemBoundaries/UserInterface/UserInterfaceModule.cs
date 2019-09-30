@@ -139,7 +139,7 @@ namespace Aupli.SystemBoundaries.UserInterface
             new DisplayStateController(this.userInterfaceBridge.TextViewNavigator, idleMonitor, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
 
             interactionController.Start();
-            this.disposer = new Disposer(timerFactory);
+            this.disposer = new Disposer(this.reporters?.DisposableReporter, timerFactory);
             await Task.CompletedTask;
         }
 

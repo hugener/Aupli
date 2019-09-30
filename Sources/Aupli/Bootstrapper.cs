@@ -12,8 +12,7 @@ namespace Aupli
     using Aupli.DomainServices;
     using Aupli.Logging.Serilog.ApplicationServices.Player;
     using Aupli.Logging.Serilog.ApplicationServices.Volume;
-    using Aupli.Logging.Serilog.Pi.ApplicationFramework.Input;
-    using Aupli.Logging.Serilog.Pi.ApplicationFramework.ViewRendering;
+    using Aupli.Logging.Serilog.SundewBase;
     using Aupli.Logging.Serilog.SystemBoundaries.MusicControl;
     using Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier;
     using Aupli.Logging.Serilog.SystemBoundaries.SystemServices;
@@ -23,6 +22,8 @@ namespace Aupli
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume;
+    using Aupli.Logging.Serilog.TextView.ApplicationFramework.Input;
+    using Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering;
     using Aupli.SystemBoundaries;
     using Aupli.SystemBoundaries.Api;
     using Aupli.SystemBoundaries.Bridges.Controls;
@@ -46,6 +47,7 @@ namespace Aupli
     {
         private readonly IApplication application;
         private readonly ILogger logger;
+        private readonly DisposableLogger disposableLogger;
         private Disposer disposer;
 
         /// <summary>
@@ -56,7 +58,8 @@ namespace Aupli
         public Bootstrapper(IApplication application, ILogger logger)
         {
             this.application = application;
-            this.logger = logger;
+            this.logger = logger.ForContext<Bootstrapper>();
+            this.disposableLogger = new DisposableLogger(this.logger);
         }
 
         /// <summary>
@@ -75,8 +78,8 @@ namespace Aupli
             this.logger.Verbose("Create Startup module");
             var startupModuleFactory = this.CreateStartupModule(this.application, gpioConnectionDriverFactory);
             var startupModule = await startupModuleFactory.StartupModule;
-            this.logger.Verbose("Initialize Startup module");
-            await startupModuleFactory.InitializeAsync().ConfigureAwait(false);
+            this.logger.Verbose("Navigate to Startup view");
+            await startupModule.NavigateToStartupViewAsync();
 
             // Create required ApplicationServices-required system boundaries modules
             this.logger.Verbose("Create Repositories Module");
@@ -137,9 +140,11 @@ namespace Aupli
                     new VolumeControllerLogger(this.logger),
                     new ShutdownControllerLogger(this.logger),
                     new ViewNavigatorLogger(this.logger),
-                    new DisplayStateControllerLogger(this.logger)));
+                    new DisplayStateControllerLogger(this.logger),
+                    this.disposableLogger));
 
             this.disposer = new Disposer(
+                this.disposableLogger,
                 new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
                 userInterfaceModule,
                 musicControlModule,
@@ -182,7 +187,8 @@ namespace Aupli
                 "greetings.csv",
                 "last-greeting.val",
                 new TextViewRendererLogger(this.logger),
-                new InputManagerLogger(this.logger));
+                new InputManagerLogger(this.logger),
+                this.disposableLogger);
         }
 
         /// <summary>
@@ -212,7 +218,8 @@ namespace Aupli
         {
             return new ControlsModuleFactory(
                 gpioConnectionDriverFactory,
-                new AmplifierLogger(this.logger, LogEventLevel.Debug));
+                new AmplifierLogger(this.logger, LogEventLevel.Debug),
+                this.disposableLogger);
         }
 
         /// <summary>

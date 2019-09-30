@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Api
 {
+    using System.Threading.Tasks;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
 
@@ -23,5 +24,9 @@ namespace Aupli.SystemBoundaries.Api
         /// The lifecycle configuration.
         /// </value>
         ILifecycleConfiguration LifecycleConfiguration { get; }
+
+        /// <summary>Navigates to startup view asynchronous.</summary>
+        /// <returns>An async task.</returns>
+        Task NavigateToStartupViewAsync();
     }
 }

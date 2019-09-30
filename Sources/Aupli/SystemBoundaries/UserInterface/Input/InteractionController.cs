@@ -71,6 +71,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
         {
             this.inputControls.RemoteControl.StartListening();
             this.inputControls.RfidTransceiver.StartScanning();
+            this.inputControls.RotaryEncoder.Start();
             this.interactionControllerReporter?.Started();
         }
 

@@ -7,12 +7,11 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
 {
-    using Aupli.SystemBoundaries.Pi.Amplifier;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using global::Serilog;
     using global::Serilog.Events;
-    using Sundew.Base;
-    using Sundew.Base.Numeric;
+    using global::Sundew.Base;
+    using global::Sundew.Base.Numeric;
 
     /// <summary>
     /// Logger reporter for the amplifier.

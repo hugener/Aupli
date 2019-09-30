@@ -15,6 +15,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Aupli.SystemBoundaries.Pi.SystemControl.Api;
     using global::NSubstitute;
     using Pi.IO.GeneralPurpose;
+    using Sundew.Base.Disposal;
     using Sundew.Pi.IO.Devices.Buttons;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
     using Sundew.Pi.IO.Devices.RfidTransceivers;
@@ -24,8 +25,9 @@ namespace Aupli.IntegrationTests.Bootstrapping
     {
         public TestControlsModuleFactory(
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
-            IAmplifierReporter amplifierReporter)
-            : base(gpioConnectionDriverFactory, amplifierReporter)
+            IAmplifierReporter amplifierReporter,
+            IDisposableReporter disposableReporter)
+            : base(gpioConnectionDriverFactory, amplifierReporter, disposableReporter)
         {
         }
 

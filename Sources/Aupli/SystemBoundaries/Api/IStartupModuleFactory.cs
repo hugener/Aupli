@@ -8,16 +8,14 @@
 namespace Aupli.SystemBoundaries.Api
 {
     using System;
-    using Sundew.Base.Initialization;
     using Sundew.Base.Threading;
 
     /// <summary>
     /// Public interface for the startup module.
     /// </summary>
     /// <seealso cref="Aupli.SystemBoundaries.Bridges.Interaction.IUserInterfaceBridge" />
-    /// <seealso cref="Sundew.Base.Initialization.IInitializable" />
     /// <seealso cref="System.IDisposable" />
-    public interface IStartupModuleFactory : IInitializable, IDisposable
+    public interface IStartupModuleFactory : IDisposable
     {
         /// <summary>
         /// Gets the startup module data.

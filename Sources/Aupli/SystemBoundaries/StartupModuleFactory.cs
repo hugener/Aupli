@@ -41,9 +41,7 @@ namespace Aupli.SystemBoundaries
         private readonly IInputManagerReporter inputManagerReporter;
         private readonly AsyncLazy<IStartupModule, StartupModuleData> startupModule;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemBoundaries.StartupModuleFactory" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SystemBoundaries.StartupModuleFactory"/> class.</summary>
         /// <param name="application">The application.</param>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <param name="namePath">The name path.</param>
@@ -52,6 +50,7 @@ namespace Aupli.SystemBoundaries
         /// <param name="lastGreetingPath">The last greeting path.</param>
         /// <param name="textViewRendererReporter">The text view renderer reporter.</param>
         /// <param name="inputManagerReporter">The input manager reporter.</param>
+        /// <param name="disposableReporter">The disposable reporter.</param>
         public StartupModuleFactory(
             IApplicationRendering application,
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
@@ -60,7 +59,8 @@ namespace Aupli.SystemBoundaries
             string greetingsPath = "greetings.csv",
             string lastGreetingPath = "last-greeting.val",
             ITextViewRendererReporter textViewRendererReporter = null,
-            IInputManagerReporter inputManagerReporter = null)
+            IInputManagerReporter inputManagerReporter = null,
+            IDisposableReporter disposableReporter = null)
         {
             this.application = application;
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
@@ -85,7 +85,7 @@ namespace Aupli.SystemBoundaries
                     this.application.TextViewRendererReporter = this.textViewRendererReporter;
 
                     var textViewNavigator = this.application.StartRendering(display);
-                    var disposer = new Disposer(displayFactory);
+                    var disposer = new Disposer(disposableReporter, displayFactory);
                     return new StartupModuleData(display, textViewNavigator, lifecycleConfiguration, greetingProvider, disposer);
                 });
         }
@@ -95,16 +95,6 @@ namespace Aupli.SystemBoundaries
         /// </summary>
         /// <returns>A task with the startup data.</returns>
         public IAsyncLazy<IStartupModule> StartupModule => this.startupModule;
-
-        /// <summary>
-        /// Initializes the asynchronous.
-        /// </summary>
-        /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
-        {
-            var values = await this.startupModule;
-            await values.TextViewNavigator.ShowAsync(new StartupTextView(values.GreetingProvider, values.LifecycleConfiguration)).ConfigureAwait(false);
-        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -181,6 +171,11 @@ namespace Aupli.SystemBoundaries
             public IGreetingProvider GreetingProvider { get; }
 
             public IDisposable Disposer { get; }
+
+            public async Task NavigateToStartupViewAsync()
+            {
+                await this.TextViewNavigator.ShowAsync(new StartupTextView(this.GreetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
+            }
         }
     }
 }

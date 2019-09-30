@@ -23,6 +23,7 @@ namespace Aupli.SystemBoundaries.MusicControl
     public class MusicControlModule : IInitializable, IDisposable
     {
         private readonly IMusicPlayerReporter musicPlayerReporter;
+        private IMpcConnection mpcConnection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MusicControlModule"/> class.
@@ -45,11 +46,11 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            var mpcConnection = this.CreateMpcConnection(this.musicPlayerReporter);
-            this.MusicPlayer = new MusicPlayer(mpcConnection, this.musicPlayerReporter);
-            return Task.CompletedTask;
+            this.mpcConnection = this.CreateMpcConnection(this.musicPlayerReporter);
+            this.MusicPlayer = new MusicPlayer(this.mpcConnection, this.musicPlayerReporter);
+            await this.mpcConnection.ConnectAsync();
         }
 
         /// <summary>
@@ -58,6 +59,7 @@ namespace Aupli.SystemBoundaries.MusicControl
         public void Dispose()
         {
             this.MusicPlayer?.Dispose();
+            this.mpcConnection?.Dispose();
         }
 
         /// <summary>

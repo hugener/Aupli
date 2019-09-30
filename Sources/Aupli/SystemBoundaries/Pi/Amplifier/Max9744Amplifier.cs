@@ -20,7 +20,7 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
     {
         private readonly Max9744Device max9744Device;
         private readonly IAmplifierReporter max9744AmplifierReporter;
-        private readonly Range<byte> volumeRange;
+        private readonly Interval<byte> volumeRange;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Max9744Amplifier" /> class.
@@ -32,9 +32,9 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
             this.max9744Device = max9744Device;
             this.max9744AmplifierReporter = max9744AmplifierReporter;
             this.max9744AmplifierReporter?.SetSource(this);
-            this.volumeRange = new Range<byte>(
+            this.volumeRange = new Interval<byte>(
                 (byte)(max9744Device.VolumeRange.Min + 10),
-                (byte)(max9744Device.VolumeRange.Max - 30));
+                (byte)(max9744Device.VolumeRange.Max - 20));
         }
 
         /// <summary>

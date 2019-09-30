@@ -10,7 +10,6 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.DomainServices.Playlist.Shared;
@@ -35,10 +34,17 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
             this.filePath = filePath;
             this.playlists =
                 new AsyncLazy<Dictionary<string, PlaylistEntity>>(
-                    async () => JsonConvert
-                        .DeserializeObject<Dictionary<string, string>>(await File.ReadAllTextAsync(this.filePath)
-                            .ConfigureAwait(false))
-                        .ToDictionary(pair => pair.Key, pair => new PlaylistEntity(pair.Key, pair.Value)),
+                    async () =>
+                    {
+                        var playlistJson = await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false);
+                        if (string.IsNullOrEmpty(playlistJson))
+                        {
+                            return null;
+                        }
+
+                        return JsonConvert.DeserializeObject<Dictionary<string, string>>(playlistJson)
+                            .ToDictionary(pair => pair.Key, pair => new PlaylistEntity(pair.Key, pair.Value));
+                    },
                     true);
         }
 
@@ -67,7 +73,10 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         public async Task SaveAsync()
         {
             var playlists = await this.playlists;
-            await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(playlists.ToDictionary(x => x.Key, x => x.Value.Name))).ConfigureAwait(false);
+            if (playlists != null)
+            {
+                await File.WriteAllTextAsync(this.filePath, JsonConvert.SerializeObject(playlists.ToDictionary(x => x.Key, x => x.Value.Name))).ConfigureAwait(false);
+            }
         }
     }
 }

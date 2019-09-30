@@ -44,7 +44,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         {
             renderContext.Clear();
             renderContext.Home();
-            renderContext.WriteLine("Bye bye " + this.lifecycleConfiguration.Name);
+            renderContext.WriteLine("Bye bye ");
         }
 
         /// <inheritdoc />

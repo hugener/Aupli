@@ -1,7 +1,22 @@
-# Install Arch Linux
+# Getting started
+Note that while this guide includes some instructions for Raspberry Pi 3 and 64 bit arch linux, there are currently problems with gpio and thus that platform is not yet supported.
+
+## Setup from scratch
+* [Start from 1.](#InstallFromScratch)
+
+## Clean install image
+* [Start from 3.](#CleanInstallImage)
+
+## User image
+* [Start from 4. (user and password is pi)](#UserImage)
+
+## Aupli image
+* [Start from 6 (user and password is pi)](#AupliImage)
+
+# <a id="InstallFromScratch">1. Install Arch Linux</a>
 Follow the guide on: https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-3
 
-# Booting to U-Boot
+ ## 1.1 Booting to U-Boot
 In my case when booting, the Raspberry Pi 3 would always end up in U-Boot.
 
 Originally, this project used a Raspberry Pi 2 build, which didn't have this problem.
@@ -24,14 +39,21 @@ setenv bootdelay 0
 saveenv
 ```
 
-# Setup pacman and update system
+# 2. Setup pacman and update system
+Login as root, password is root
+
+```
+su
+```
+
 ```
 pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Syyuu
+pacman -Scc
 ```
 
-# Initial setup (Users)
+# <a id="CleanInstallImage">3. Initial setup</a>
 Login as root, password is root
 
 ```
@@ -52,46 +74,33 @@ passwd pi
 Delete alarm user
 ```
 userdel alarm
+rm /home/alarm -r
 ```
 
 Install sudo and add pi user as sudoer
 ```
 pacman -S sudo
-gpasswd -a pi wheelgpass
+gpasswd -a pi wheel
 visudo
 ```
 Comment both "%wheel" lines in, by removing #
 
 :x followed by enter to save
 
-Change hostname:
+Set up locale
 ```
-hostnamectl set-hostname Aupli
+nano /etc/locale.gen
 ```
-Setup keyboard layout by adding: KEYMAP="dk"
+Uncomment en_US.UTF-8
 ```
-nano /etc/vconsole.conf
+locale-gen
+localectl set-locale LANG=en_US.UTF-8
 ```
-Reboot
 ```
 reboot
 ```
-
-# Setup WIFI
-Copy example profile
-```
-sudo cp /etc/netctl/examples/wireless-wpa /etc/netctl/PROFILE-NAME
-```
-Change ESSID and key
-```
-sudo nano /etc/netctl/PROFILE-NAME
-```
-Enable profile
-```
-sudo netctl enable PROFILE-NAME
-```
-
-# Configure boot and device tree
+# <a id="UserImage">4. Hardware Configuration</a>
+ ## 4.1 Configure boot and device tree
 ```
 sudo nano /boot/config.txt
 ```
@@ -108,7 +117,7 @@ dtoverlay=sdtweak,overclock_50=100
 boot_delay=0
 ```
 
-# Update modules
+ ## 4.2 Update modules
 ```
 sudo nano /etc/modules
 ```
@@ -119,55 +128,82 @@ i2c-bcm2835
 lirc_dev
 lirc_rpi gpio_in_pin=18
 ```
-# Install MPD
+# 5. Install software:
+ ## 5.1 Install MPD
 ```
 sudo pacman -S mpd mpc alsa-utils
-
-sudo mkdir Music
-sudo mkdir Playlists
+```
+ ### 5.1.1 Set up folders, permissions and user
+```
+mkdir Music
+mkdir Playlists
+sudo gpasswd -a mpd pi
 sudo chmod -R 777 /home/pi/Music
 sudo chmod -R 777 /home/pi/Playlists
 ```
 
-# Update mpd.conf
+### 5.1.2 Update mpd.conf
 ```
 sudo nano /etc/mpd.conf
 ```
 Change the lines:
 ```
-music_directory         "/home/pi/Music"
-playlist_directory		"/home/pi/Playlists"
+# See: /usr/share/doc/mpd/mpdconf.example
+
+pid_file           "/run/mpd/mpd.pid"
+db_file            "/var/lib/mpd/mpd.db"
+state_file         "/var/lib/mpd/mpdstate"
+music_directory    "/home/pi/Music"
+playlist_directory "/home/pi/Playlists"
+
+bind_to_address    "localhost"
+
+user               "mpd"
+
+audio_output {
+    type           "alsa"
+    name           "Aupli"
+    device         "hw:1,0"   # optional
+    mixer_type     "null"     # optional
+#   mixer_device   "default"  # optional
+#   mixer_control  "PCM"      # optional
+#   mixer_index    "0"        # optional
+}
+
+filesystem_charset "UTF-8"
+
+auto_update        "yes"
 ```
 
-Set audio output to max
+Enable mpd service
+```
+sudo systemctl enable mpd
+```
+
+Set Speaker output to max
 ```
 sudo alsamixer
 ```
-# Install lirc
+## 5.2 Install lirc
 ```
 sudo pacman -S lirc
 ```
-# Update lirc_options.conf
+ ### 5.2.1 Update lirc_options.conf
 ```
 sudo nano /etc/lirc/lirc_options.conf
 ```
 Change the lines:
 ```
-driver    		= default
-device    		= /dev/lirc0
-listen          = 0.0.0.0:8765
+driver        = default
+device        = /dev/lirc0
+listen        = 0.0.0.0:8765
 ```
-# Add Aupli.lircd.conf and copy contents into it
+ ### 5.2.2 Add Aupli.lircd.conf and copy contents into it
 ```
 sudo nano /etc/lirc/lircd.conf.d/Aupli.lircd.conf
 ```
-# Add Aupli.service and copy contents into it
-```
-sudo nano /lib/systemd/system/Aupli.service
 
-sudo systemctl enable Aupli.service
-```
-# Update lircd.service
+ ### 5.2.3 Update lircd.service
 ```
 sudo nano /lib/systemd/system/lircd.service
 ```
@@ -175,25 +211,9 @@ Change the line:
 ```
 ExecStart=/usr/sbin/lircd --nodaemon --listen
 ```
-# Install .NET Core runtime
-Download the latest .NET Core Runtime for ARM64. This is refereed to as armhf on the Daily Builds page.
-https://dotnet.microsoft.com/download/dotnet-core/3.0
-
+ ## 5.3 Install upnp for MPD
 ```
-curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/9605c24e-9bb2-499f-a003-4fb2bddcf09c/a8683ff89405d370961beb1909ddc295/dotnet-sdk-2.2.300-linux-arm64.tar.gz
-```
-Create a destination folder and extract the downloaded package into it.
-```
-sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
-```
-Set up a symbolic link to the dotnet executable.
-```
-sudo ln -s /opt/dotnet/dotnet /usr/local/bin
-
-sudo mkdir Aupli
-```
-# Install upnp for MPD
-pacman -S --needed base-devel git wget yajl
+sudo pacman -S --needed base-devel git wget yajl
 
 git clone https://aur.archlinux.org/package-query.git 
 cd package-query 
@@ -205,10 +225,118 @@ makepkg -si
 
 yaourt -S upmpdcli
 
-sudo nano /etc/upmpdcli.conf
-friendlyname = Laia-Aupli
+sudo systemctl enable upmpdcli
+```
+## 5.4 Install .NET Core runtime
+Download the latest .NET Core Runtime for ARM64. This is refered to as armhf on the Daily Builds page.
+https://dotnet.microsoft.com/download/dotnet-core/3.0
 
-# Publish sources from Package manager console:
+```
+curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/5cbf9f66-7945-43e2-9b7c-351f900e9893/2fcd48f3d4db99283ebdb46daf9bacec/aspnetcore-runtime-3.0.0-linux-arm64.tar.gz
+
+curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/e9d4b012-a877-443c-8344-72ef910c86dd/b5e729b532d7b3b5488c97764bd0fb8e/aspnetcore-runtime-3.0.0-linux-arm.tar.gz
+```
+Create a destination folder and extract the downloaded package into it.
+```
+sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
+```
+Set up a symbolic link to the dotnet executable.
+```
+sudo ln -s /opt/dotnet/dotnet /usr/local/bin
+
+sudo mkdir Aupli
+```
+
+ ## 5.5 Install Aupli
+  ### 5.5.1 Publish sources from Package manager console:
+```
+dotnet publish -r linux-arm64 -c Release .\Aupli\Aupli.csproj
+```
+```
 dotnet publish -r linux-arm -c Release .\Aupli\Aupli.csproj
-
+```
 Transfer published output to /home/pi/Aupli using WinSCP etc.
+
+  ### 5.5.2 Add Aupli.service and copy contents into it
+```
+sudo nano /lib/systemd/system/Aupli.service
+
+sudo systemctl enable Aupli.service
+```
+# <a id="AupliImage">6. Personalize setup</a>
+
+ ## 6.1 Setup WIFI
+Copy example profile
+```
+sudo cp /etc/netctl/examples/wireless-wpa /etc/netctl/PROFILE-NAME
+```
+Change ESSID and key
+```
+sudo nano /etc/netctl/PROFILE-NAME
+```
+Enable profile
+```
+sudo netctl enable PROFILE-NAME
+```
+
+ ## 6.2 Change hostname:
+```
+hostnamectl set-hostname Aupli
+```
+
+ ## 6.3 Change upmp friendly name:
+```
+sudo nano /etc/upmpdcli.conf
+```
+```
+friendlyname = Aupli
+```
+ ## 6.4 Change passwords: (Aupli image only)
+```
+su
+```
+
+Change root and pi password
+```
+passwd pi
+passwd root
+```
+## 6.5 Reboot or shutdown if you need to create an image
+```
+reboot/shutdown now
+```
+# 7. Extend partition
+Skip this step if you set up everything from scratch.
+```
+sudo systemctl rescue
+sudo mount -o ro,remount /
+sudo fdisk /dev/mmcblk0
+```
+Fdisk commands
+```
+p
+d
+2
+n
+p
+2
+```
+Make sure the beginning of old and new partition are the same.
+<br>The p command above listed the start blocks
+```
+w
+```
+Reboot the pick up changes and resize file system.
+```
+sudo reboot
+sudo systemctl rescue
+sudo resize2fs /dev/mmcblk0p2
+sudo reboot
+sudo systemctl rescue
+sudo mount -o ro,remount /
+sudo e2fsck /dev/mmcblk0p2
+sync
+sudo reboot
+```
+
+# 8. Enjoy!

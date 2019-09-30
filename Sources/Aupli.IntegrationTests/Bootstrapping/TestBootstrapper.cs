@@ -61,7 +61,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IControlsModuleFactory CreateControlsModule(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
-            this.ControlsModuleFactory = new TestControlsModuleFactory(gpioConnectionDriverFactory, null);
+            this.ControlsModuleFactory = new TestControlsModuleFactory(gpioConnectionDriverFactory, null, null);
             return this.ControlsModuleFactory;
         }
 
