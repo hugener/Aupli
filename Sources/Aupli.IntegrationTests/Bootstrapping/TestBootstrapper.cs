@@ -16,6 +16,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Aupli.SystemBoundaries.MusicControl;
     using Aupli.SystemBoundaries.Persistence.Api;
     using Aupli.SystemBoundaries.Persistence.Configuration.Api;
+    using Aupli.SystemBoundaries.SystemServices;
     using global::NSubstitute;
     using Pi.IO.GeneralPurpose;
     using Serilog;
@@ -73,7 +74,12 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override PlayerModule CreatePlayerModule(IRepositoriesModule repositoriesModule, PlaylistModule playlistModule, MusicControlModule musicControlModule)
         {
-            return new TestPlayerModule(repositoriesModule.PlaylistRepository, playlistModule.LastPlaylistService, musicControlModule.MusicPlayer, null, null, null);
+            return new TestPlayerModule(repositoriesModule.PlaylistRepository, playlistModule.LastPlaylistService, musicControlModule.MusicPlayer, null);
+        }
+
+        protected override SystemServicesModule CreateSystemServicesModule()
+        {
+            return new TestSystemServicesModule(null, null);
         }
     }
 }

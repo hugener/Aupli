@@ -7,28 +7,15 @@
 
 namespace Aupli.IntegrationTests.Bootstrapping
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Aupli.ApplicationServices;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.DomainServices.Playlist.Api;
-    using Aupli.SystemBoundaries.SystemServices.Api;
-    using Aupli.SystemBoundaries.SystemServices.Ari;
-    using global::NSubstitute;
 
     public class TestPlayerModule : PlayerModule
     {
-        public TestPlayerModule(IPlaylistRepository playlistRepository, ILastPlaylistService lastPlaylistService, IPlaybackControls playbackControls, ISystemServicesAwaiterReporter systemServicesAwaiterReporter, IPlayerServiceReporter playerServiceReporter, IWifiConnecterReporter wifiConnecterReporter)
-            : base(playlistRepository, lastPlaylistService, playbackControls, systemServicesAwaiterReporter, playerServiceReporter, wifiConnecterReporter)
+        public TestPlayerModule(IPlaylistRepository playlistRepository, ILastPlaylistService lastPlaylistService, IPlaybackControls playbackControls, IPlayerServiceReporter playerServiceReporter)
+            : base(playlistRepository, lastPlaylistService, playbackControls, playerServiceReporter)
         {
-        }
-
-        protected override ISystemServicesAwaiter CreateServicesAwaiter()
-        {
-            var systemServicesAwaiter = Substitute.For<ISystemServicesAwaiter>();
-            systemServicesAwaiter.WaitForServicesAsync(Arg.Any<IEnumerable<string>>(), Timeout.InfiniteTimeSpan).Returns(Task.FromResult(true));
-            return systemServicesAwaiter;
         }
     }
 }

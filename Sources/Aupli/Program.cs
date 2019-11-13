@@ -22,10 +22,6 @@ namespace Aupli
     /// </summary>
     public class Program
     {
-        /// <summary>Gets the logger.</summary>
-        /// <value>The logger.</value>
-        public static ILogger Logger { get; private set; } = default!;
-
         /// <summary>
         /// Mains the specified arguments.
         /// </summary>
@@ -48,7 +44,6 @@ namespace Aupli
             }
 
             var log = GetLog(result);
-            Logger = log;
             var logger = log.ForContext<Program>();
             try
             {

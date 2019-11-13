@@ -31,6 +31,7 @@ namespace Aupli
     using Aupli.SystemBoundaries.Persistence;
     using Aupli.SystemBoundaries.Persistence.Api;
     using Aupli.SystemBoundaries.Pi;
+    using Aupli.SystemBoundaries.SystemServices;
     using Aupli.SystemBoundaries.UserInterface;
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using Pi.IO.GeneralPurpose;
@@ -103,6 +104,10 @@ namespace Aupli
             // Create music control module.
             var musicControlModule = this.CreateMusicControlModule();
             await musicControlModule.InitializeAsync().ConfigureAwait(false);
+
+            this.logger.Verbose("Create System services");
+            var systemServicesModule = this.CreateSystemServicesModule();
+            await systemServicesModule.InitializeAsync().ConfigureAwait(false);
 
             // Create application modules
             this.logger.Verbose("Create Player Module");
@@ -232,6 +237,15 @@ namespace Aupli
             return new MusicControlModule(new MusicPlayerLogger(this.logger));
         }
 
+        /// <summary>Creates the system services module.</summary>
+        /// <returns>A <see cref="SystemServicesModule"/>.</returns>
+        protected virtual SystemServicesModule CreateSystemServicesModule()
+        {
+            return new SystemServicesModule(
+                new SystemServicesAwaiterLogger(this.logger),
+                new WifiConnecterLogger(this.logger));
+        }
+
         /// <summary>
         /// Creates the player module.
         /// </summary>
@@ -245,9 +259,7 @@ namespace Aupli
                 repositoriesModule.PlaylistRepository,
                 playlistModule.LastPlaylistService,
                 musicControlModule.MusicPlayer,
-                new SystemServicesAwaiterLogger(this.logger),
-                new PlayerServiceLogger(this.logger),
-                new WifiConnecterLogger(this.logger));
+                new PlayerServiceLogger(this.logger));
         }
     }
 }
