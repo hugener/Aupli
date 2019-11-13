@@ -22,14 +22,15 @@ namespace Aupli.SystemBoundaries.MusicControl
     /// <seealso cref="System.IDisposable" />
     public class MusicControlModule : IInitializable, IDisposable
     {
-        private readonly IMusicPlayerReporter musicPlayerReporter;
-        private IMpcConnection mpcConnection;
+        private readonly IMusicPlayerReporter? musicPlayerReporter;
+        private IMpcConnection? mpcConnection;
+        private IMusicPlayer? musicPlayer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MusicControlModule"/> class.
         /// </summary>
         /// <param name="musicPlayerReporter">The music player reporter.</param>
-        public MusicControlModule(IMusicPlayerReporter musicPlayerReporter)
+        public MusicControlModule(IMusicPlayerReporter? musicPlayerReporter)
         {
             this.musicPlayerReporter = musicPlayerReporter;
         }
@@ -40,13 +41,17 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// <value>
         /// The music player.
         /// </value>
-        public IMusicPlayer MusicPlayer { get; private set; }
+        public IMusicPlayer MusicPlayer
+        {
+            get => this.musicPlayer ?? throw new NotInitializedException(this);
+            private set => this.musicPlayer = value;
+        }
 
         /// <summary>
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             this.mpcConnection = this.CreateMpcConnection(this.musicPlayerReporter);
             this.MusicPlayer = new MusicPlayer(this.mpcConnection, this.musicPlayerReporter);
@@ -67,7 +72,7 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// </summary>
         /// <param name="mpcConnectionReporter">The music player logger.</param>
         /// <returns>A mpc connection.</returns>
-        protected virtual IMpcConnection CreateMpcConnection(IMpcConnectionReporter mpcConnectionReporter)
+        protected virtual IMpcConnection CreateMpcConnection(IMpcConnectionReporter? mpcConnectionReporter)
         {
             return new MpcConnection(new IPEndPoint(IPAddress.Loopback, 6600), mpcConnectionReporter);
         }

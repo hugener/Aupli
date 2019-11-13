@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.ApplicationServices.Player
 {
+    using System.Reflection;
     using Aupli.ApplicationServices.Player.Ari;
     using global::Serilog;
     using Sundew.Base;
@@ -43,7 +44,7 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Player
         /// <param name="playlistName">Name of the playlist.</param>
         public void FoundPlaylist(string playlistName)
         {
-            this.log.Debug($"{nameof(this.FoundPlaylist)} {{{nameof(playlistName)}}}", playlistName);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(playlistName)}}}", playlistName);
         }
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Player
         /// <param name="playlistId">The playlist identifier.</param>
         public void DidNotFindPlaylistForId(string playlistId)
         {
-            this.log.Debug($"{nameof(this.DidNotFindPlaylistForId)} {{{nameof(playlistId)}}}", playlistId);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(playlistId)}}}", playlistId);
         }
     }
 }

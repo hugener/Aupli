@@ -73,7 +73,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override PlayerModule CreatePlayerModule(IRepositoriesModule repositoriesModule, PlaylistModule playlistModule, MusicControlModule musicControlModule)
         {
-            return new TestPlayerModule(repositoriesModule.PlaylistRepository, playlistModule.LastPlaylistService, musicControlModule.MusicPlayer, null, null);
+            return new TestPlayerModule(repositoriesModule.PlaylistRepository, playlistModule.LastPlaylistService, musicControlModule.MusicPlayer, null, null, null);
         }
     }
 }

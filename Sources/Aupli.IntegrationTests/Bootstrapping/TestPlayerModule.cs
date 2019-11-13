@@ -19,8 +19,8 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
     public class TestPlayerModule : PlayerModule
     {
-        public TestPlayerModule(IPlaylistRepository playlistRepository, ILastPlaylistService lastPlaylistService, IPlaybackControls playbackControls, ISystemServicesAwaiterReporter systemServicesAwaiterReporter, IPlayerServiceReporter playerServiceReporter)
-            : base(playlistRepository, lastPlaylistService, playbackControls, systemServicesAwaiterReporter, playerServiceReporter)
+        public TestPlayerModule(IPlaylistRepository playlistRepository, ILastPlaylistService lastPlaylistService, IPlaybackControls playbackControls, ISystemServicesAwaiterReporter systemServicesAwaiterReporter, IPlayerServiceReporter playerServiceReporter, IWifiConnecterReporter wifiConnecterReporter)
+            : base(playlistRepository, lastPlaylistService, playbackControls, systemServicesAwaiterReporter, playerServiceReporter, wifiConnecterReporter)
         {
         }
 

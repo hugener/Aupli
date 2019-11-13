@@ -28,12 +28,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         private readonly PlayerController playerController;
         private readonly IPlayerStatusUpdater playerStatusUpdater;
         private readonly IVolumeStatus volumeStatus;
-        private PlayerStatus playerStatus;
-        private PlayerStatus previousPlayerStatus;
-        private IInvalidater invalidater;
-        private TextScroller artistTextScroller;
-        private TextScroller titleTextScroller;
-        private TextBlinker muteTextBlinker;
+        private PlayerStatus playerStatus = default!;
+        private PlayerStatus? previousPlayerStatus;
+        private IInvalidater invalidater = default!;
+        private TextScroller artistTextScroller = default!;
+        private TextScroller titleTextScroller = default!;
+        private TextBlinker muteTextBlinker = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerTextView" /> class.
@@ -65,10 +65,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         /// </summary>
         /// <param name="invalidater">The invalidater.</param>
         /// <param name="characterContext">The character context.</param>
-        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext? characterContext)
         {
             this.ResetPlayerState();
-            PlayerCustomCharacters.SetCharacters(characterContext);
+            PlayerCustomCharacters.TrySetCharacters(characterContext);
             this.invalidater = invalidater;
             this.playerStatus = this.playerStatusUpdater.Status;
             this.playerStatusUpdater.StatusChanged += this.OnPlayerStatusUpdaterStatusChanged;
@@ -95,7 +95,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         /// </summary>
         /// <param name="renderContext">The render context.</param>
         /// <inheritdoc />
-        public void Render(IRenderContext renderContext)
+        public void OnDraw(IRenderContext renderContext)
         {
             var localPreviousPlayerStatus = this.previousPlayerStatus;
             this.previousPlayerStatus = this.playerStatus;
@@ -137,12 +137,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             return Task.CompletedTask;
         }
 
-        private void OnVolumeStatusVolumeChanged(object sender, EventArgs e)
+        private void OnVolumeStatusVolumeChanged(object? sender, EventArgs e)
         {
             this.muteTextBlinker.IsEnabled = this.volumeStatus.IsMuted;
         }
 
-        private void OnPlayerStatusUpdaterStatusChanged(object sender, StatusEventArgs e)
+        private void OnPlayerStatusUpdaterStatusChanged(object? sender, StatusEventArgs e)
         {
             this.playerStatus = new PlayerStatus(e.PlaylistName, e.Artist, e.Title, e.State, e.Track, e.Elapsed);
             this.invalidater?.Invalidate();
@@ -162,7 +162,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             this.previousPlayerStatus = null;
         }
 
-        private bool ShouldUpdateElapsedOnly(PlayerStatus localPreviousPlayerStatus)
+        private bool ShouldUpdateElapsedOnly(PlayerStatus? localPreviousPlayerStatus)
         {
             return localPreviousPlayerStatus != null &&
                    !this.artistTextScroller.IsChanged &&

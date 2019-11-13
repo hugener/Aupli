@@ -22,7 +22,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
     {
         private readonly InputControls inputControls;
         private readonly IInputManager inputManager;
-        private readonly IInteractionControllerReporter interactionControllerReporter;
+        private readonly IInteractionControllerReporter? interactionControllerReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionController" /> class.
@@ -30,7 +30,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
         /// <param name="inputControls">The input controls.</param>
         /// <param name="inputManager">The input manager.</param>
         /// <param name="interactionControllerReporter">The interaction controller reporter.</param>
-        public InteractionController(InputControls inputControls, IInputManager inputManager, IInteractionControllerReporter interactionControllerReporter)
+        public InteractionController(InputControls inputControls, IInputManager inputManager, IInteractionControllerReporter? interactionControllerReporter)
         {
             this.inputControls = inputControls;
             this.inputManager = inputManager;
@@ -77,73 +77,62 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
 
         private static KeyInput GetInput(LircCommandEventArgs e)
         {
-            switch (e.KeyCode)
+            return e.KeyCode switch
             {
-                case LircKeyCodes.KeyOk:
-                    return KeyInput.Ok;
-                case LircKeyCodes.KeyLeft:
-                    return KeyInput.Left;
-                case LircKeyCodes.KeyRight:
-                    return KeyInput.Right;
-                case LircKeyCodes.KeyUp:
-                    return KeyInput.Up;
-                case LircKeyCodes.KeyDown:
-                    return KeyInput.Down;
-                case LircKeyCodes.KeyPlayPause:
-                    return KeyInput.PlayPause;
-                case LircKeyCodes.KeyPrevious:
-                    return KeyInput.Previous;
-                case LircKeyCodes.KeyNextSong:
-                    return KeyInput.Next;
-                case LircKeyCodes.KeyStop:
-                    return KeyInput.Stop;
-                case LircKeyCodes.KeyMenu:
-                    return KeyInput.Menu;
-                default:
-                    return KeyInput.Unknown;
-            }
+                LircKeyCodes.KeyOk => KeyInput.Ok,
+                LircKeyCodes.KeyLeft => KeyInput.Left,
+                LircKeyCodes.KeyRight => KeyInput.Right,
+                LircKeyCodes.KeyUp => KeyInput.Up,
+                LircKeyCodes.KeyDown => KeyInput.Down,
+                LircKeyCodes.KeyPlayPause => KeyInput.PlayPause,
+                LircKeyCodes.KeyPrevious => KeyInput.Previous,
+                LircKeyCodes.KeyNextSong => KeyInput.Next,
+                LircKeyCodes.KeyStop => KeyInput.Stop,
+                LircKeyCodes.KeyMenu => KeyInput.Menu,
+                _ => KeyInput.Unknown
+            };
         }
 
-        private void OnPlayPauseButtonPressed(object sender, EventArgs eventArgs)
+        private void OnPlayPauseButtonPressed(object? sender, EventArgs eventArgs)
         {
             this.RaiseInput(KeyInput.Ok);
         }
 
-        private void OnNextButtonPressed(object sender, EventArgs eventArgs)
+        private void OnNextButtonPressed(object? sender, EventArgs eventArgs)
         {
             this.RaiseInput(KeyInput.Right);
         }
 
-        private void OnPreviousButtonPressed(object sender, EventArgs eventArgs)
+        private void OnPreviousButtonPressed(object? sender, EventArgs eventArgs)
         {
             this.RaiseInput(KeyInput.Left);
         }
 
-        private void OnMenuButtonPressed(object sender, EventArgs eventArgs)
+        private void OnMenuButtonPressed(object? sender, EventArgs eventArgs)
         {
             this.RaiseInput(KeyInput.Menu);
         }
 
-        private void OnKy040ConnectionRotated(object sender, RotationEventArgs e)
+        private void OnKy040ConnectionRotated(object? sender, RotationEventArgs e)
         {
             this.RaiseInput(e.EncoderDirection == EncoderDirection.Clockwise ? KeyInput.Up : KeyInput.Down);
         }
 
-        private void OnKy040ConnectionPressed(object sender, EventArgs e)
+        private void OnKy040ConnectionPressed(object? sender, EventArgs e)
         {
             this.RaiseInput(KeyInput.Select);
         }
 
-        private void OnLircConnectionLircCommand(object sender, LircCommandEventArgs e)
+        private void OnLircConnectionLircCommand(object? sender, LircCommandEventArgs e)
         {
             this.RaiseInput(GetInput(e));
         }
 
-        private void OnRfidTransceiverTagDetected(object sender, TagDetectedEventArgs e)
+        private void OnRfidTransceiverTagDetected(object? sender, TagDetectedEventArgs e)
         {
             var uid = e.Tag.ToString();
-            this.interactionControllerReporter?.TagInputEvent(uid);
-            this.inputManager.Raise(this.TagInputEvent, this, new TagInputArgs(uid));
+            this.interactionControllerReporter?.TagInputEvent(uid!);
+            this.inputManager.Raise(this.TagInputEvent, this, new TagInputArgs(uid!));
         }
 
         private void RaiseInput(KeyInput keyInput)

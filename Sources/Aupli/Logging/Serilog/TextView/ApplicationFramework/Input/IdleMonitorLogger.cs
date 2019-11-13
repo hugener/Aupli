@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
 {
+    using System.Reflection;
     using global::Serilog;
     using global::Sundew.Base;
     using global::Sundew.TextView.ApplicationFramework.Input;
@@ -42,7 +43,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// </summary>
         public void Started()
         {
-            this.log.Debug(nameof(this.Started));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// </summary>
         public void OnInputActivity()
         {
-            this.log.Verbose(nameof(this.OnInputActivity));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// </summary>
         public void Activated()
         {
-            this.log.Debug(nameof(this.Activated));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// </summary>
         public void OnSystemActivity()
         {
-            this.log.Verbose(nameof(this.OnSystemActivity));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// </summary>
         public void OnInputIdle()
         {
-            this.log.Debug(nameof(this.OnInputIdle));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// </summary>
         public void OnSystemIdle()
         {
-            this.log.Debug(nameof(this.OnSystemIdle));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
     }
 }

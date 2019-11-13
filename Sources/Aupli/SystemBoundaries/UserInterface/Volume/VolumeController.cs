@@ -18,7 +18,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     {
         private readonly IVolumeService volumeService;
         private readonly IInteractionController interactionController;
-        private readonly IVolumeControllerReporter volumeControllerReporter;
+        private readonly IVolumeControllerReporter? volumeControllerReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeController" /> class.
@@ -26,7 +26,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         /// <param name="volumeService">The volume service.</param>
         /// <param name="interactionController">The interaction controller.</param>
         /// <param name="volumeControllerReporter">The volume controller reporter.</param>
-        public VolumeController(IVolumeService volumeService, IInteractionController interactionController, IVolumeControllerReporter volumeControllerReporter)
+        public VolumeController(IVolumeService volumeService, IInteractionController interactionController, IVolumeControllerReporter? volumeControllerReporter)
         {
             this.volumeService = volumeService;
             this.interactionController = interactionController;
@@ -35,19 +35,19 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
             this.interactionController.KeyInputEvent.Register(this, this.OnInteractionControllerKeyInput);
         }
 
-        private async void OnInteractionControllerKeyInput(object sender, KeyInputArgs e)
+        private void OnInteractionControllerKeyInput(object? sender, KeyInputArgs e)
         {
-            this.volumeControllerReporter.KeyInput(e.KeyInput);
+            this.volumeControllerReporter?.KeyInput(e.KeyInput);
             switch (e.KeyInput)
             {
                 case KeyInput.Down:
-                    await this.volumeService.ChangeVolumeAsync(false);
+                    this.volumeService.ChangeVolumeAsync(false).Wait();
                     break;
                 case KeyInput.Up:
-                    await this.volumeService.ChangeVolumeAsync(true);
+                    this.volumeService.ChangeVolumeAsync(true).Wait();
                     break;
                 case KeyInput.Select:
-                    await this.volumeService.ToggleMuteAsync();
+                    this.volumeService.ToggleMuteAsync().Wait();
                     break;
             }
         }

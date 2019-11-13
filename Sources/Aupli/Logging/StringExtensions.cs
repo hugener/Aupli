@@ -18,7 +18,7 @@ namespace Aupli.Logging
         /// <summary>  Takes a camel case string and returns a sentence case string.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The sentence case string.</returns>
-        public static string FromCamelCaseToSentenceCase(this string value)
+        public static string? FromCamelCaseToSentenceCase(this string value)
         {
             return value.FromCamelCaseToSentenceCase(CultureInfo.CurrentCulture);
         }
@@ -27,7 +27,7 @@ namespace Aupli.Logging
         /// <param name="value">The value.</param>
         /// <param name="cultureInfo">The culture information.</param>
         /// <returns>The sentence case string.</returns>
-        public static string FromCamelCaseToSentenceCase(this string value, CultureInfo cultureInfo)
+        public static string? FromCamelCaseToSentenceCase(this string value, CultureInfo cultureInfo)
         {
             if (string.IsNullOrEmpty(value))
             {

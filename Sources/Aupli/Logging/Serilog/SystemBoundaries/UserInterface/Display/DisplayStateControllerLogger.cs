@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Display
 {
+    using System.Reflection;
     using Aupli.SystemBoundaries.UserInterface.Display.Ari;
     using global::Serilog;
     using Sundew.Base;
@@ -42,7 +43,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Display
         /// </summary>
         public void EnabledDisplay()
         {
-            this.log.Debug(nameof(this.EnabledDisplay));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Display
         /// </summary>
         public void DisabledDisplay()
         {
-            this.log.Debug(nameof(this.DisabledDisplay));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
                         var playlistJson = await File.ReadAllTextAsync(this.filePath).ConfigureAwait(false);
                         if (string.IsNullOrEmpty(playlistJson))
                         {
-                            return null;
+                            return new Dictionary<string, PlaylistEntity>();
                         }
 
                         return JsonConvert.DeserializeObject<Dictionary<string, string>>(playlistJson)
@@ -55,7 +55,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
         /// <returns>
         /// The entity.
         /// </returns>
-        public async Task<PlaylistEntity> GetPlaylistAsync(string id)
+        public async Task<PlaylistEntity?> GetPlaylistAsync(string id)
         {
             var playlists = await this.playlists;
             if (playlists.TryGetValue(id, out var playlist))

@@ -22,6 +22,10 @@ namespace Aupli
     /// </summary>
     public class Program
     {
+        /// <summary>Gets the logger.</summary>
+        /// <value>The logger.</value>
+        public static ILogger Logger { get; private set; } = default!;
+
         /// <summary>
         /// Mains the specified arguments.
         /// </summary>
@@ -29,7 +33,7 @@ namespace Aupli
         /// <returns>An exit code.</returns>
         public static async Task<int> Main(string[] args)
         {
-            var startTime = new TimeSpan(Environment.TickCount);
+            var startTime = Stopwatch.GetTimestamp();
             var stopwatch = Stopwatch.StartNew();
             var commandLineParser = new CommandLineParser<Options, int>();
             commandLineParser.WithArguments(
@@ -44,17 +48,18 @@ namespace Aupli
             }
 
             var log = GetLog(result);
+            Logger = log;
             var logger = log.ForContext<Program>();
             try
             {
                 logger.Information("------------------------------------------");
-                logger.Information("Starting Aupli: {Args}, start time: {startTime}", string.Join(" ", args), startTime);
+                logger.Information("Starting Aupli: {Args}, start time: {startTime}", string.Join(" ", args), new TimeSpan(startTime));
                 var application = new Application();
 
                 var bootstrapper = new Bootstrapper(application, logger);
                 logger.Verbose("Created Bootstrapper");
                 await bootstrapper.StartAsync(result.Value.AllowShutdown);
-                logger.Information("Started Aupli in {time}, total startup time: {totalStartupTime}", stopwatch.Elapsed, new TimeSpan(Environment.TickCount));
+                logger.Information("Started Aupli in {time}, total startup time: {totalStartupTime}", stopwatch.Elapsed, new TimeSpan(Stopwatch.GetTimestamp()));
                 stopwatch.Stop();
 
                 application.Run();

@@ -8,7 +8,6 @@
 namespace Aupli.SystemBoundaries.UserInterface.Internal
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using Aupli.ApplicationServices.Volume.Api;
     using Aupli.SystemBoundaries.UserInterface.Api;
@@ -25,9 +24,8 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     {
         private readonly ITextViewNavigator textViewNavigator;
         private readonly ViewFactory viewFactory;
-        private readonly ITimerFactory timerFactory;
         private readonly VolumeController volumeController;
-        private readonly IViewNavigatorReporter viewNavigatorReporter;
+        private readonly IViewNavigatorReporter? viewNavigatorReporter;
         private readonly ITimer viewTimeoutTimer;
 
         /// <summary>
@@ -49,12 +47,11 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
             ITextViewNavigator textViewNavigator,
             ViewFactory viewFactory,
             ITimerFactory timerFactory,
-            IViewNavigatorReporter viewNavigatorReporter = null)
+            IViewNavigatorReporter? viewNavigatorReporter = null)
         {
             this.textViewNavigator = textViewNavigator;
             this.volumeController = volumeController;
             this.viewFactory = viewFactory;
-            this.timerFactory = timerFactory;
             this.viewNavigatorReporter = viewNavigatorReporter;
             this.viewNavigatorReporter?.SetSource(this);
             this.viewTimeoutTimer = timerFactory.Create();
@@ -85,18 +82,18 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
             await this.textViewNavigator.NavigateBackAsync(oldViewView => this.viewNavigatorReporter?.NavigateBack());
         }
 
-        private async void OnVolumeControllerVolumeChanged(object sender, EventArgs e)
+        private void OnVolumeControllerVolumeChanged(object? sender, EventArgs e)
         {
             this.viewTimeoutTimer.StartOnce(TimeSpan.FromMilliseconds(1500));
-            await this.textViewNavigator.ShowAsync(this.viewFactory.VolumeTextView, oldTextView => this.viewNavigatorReporter?.NavigateToVolumeTextView());
+            this.textViewNavigator.ShowAsync(this.viewFactory.VolumeTextView, oldTextView => this.viewNavigatorReporter?.NavigateToVolumeTextView()).Wait();
         }
 
-        private async void OnShutdownNotifierShuttingDown(object sender, EventArgs e)
+        private async void OnShutdownNotifierShuttingDown(object? sender, EventArgs e)
         {
             await this.textViewNavigator.NavigateToAsync(this.viewFactory.ShutdownTextView, oldTextView => this.viewNavigatorReporter?.NavigateToShutdownTextView());
         }
 
-        private async void OnMenuRequesterMenuRequested(object sender, EventArgs e)
+        private async void OnMenuRequesterMenuRequested(object? sender, EventArgs e)
         {
             await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.MenuTextView, oldTextView => this.viewNavigatorReporter?.NavigateToMenuTextView());
         }

@@ -34,11 +34,12 @@ namespace Aupli.SystemBoundaries.MusicControl
         private readonly AutoResetEventAsync updateStatusSleepEvent = new AutoResetEventAsync(false);
         private readonly AutoResetEventAsync statusUpdatedEvent = new AutoResetEventAsync(false);
         private readonly IMpcConnection mpcConnection;
-        private readonly IMusicPlayerReporter musicPlayerReporter;
+        private readonly IMusicPlayerReporter? musicPlayerReporter;
         private readonly ContinuousJob musicPlayerStatusJob;
 
-        private string currentPlaylist;
-        private MpdStatus lastMpdStatus;
+        private string currentPlaylist = string.Empty;
+
+        private MpdStatus lastMpdStatus = new MpdStatus(-1, false, false, false, false, 0, 0, 0, MpdState.Unknown, 0, 0, 0, 0, TimeSpan.Zero, TimeSpan.Zero, 0, 0, 0, 0, 0, string.Empty);
         private Percentage volume;
         private bool isMuted;
 
@@ -47,7 +48,7 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// </summary>
         /// <param name="mpcConnection">The MPC connection.</param>
         /// <param name="musicPlayerReporter">The music player observer.</param>
-        public MusicPlayer(IMpcConnection mpcConnection, IMusicPlayerReporter musicPlayerReporter)
+        public MusicPlayer(IMpcConnection mpcConnection, IMusicPlayerReporter? musicPlayerReporter)
         {
             this.mpcConnection = mpcConnection;
             this.musicPlayerReporter = musicPlayerReporter;
@@ -58,17 +59,17 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// <summary>
         /// Occurs when status has changed.
         /// </summary>
-        public event EventHandler<StatusEventArgs> StatusChanged;
+        public event EventHandler<StatusEventArgs>? StatusChanged;
 
         /// <summary>
         /// Occurs when [volume changed].
         /// </summary>
-        public event EventHandler<VolumeChangedEventArgs> VolumeChanged;
+        public event EventHandler<VolumeChangedEventArgs>? VolumeChanged;
 
         /// <summary>
         /// Occurs when [audio output status changed].
         /// </summary>
-        public event EventHandler AudioOutputStatusChanged;
+        public event EventHandler? AudioOutputStatusChanged;
 
         /// <summary>
         /// Gets or sets the status automatic refresh period.
@@ -245,21 +246,18 @@ namespace Aupli.SystemBoundaries.MusicControl
         public void Dispose()
         {
             this.musicPlayerStatusJob.Dispose();
+            this.mpcCommandLock.Dispose();
         }
 
         private static PlayerState GetPlayerState(MpdState mpdState)
         {
-            switch (mpdState)
+            return mpdState switch
             {
-                case MpdState.Play:
-                    return PlayerState.Playing;
-                case MpdState.Stop:
-                    return PlayerState.Stopped;
-                case MpdState.Pause:
-                    return PlayerState.Paused;
-                default:
-                    return PlayerState.Unknown;
-            }
+                MpdState.Play => PlayerState.Playing,
+                MpdState.Stop => PlayerState.Stopped,
+                MpdState.Pause => PlayerState.Paused,
+                _ => PlayerState.Unknown
+            };
         }
 
         private async Task<MusicPlayerEventArgs> ExecuteCurrentSongAndStatusCommandAsync()
@@ -270,9 +268,9 @@ namespace Aupli.SystemBoundaries.MusicControl
             {
                 var currentSong = currentSongResult.Response.Content;
                 var status = statusResult.Response.Content;
-                StatusEventArgs statusEventArgs = null;
-                VolumeChangedEventArgs volumeChangedEventArgs = null;
-                EventArgs audioOutputEventArgs = null;
+                StatusEventArgs? statusEventArgs = null;
+                VolumeChangedEventArgs? volumeChangedEventArgs = null;
+                EventArgs? audioOutputEventArgs = null;
                 if (status != null)
                 {
                     this.lastMpdStatus = status;
@@ -309,6 +307,7 @@ namespace Aupli.SystemBoundaries.MusicControl
             return MusicPlayerEventArgs.EmptyEventArgs;
         }
 
+#nullable disable
         private async Task<TResult> ExecuteCommandAsync<TResult>(Func<Task<TResult>> func)
         {
             using (var lockResult = await this.mpcCommandLock.TryLockAsync())
@@ -321,15 +320,14 @@ namespace Aupli.SystemBoundaries.MusicControl
 
             return default;
         }
+#nullable enable
 
         private async Task ExecuteCommandAsync(Func<Task> action)
         {
-            using (var lockResult = await this.mpcCommandLock.TryLockAsync())
+            using var lockResult = await this.mpcCommandLock.TryLockAsync();
+            if (lockResult)
             {
-                if (lockResult)
-                {
-                    await action();
-                }
+                await action();
             }
         }
 
@@ -378,18 +376,18 @@ namespace Aupli.SystemBoundaries.MusicControl
         {
             public static readonly MusicPlayerEventArgs EmptyEventArgs = new MusicPlayerEventArgs(null, null, null);
 
-            public MusicPlayerEventArgs(StatusEventArgs statusEventArgs, VolumeChangedEventArgs volumeChangedEventArgs, EventArgs audioOutputEventArgs)
+            public MusicPlayerEventArgs(StatusEventArgs? statusEventArgs, VolumeChangedEventArgs? volumeChangedEventArgs, EventArgs? audioOutputEventArgs)
             {
                 this.StatusEventArgs = statusEventArgs;
                 this.VolumeChangedEventArgs = volumeChangedEventArgs;
                 this.AudioOutputEventArgs = audioOutputEventArgs;
             }
 
-            public StatusEventArgs StatusEventArgs { get; }
+            public StatusEventArgs? StatusEventArgs { get; }
 
-            public VolumeChangedEventArgs VolumeChangedEventArgs { get; }
+            public VolumeChangedEventArgs? VolumeChangedEventArgs { get; }
 
-            public EventArgs AudioOutputEventArgs { get; }
+            public EventArgs? AudioOutputEventArgs { get; }
 
             public bool Equals(MusicPlayerEventArgs other)
             {

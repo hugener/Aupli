@@ -21,7 +21,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     public class VolumeTextView : ITextView
     {
         private readonly IVolumeService volumeService;
-        private IInvalidater invalidater;
+        private IInvalidater invalidater = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeTextView" /> class.
@@ -34,10 +34,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         }
 
         /// <inheritdoc />
-        public IEnumerable<object> InputTargets => null;
+        public IEnumerable<object>? InputTargets => null;
 
         /// <inheritdoc />
-        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext? characterContext)
         {
             this.invalidater = invalidater;
             return Task.CompletedTask;
@@ -47,7 +47,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         /// Renders the specified textView information.
         /// </summary>
         /// <param name="renderContext">The render context.</param>
-        public void Render(IRenderContext renderContext)
+        public void OnDraw(IRenderContext renderContext)
         {
             renderContext.Home();
             var line1 = $"Volume: {this.volumeService.Volume.ToString(0),5}{' '.Repeat(renderContext.Size.Width - 5 + 8)}";
@@ -65,7 +65,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
             return Task.CompletedTask;
         }
 
-        private void OnVolumeServiceVolumeChanged(object sender, EventArgs e)
+        private void OnVolumeServiceVolumeChanged(object? sender, EventArgs e)
         {
             this.invalidater?.Invalidate();
         }

@@ -24,7 +24,7 @@ namespace Aupli.SystemBoundaries.UserInterface
     using Aupli.SystemBoundaries.UserInterface.Player;
     using Aupli.SystemBoundaries.UserInterface.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Volume;
-    using global::Pi.Timers;
+    using global::Pi.Core.Timers;
     using Sundew.Base.Disposal;
     using Sundew.Base.Initialization;
     using Sundew.TextView.ApplicationFramework;
@@ -43,11 +43,12 @@ namespace Aupli.SystemBoundaries.UserInterface
         private readonly bool allowShutdown;
         private readonly ILifecycleConfiguration lifecycleConfiguration;
         private readonly ITimeoutConfiguration timeoutConfiguration;
-        private readonly Reporters reporters;
-        private VolumeController volumeController;
-        private ShutdownController shutdownController;
-        private PlayerController playerController;
-        private Disposer disposer;
+        private readonly Reporters? reporters;
+        private VolumeController volumeController = default!;
+        private ShutdownController shutdownController = default!;
+        private PlayerController playerController = default!;
+        private Disposer disposer = default!;
+        private IViewNavigator? viewNavigator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterfaceModule" /> class.
@@ -72,7 +73,7 @@ namespace Aupli.SystemBoundaries.UserInterface
             bool allowShutdown,
             ILifecycleConfiguration lifecycleConfiguration,
             ITimeoutConfiguration timeoutConfiguration,
-            Reporters reporters = null)
+            Reporters? reporters = null)
         {
             this.application = application;
             this.userInterfaceBridge = userInterfaceBridge;
@@ -92,20 +93,24 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// <value>
         /// The view navigator.
         /// </value>
-        public IViewNavigator ViewNavigator { get; private set; }
+        public IViewNavigator ViewNavigator
+        {
+            get => this.viewNavigator ?? throw new NotInitializedException(this);
+            private set => this.viewNavigator = value;
+        }
 
         /// <summary>
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             var interactionController =
                 new InteractionController(this.controlsModule.InputControls, this.application.InputManager, this.reporters?.InteractionControllerReporter);
 
             this.application.IdleMonitorReporter = this.reporters?.IdleMonitorReporter;
             var idleMonitor = this.application.CreateIdleMonitoring(
-                this.application.InputManager,
+                null,
                 new SystemActivityAggregator(this.musicPlayer, this.reporters?.SystemActivityAggregatorReporter),
                 this.timeoutConfiguration.IdleTimeout,
                 this.timeoutConfiguration.SystemTimeout);

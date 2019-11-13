@@ -20,7 +20,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
     {
         private readonly ITextViewNavigator textViewNavigator;
         private readonly IDisplay display;
-        private readonly IDisplayStateControllerReporter displayStateControllerReporter;
+        private readonly IDisplayStateControllerReporter? displayStateControllerReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayStateController" /> class.
@@ -29,7 +29,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
         /// <param name="idleMonitor">The idle monitor.</param>
         /// <param name="display">The text display device.</param>
         /// <param name="displayStateControllerReporter">The display state controller reporter.</param>
-        public DisplayStateController(ITextViewNavigator textViewNavigator, IIdleMonitor idleMonitor, IDisplay display, IDisplayStateControllerReporter displayStateControllerReporter)
+        public DisplayStateController(ITextViewNavigator textViewNavigator, IIdleMonitor idleMonitor, IDisplay display, IDisplayStateControllerReporter? displayStateControllerReporter)
         {
             this.textViewNavigator = textViewNavigator;
             this.display = display;
@@ -39,7 +39,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
             idleMonitor.Activated += this.OnIdleControllerActivated;
         }
 
-        private async void OnIdleControllerInputIdle(object sender, EventArgs eventArgs)
+        private async void OnIdleControllerInputIdle(object? sender, EventArgs eventArgs)
         {
             if (this.display.HasBacklight)
             {
@@ -53,7 +53,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
             this.displayStateControllerReporter?.DisabledDisplay();
         }
 
-        private async void OnIdleControllerActivated(object sender, ActivatedEventArgs eventArgs)
+        private async void OnIdleControllerActivated(object? sender, ActivatedEventArgs eventArgs)
         {
             if (this.display.HasBacklight)
             {

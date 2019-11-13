@@ -61,7 +61,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="playlistName">Name of the playlist.</param>
         public void StartingPlaylist(string playlistName)
         {
-            this.log.Write(this.currentLogLevel, "Starting playlist: {Playlist}", playlistName);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Starting playlist: {Playlist}", playlistName));
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="exception">The exception.</param>
         public void OnStatusException(Exception exception)
         {
-            this.log.Write(this.currentLogLevel, "Status Exception: {Exception}", exception);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Status Exception: {Exception}", exception));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="playlistName">Name of the playlist.</param>
         public void IgnoredPlaylist(string playlistName)
         {
-            this.log.Write(this.currentLogLevel, "Ignored playlist: {Playlist}", string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Ignored playlist: {Playlist}", string.IsNullOrEmpty(playlistName) ? "<None>" : playlistName));
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="connectAttempt">The connect attempt.</param>
         public void Connecting(bool isReconnect, int connectAttempt)
         {
-            this.log.Write(this.currentLogLevel, "{ConnectionMethod}, {Attempt}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt);
+            this.Log(() => this.log.Write(this.currentLogLevel, "{ConnectionMethod}, {Attempt}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt));
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="connectAttempt">The connect attempt.</param>
         public void ConnectionAccepted(bool isReconnect, int connectAttempt)
         {
-            this.log.Write(this.currentLogLevel, "Connection Accepted {ConnectionMethod}, {Attempt}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Connection Accepted {ConnectionMethod}, {Attempt}", isReconnect ? "Reconnecting" : "Connecting", connectAttempt));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="connectionInfo">The connection information.</param>
         public void Connected(bool isReconnect, int connectAttempt, string connectionInfo)
         {
-            this.log.Write(this.currentLogLevel, "Connected: {ConnectAttempt} - {ConnectionInfo}", connectAttempt, connectionInfo);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Connected: {ConnectAttempt} - {ConnectionInfo}", connectAttempt, connectionInfo));
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="command">The command.</param>
         public void Sending(string command)
         {
-            this.log.Write(this.currentLogLevel, "Sending: {Command}", command);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Sending: {Command}", command));
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="exception">The exception.</param>
         public void SendException(string command, int sendAttempt, Exception exception)
         {
-            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt} | {Exception}", command, sendAttempt, exception);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Send exception: {Command} - attempt: {Attempt} | {Exception}", command, sendAttempt, exception));
         }
 
         /// <summary>
@@ -140,16 +140,17 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="sendAttempt">The send attempt.</param>
         public void RetrySend(string command, int sendAttempt)
         {
-            this.log.Write(this.currentLogLevel, "Sending: {Command} - attempt: {Attempt}", command, sendAttempt);
+            this.Log(() => this.log.Write(this.currentLogLevel, "Retry send: {Command} - attempt: {Attempt}", command, sendAttempt));
         }
 
         /// <summary>
         /// Reads the response.
         /// </summary>
         /// <param name="responseLine">The response line.</param>
-        public void ReadResponse(string responseLine)
+        /// <param name="command">The command.</param>
+        public void ReadResponse(string responseLine, string command)
         {
-            this.log.Write(this.currentLogLevel, "ReadResponse: {Content}", responseLine);
+            this.Log(() => this.log.Write(this.currentLogLevel, "ReadResponse: {Content} for {Command}", responseLine, command));
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="isExplicitDisconnect">if set to <c>true</c> [is explicit].</param>
         public void Disconnecting(bool isExplicitDisconnect)
         {
-            this.log.Write(this.currentLogLevel, "Disconnecting: {Reason}", isExplicitDisconnect ? "explicit" : "implicit");
+            this.Log(() => this.log.Write(this.currentLogLevel, "Disconnecting: {Reason}", isExplicitDisconnect ? "explicit" : "implicit"));
         }
 
         /// <summary>
@@ -167,7 +168,15 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.MusicControl
         /// <param name="isExplicitDisconnect">if set to <c>true</c> [is explicit].</param>
         public void Disconnected(bool isExplicitDisconnect)
         {
-            this.log.Write(this.currentLogLevel, "Disconnected: {Reason}", isExplicitDisconnect ? "explicit" : "implicit");
+            this.Log(() => this.log.Write(this.currentLogLevel, "Disconnected: {Reason}", isExplicitDisconnect ? "explicit" : "implicit"));
+        }
+
+        private void Log(Action logAction)
+        {
+            if (this.currentLogLevel != LogEventLevel.Verbose)
+            {
+                logAction();
+            }
         }
 
         private class LogLevelResetter : IDisposable

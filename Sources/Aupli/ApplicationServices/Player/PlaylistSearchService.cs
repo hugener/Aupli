@@ -34,7 +34,7 @@ namespace Aupli.ApplicationServices.Player
         /// <returns>
         /// The playlist name.
         /// </returns>
-        public Task<PlaylistEntity> GetPlaylistAsync(string id)
+        public Task<PlaylistEntity?> GetPlaylistAsync(string id)
         {
             return this.playlistRepository.GetPlaylistAsync(id);
         }

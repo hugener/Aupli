@@ -26,23 +26,25 @@ namespace Aupli.ApplicationServices
     public class PlayerModule : IInitializable
     {
         private readonly ISystemServicesAwaiterReporter systemServicesAwaiterReporter;
+        private readonly IWifiConnecterReporter wifiConnecterReporter;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerModule" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="PlayerModule"/> class.</summary>
         /// <param name="playlistRepository">The playlist repository.</param>
         /// <param name="lastPlaylistService">The last playlist service.</param>
         /// <param name="playbackControls">The playback controls.</param>
         /// <param name="systemServicesAwaiterReporter">The system services awaiter reporter.</param>
         /// <param name="playerServiceReporter">The player service reporter.</param>
+        /// <param name="wifiConnecterReporter">The wifi connecter reporter.</param>
         public PlayerModule(
             IPlaylistRepository playlistRepository,
             ILastPlaylistService lastPlaylistService,
             IPlaybackControls playbackControls,
             ISystemServicesAwaiterReporter systemServicesAwaiterReporter,
-            IPlayerServiceReporter playerServiceReporter)
+            IPlayerServiceReporter playerServiceReporter,
+            IWifiConnecterReporter wifiConnecterReporter)
         {
             this.systemServicesAwaiterReporter = systemServicesAwaiterReporter;
+            this.wifiConnecterReporter = wifiConnecterReporter;
             this.PlayerService = new PlayerService(
                 new PlaylistSearchService(playlistRepository),
                 lastPlaylistService,
@@ -62,7 +64,7 @@ namespace Aupli.ApplicationServices
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             await Task.Run(async () =>
             {
@@ -70,6 +72,8 @@ namespace Aupli.ApplicationServices
                 await systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, Timeout.InfiniteTimeSpan);
                 await this.PlayerService.InitializeAsync();
             });
+
+            var task = this.CreateWifiConnecter().TryConnectAsync(x => x.StartsWith("A"), CancellationToken.None);
         }
 
         /// <summary>
@@ -79,6 +83,13 @@ namespace Aupli.ApplicationServices
         protected virtual ISystemServicesAwaiter CreateServicesAwaiter()
         {
             return new SystemServicesAwaiter(this.systemServicesAwaiterReporter);
+        }
+
+        /// <summary>Creates the wifi connecter.</summary>
+        /// <returns>A <see cref="WifiConnecter"/>.</returns>
+        protected virtual IWifiConnecter CreateWifiConnecter()
+        {
+            return new WifiConnecter(this.wifiConnecterReporter);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Aupli.DomainServices.Playlist.Api
         /// <value>
         /// The last playlist.
         /// </value>
-        PlaylistEntity LastPlaylist { get; }
+        PlaylistEntity? LastPlaylist { get; }
 
         /// <summary>
         /// Changes the last playlist.

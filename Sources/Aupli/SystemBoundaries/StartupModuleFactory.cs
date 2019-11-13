@@ -37,8 +37,9 @@ namespace Aupli.SystemBoundaries
         private readonly string pin26FeaturePath;
         private readonly string greetingsPath;
         private readonly string lastGreetingPath;
-        private readonly ITextViewRendererReporter textViewRendererReporter;
-        private readonly IInputManagerReporter inputManagerReporter;
+        private readonly ITextViewRendererReporter? textViewRendererReporter;
+        private readonly IInputManagerReporter? inputManagerReporter;
+        private readonly ITimeIntervalSynchronizerReporter? timeIntervalSynchronizerReporter;
         private readonly AsyncLazy<IStartupModule, StartupModuleData> startupModule;
 
         /// <summary>Initializes a new instance of the <see cref="SystemBoundaries.StartupModuleFactory"/> class.</summary>
@@ -51,6 +52,7 @@ namespace Aupli.SystemBoundaries
         /// <param name="textViewRendererReporter">The text view renderer reporter.</param>
         /// <param name="inputManagerReporter">The input manager reporter.</param>
         /// <param name="disposableReporter">The disposable reporter.</param>
+        /// <param name="timeIntervalSynchronizerReporter">The time interval synchronizer reporter.</param>
         public StartupModuleFactory(
             IApplicationRendering application,
             IGpioConnectionDriverFactory gpioConnectionDriverFactory,
@@ -58,9 +60,10 @@ namespace Aupli.SystemBoundaries
             string pin26FeaturePath = "pin26-feature.val",
             string greetingsPath = "greetings.csv",
             string lastGreetingPath = "last-greeting.val",
-            ITextViewRendererReporter textViewRendererReporter = null,
-            IInputManagerReporter inputManagerReporter = null,
-            IDisposableReporter disposableReporter = null)
+            ITextViewRendererReporter? textViewRendererReporter = null,
+            IInputManagerReporter? inputManagerReporter = null,
+            IDisposableReporter? disposableReporter = null,
+            ITimeIntervalSynchronizerReporter? timeIntervalSynchronizerReporter = null)
         {
             this.application = application;
             this.gpioConnectionDriverFactory = gpioConnectionDriverFactory;
@@ -70,6 +73,7 @@ namespace Aupli.SystemBoundaries
             this.lastGreetingPath = lastGreetingPath;
             this.textViewRendererReporter = textViewRendererReporter;
             this.inputManagerReporter = inputManagerReporter;
+            this.timeIntervalSynchronizerReporter = timeIntervalSynchronizerReporter;
             this.startupModule = new AsyncLazy<IStartupModule, StartupModuleData>(
                 async () =>
                 {
@@ -83,8 +87,9 @@ namespace Aupli.SystemBoundaries
 
                     this.application.InputManagerReporter = this.inputManagerReporter;
                     this.application.TextViewRendererReporter = this.textViewRendererReporter;
+                    this.application.TimeIntervalSynchronizerReporter = this.timeIntervalSynchronizerReporter;
 
-                    var textViewNavigator = this.application.StartRendering(display);
+                    var textViewNavigator = this.application.StartRendering(display, TimeSpan.FromMilliseconds(200));
                     var disposer = new Disposer(disposableReporter, displayFactory);
                     return new StartupModuleData(display, textViewNavigator, lifecycleConfiguration, greetingProvider, disposer);
                 });

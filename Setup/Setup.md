@@ -110,7 +110,7 @@ dtparam=i2c_arm=on
 dtparam=i2c=on
 dtparam=i2c1=on
 dtparam=spi=on
-dtoverlay=lirc-rpi,gpio_in_pin=18
+dtoverlay=gpio-ir,gpio_in_pin=18,gpio_in_pull=up
 dtparam=audio=on
 disable_splash=1
 dtoverlay=sdtweak,overclock_50=100
@@ -138,6 +138,7 @@ sudo pacman -S mpd mpc alsa-utils
 mkdir Music
 mkdir Playlists
 sudo gpasswd -a mpd pi
+sudo chmod -R 750 /home/pi
 sudo chmod -R 777 /home/pi/Music
 sudo chmod -R 777 /home/pi/Playlists
 ```
@@ -211,6 +212,11 @@ Change the line:
 ```
 ExecStart=/usr/sbin/lircd --nodaemon --listen
 ```
+Enable the service
+```
+sudo systemctl enable lircd
+```
+
  ## 5.3 Install upnp for MPD
 ```
 sudo pacman -S --needed base-devel git wget yajl
@@ -244,7 +250,7 @@ Set up a symbolic link to the dotnet executable.
 ```
 sudo ln -s /opt/dotnet/dotnet /usr/local/bin
 
-sudo mkdir Aupli
+mkdir Aupli
 ```
 
  ## 5.5 Install Aupli
@@ -281,7 +287,7 @@ sudo netctl enable PROFILE-NAME
 
  ## 6.2 Change hostname:
 ```
-hostnamectl set-hostname Aupli
+sudo hostnamectl set-hostname Aupli
 ```
 
  ## 6.3 Change upmp friendly name:
@@ -308,9 +314,36 @@ reboot/shutdown now
 # 7. Extend partition
 Skip this step if you set up everything from scratch.
 ```
-sudo systemctl rescue
-sudo mount -o ro,remount /
-sudo fdisk /dev/mmcblk0
+su
+<enter password>
+systemctl rescue
+nano /boot/cmdline.txt
+```
+Change rw to ro in the line below:
+```
+root=/dev/mmcblk0p2 rw rootwait...
+
+ctrl o
+<enter>
+ctrl x
+
+nano /etc/fstab
+```
+Add the following lines below:
+
+```
+tmpfs   /var/log    tmpfs   nodev,nosuid    0   0
+tmpfs   /var/tmp    tmpfs   nodev,nosuid    0   0
+
+ctrl o
+<enter>
+ctrl x
+reboot
+
+su
+<enter password>
+
+fdisk /dev/mmcblk0
 ```
 Fdisk commands
 ```
@@ -322,21 +355,53 @@ p
 2
 ```
 Make sure the beginning of old and new partition are the same.
-<br>The p command above listed the start blocks
+<br>The p command above lists the start blocks
+<br>If you are asked whether to remove the old signature press No.
 ```
+<enter>
+<enter>
+<no>
+
 w
 ```
 Reboot the pick up changes and resize file system.
 ```
-sudo reboot
-sudo systemctl rescue
-sudo resize2fs /dev/mmcblk0p2
-sudo reboot
-sudo systemctl rescue
-sudo mount -o ro,remount /
-sudo e2fsck /dev/mmcblk0p2
+reboot
+
+su
+<enter password>
+
+systemctl rescue
+mount -o rw,remount /
+resize2fs /dev/mmcblk0p2
+mount -o ro,remount /
+e2fsck /dev/mmcblk0p2
 sync
-sudo reboot
+nano /boot/cmdline.txt
+```
+Change ro back to rw in the line below:
+```
+root=/dev/mmcblk0p2 ro rootwait...
+
+mount -o rw,remount /
+nano /etc/fstab
+```
+Comment out the added lines below:
+```
+tmpfs   /var/log    tmpfs   nodev,nosuid    0   0
+tmpfs   /var/tmp    tmpfs   nodev,nosuid    0   0
+
+ctrl o
+<enter>
+ctrl x
+
+reboot
 ```
 
 # 8. Enjoy!
+Start adding music and playlists in:
+/home/pi/Music
+/home/pi/Playlists
+
+Mapping between Playlists and RFIDs happens in:
+/home/pi/Aupli/playlists.json

@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
 {
+    using System.Reflection;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
     using global::Serilog;
     using Sundew.Base;
@@ -42,7 +43,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
         /// </summary>
         public void RemotePiShutdown()
         {
-            this.log.Debug(nameof(this.RemotePiShutdown));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
         /// </summary>
         public void ShuttingDownAupli()
         {
-            this.log.Information(nameof(this.ShuttingDownAupli));
+            this.log.Information(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
         /// </summary>
         public void ClosingAupli()
         {
-            this.log.Information(nameof(this.ClosingAupli));
+            this.log.Information(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
         /// </summary>
         public void SystemIdleShutdown()
         {
-            this.log.Debug(nameof(this.SystemIdleShutdown));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Shutdown
         /// </summary>
         public void ShutdownByCtrlC()
         {
-            this.log.Information(nameof(this.ShutdownByCtrlC));
+            this.log.Information(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using global::Serilog;
     using global::Sundew.Base;
     using global::Sundew.TextView.ApplicationFramework.Input;
@@ -45,7 +46,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <param name="inputTargets">The input targets.</param>
         public void StartedInputContext(IReadOnlyList<object> inputTargets)
         {
-            this.log.Debug($"{nameof(this.StartedInputContext)}: {{InputTargets}}", string.Join(", ", inputTargets.Select(x => x.GetType())));
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{InputTargets}}", string.Join(", ", inputTargets.Select(x => x.GetType())));
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <param name="inputTarget">The input target.</param>
         public void AddedTarget(object inputTarget)
         {
-            this.log.Debug($"{nameof(this.AddedTarget)}: {{InputTarget}}", inputTarget.GetType());
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{InputTarget}}", inputTarget.GetType());
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <param name="inputTarget">The input target.</param>
         public void RemovedTarget(object inputTarget)
         {
-            this.log.Debug($"{nameof(this.RemovedTarget)}: {{InputTarget}}", inputTarget.GetType());
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{InputTarget}}", inputTarget.GetType());
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <param name="inputTargets">The input targets.</param>
         public void EndedInputContext(IReadOnlyList<object> inputTargets)
         {
-            this.log.Debug($"{nameof(this.EndedInputContext)}: {{InputTargets}}", string.Join(", ", inputTargets.Select(x => x.GetType())));
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{InputTargets}}", string.Join(", ", inputTargets.Select(x => x.GetType())));
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <param name="eventArgs">The event arguments instance containing the event data.</param>
         public void RaisingEvent<TEventArgs>(InputEvent<TEventArgs> inputEvent, TEventArgs eventArgs)
         {
-            this.log.Debug($"{nameof(this.RaisingEvent)}: {{EventType}} {{EventArgs}}", typeof(TEventArgs), eventArgs);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{EventType}} {{EventArgs}}", typeof(TEventArgs), eventArgs);
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <param name="eventArgs">The event arguments instance containing the event data.</param>
         public void RaisedEvent<TEventArgs>(InputEvent<TEventArgs> inputEvent, TEventArgs eventArgs)
         {
-            this.log.Debug($"{nameof(this.RaisedEvent)}: {{EventType}} {{EventArgs}}", typeof(TEventArgs), eventArgs);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{EventType}} {{EventArgs}}", typeof(TEventArgs), eventArgs);
         }
     }
 }

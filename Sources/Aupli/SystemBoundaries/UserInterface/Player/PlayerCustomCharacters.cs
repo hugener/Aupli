@@ -109,16 +109,21 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
 
         public static string PlayerBottom => $" {(char)PlayBottomLeft}{(char)PlayBottomRight} ";
         */
-        public static void SetCharacters(ICharacterContext characterContext)
+        public static bool TrySetCharacters(ICharacterContext? characterContext)
         {
             /*    characterContext.SetCustomCharacter(0, PlayTopLeftCharacter);
                 characterContext.SetCustomCharacter(1, PlayTopRightCharacter);
                 characterContext.SetCustomCharacter(2, PlayBottomLeftCharacter);
                 characterContext.SetCustomCharacter(3, PlayBottomRightCharacter);*/
+            if (characterContext != null)
+            {
+                characterContext.SetCustomCharacter(PauseLeftId, PauseLeftCharacter);
+                characterContext.SetCustomCharacter(PauseRightId, PauseRightCharacter);
+                characterContext.SetCustomCharacter(MuteId, MuteCharacter);
+                return true;
+            }
 
-            characterContext.SetCustomCharacter(PauseLeftId, PauseLeftCharacter);
-            characterContext.SetCustomCharacter(PauseRightId, PauseRightCharacter);
-            characterContext.SetCustomCharacter(MuteId, MuteCharacter);
+            return false;
         }
     }
 }

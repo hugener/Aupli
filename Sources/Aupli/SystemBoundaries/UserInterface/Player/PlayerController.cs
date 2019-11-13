@@ -22,7 +22,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
         private readonly IPlaybackControls playbackControls;
         private readonly IMenuRequester menuRequester;
 
-        private readonly IPlayerControllerReporter playerControllerReporter;
+        private readonly IPlayerControllerReporter? playerControllerReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerController" /> class.
@@ -37,7 +37,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             IPlayerService playerService,
             IPlaybackControls playbackControls,
             IMenuRequester menuRequester,
-            IPlayerControllerReporter playerControllerReporter)
+            IPlayerControllerReporter? playerControllerReporter)
         {
             this.interactionController = interactionController;
             this.playerService = playerService;
@@ -49,7 +49,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             this.playerControllerReporter?.SetSource(this);
         }
 
-        private async void OnInteractionControllerKeyInput(object sender, KeyInputArgs e)
+        private async void OnInteractionControllerKeyInput(object? sender, KeyInputArgs e)
         {
             this.playerControllerReporter?.KeyInput(e.KeyInput);
             switch (e.KeyInput)
@@ -73,7 +73,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             }
         }
 
-        private async void OnInteractionControllerTagDetected(object sender, TagInputArgs e)
+        private async void OnInteractionControllerTagDetected(object? sender, TagInputArgs e)
         {
             this.playerControllerReporter?.TagInput(e);
             await this.playerService.StartPlaylistAsync(e.Uid).ConfigureAwait(false);

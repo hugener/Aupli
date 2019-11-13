@@ -26,12 +26,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
     {
         private readonly INetworkDeviceInfoProvider networkDeviceInfoProvider;
         private readonly MenuController menuController;
-        private IReadOnlyList<NetworkDeviceInfo> networkDevices;
-        private IInvalidater invalidater;
-        private IPAddress ipAddress;
+        private IReadOnlyList<NetworkDeviceInfo>? networkDevices;
+        private IInvalidater invalidater = default!;
+        private IPAddress? ipAddress;
         private int ipAddressIndex;
-        private string tag;
-        private IViewTimer timer;
+        private string? tag;
+        private IViewTimer timer = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuTextView" /> class.
@@ -49,7 +49,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         public IEnumerable<object> InputTargets => this.menuController.ToEnumerable();
 
         /// <inheritdoc />
-        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext? characterContext)
         {
             this.invalidater = invalidater;
             this.networkDevices = this.networkDeviceInfoProvider.GetNetworkDeviceInfos().Where(
@@ -63,7 +63,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         }
 
         /// <inheritdoc />
-        public void Render(IRenderContext renderContext)
+        public void OnDraw(IRenderContext renderContext)
         {
             renderContext.Home();
 
@@ -84,9 +84,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
             return Task.CompletedTask;
         }
 
-        private void OnTimerTick(object sender, EventArgs e)
+        private void OnTimerTick(object? sender, EventArgs e)
         {
-            if (this.ipAddressIndex >= this.networkDevices.Count)
+            if (this.ipAddressIndex >= this.networkDevices!.Count)
             {
                 this.ipAddressIndex = 0;
             }
@@ -103,7 +103,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
             this.invalidater.Invalidate();
         }
 
-        private void OnMenuControllerTagInput(object sender, TagInputArgs e)
+        private void OnMenuControllerTagInput(object? sender, TagInputArgs e)
         {
             this.tag = e.Uid;
             this.invalidater.Invalidate();

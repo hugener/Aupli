@@ -7,7 +7,6 @@
 
 namespace Aupli.ApplicationServices.Volume
 {
-    using System;
     using Sundew.Base.Numeric;
 
     /// <summary>

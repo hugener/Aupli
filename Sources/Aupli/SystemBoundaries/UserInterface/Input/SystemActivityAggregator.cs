@@ -19,14 +19,14 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
     public class SystemActivityAggregator : IActivityAggregator
     {
         private readonly IPlayerStatusUpdater playerStatusUpdater;
-        private readonly ISystemActivityAggregatorReporter systemActivityAggregatorReporter;
+        private readonly ISystemActivityAggregatorReporter? systemActivityAggregatorReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemActivityAggregator" /> class.
         /// </summary>
         /// <param name="playerStatusUpdater">The player status.</param>
         /// <param name="systemActivityAggregatorReporter">The system activity aggregator reporter.</param>
-        public SystemActivityAggregator(IPlayerStatusUpdater playerStatusUpdater, ISystemActivityAggregatorReporter systemActivityAggregatorReporter)
+        public SystemActivityAggregator(IPlayerStatusUpdater playerStatusUpdater, ISystemActivityAggregatorReporter? systemActivityAggregatorReporter)
         {
             this.playerStatusUpdater = playerStatusUpdater;
             this.systemActivityAggregatorReporter = systemActivityAggregatorReporter;
@@ -37,9 +37,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
         /// <summary>
         /// Occurs when an activity happens.
         /// </summary>
-        public event EventHandler<EventArgs> ActivityOccured;
+        public event EventHandler<EventArgs>? ActivityOccured;
 
-        private void OnPlayerStatusUpdaterStatusChanged(object sender, StatusEventArgs e)
+        private void OnPlayerStatusUpdaterStatusChanged(object? sender, StatusEventArgs e)
         {
             if (e.State == PlayerState.Playing)
             {

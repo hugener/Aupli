@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SundewBase
 {
+    using System.Reflection;
     using global::Serilog;
     using Sundew.Base;
     using Sundew.Base.Disposal;
@@ -33,9 +34,9 @@ namespace Aupli.Logging.Serilog.SundewBase
 
         /// <summary>Called when [disposed].</summary>
         /// <param name="disposable">The disposable.</param>
-        public void OnDisposed(object disposable)
+        public void Disposed(object disposable)
         {
-            this.logger.Verbose("Disposed: {disposable}", disposable);
+            this.logger.Verbose($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{disposable}}", disposable);
         }
     }
 }

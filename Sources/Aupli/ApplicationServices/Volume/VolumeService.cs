@@ -26,7 +26,7 @@ namespace Aupli.ApplicationServices.Volume
         private readonly IVolumeControl volumeControl;
         private readonly IAudioOutputStatusUpdater audioOutputStatusUpdater;
         private readonly IVolumeRepository volumeRepository;
-        private readonly IVolumeServiceReporter volumeServiceReporter;
+        private readonly IVolumeServiceReporter? volumeServiceReporter;
         private readonly InitializeFlag initializeFlag = new InitializeFlag();
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Aupli.ApplicationServices.Volume
             IAudioOutputStatusUpdater audioOutputStatusUpdater,
             IVolumeRepository volumeRepository,
             VolumeAdjuster volumeAdjuster,
-            IVolumeServiceReporter volumeServiceReporter)
+            IVolumeServiceReporter? volumeServiceReporter)
         {
             this.volumeAdjuster = volumeAdjuster;
             this.amplifier = amplifier;
@@ -59,7 +59,7 @@ namespace Aupli.ApplicationServices.Volume
         /// <summary>
         /// Occurs when volume has changed.
         /// </summary>
-        public event EventHandler VolumeChanged;
+        public event EventHandler? VolumeChanged;
 
         /// <summary>
         /// Gets the volume.
@@ -81,7 +81,7 @@ namespace Aupli.ApplicationServices.Volume
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             await this.SetVolumeAllAsync(Comparison.Min(this.Volume, new Percentage(0.8)));
             this.SetAmplifierMuteState(this.audioOutputStatusUpdater.IsAudioOutputActive);
@@ -115,17 +115,24 @@ namespace Aupli.ApplicationServices.Volume
             if (this.Volume != newVolume)
             {
                 this.volumeServiceReporter?.ChangeVolume(newVolume);
-                if (this.Volume < newVolume && this.IsMuted && this.audioOutputStatusUpdater.IsAudioOutputActive)
+                if (this.Volume < newVolume && this.IsMuted)
                 {
-                    await this.SetMuteStateAsync(false);
+                    if (this.audioOutputStatusUpdater.IsAudioOutputActive)
+                    {
+                        await this.SetMuteStateAsync(false).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        this.IsMuted = false;
+                    }
                 }
 
-                await this.SetVolumeAllAsync(newVolume);
+                await this.SetVolumeAllAsync(newVolume).ConfigureAwait(false);
                 this.VolumeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        private void OnAudioOutputStatusUpdaterStatusChanged(object sender, EventArgs e)
+        private void OnAudioOutputStatusUpdaterStatusChanged(object? sender, EventArgs e)
         {
             if (!this.IsMuted)
             {
@@ -133,7 +140,7 @@ namespace Aupli.ApplicationServices.Volume
             }
         }
 
-        private async void OnVolumeStatusUpdaterVolumeChanged(object sender, VolumeChangedEventArgs e)
+        private async void OnVolumeStatusUpdaterVolumeChanged(object? sender, VolumeChangedEventArgs e)
         {
             if (this.initializeFlag.Initialize())
             {

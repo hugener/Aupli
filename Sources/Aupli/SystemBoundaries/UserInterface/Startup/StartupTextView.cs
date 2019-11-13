@@ -21,7 +21,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Startup
     {
         private readonly IGreetingProvider greetingProvider;
         private readonly ILifecycleConfiguration lifecycleConfiguration;
-        private string greeting;
+        private string greeting = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupTextView" /> class.
@@ -35,16 +35,16 @@ namespace Aupli.SystemBoundaries.UserInterface.Startup
         }
 
         /// <inheritdoc />
-        public IEnumerable<object> InputTargets => null;
+        public IEnumerable<object>? InputTargets => null;
 
         /// <inheritdoc />
-        public async Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
+        public async Task OnShowingAsync(IInvalidater invalidater, ICharacterContext? characterContext)
         {
             this.greeting = await this.greetingProvider.GetGreetingAsync();
         }
 
         /// <inheritdoc />
-        public void Render(IRenderContext renderContext)
+        public void OnDraw(IRenderContext renderContext)
         {
             renderContext.Clear();
             renderContext.Home();

@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.ApplicationServices.Volume
 {
+    using System.Reflection;
     using Aupli.ApplicationServices.Volume.Ari;
     using global::Serilog;
     using global::Sundew.Base;
@@ -44,7 +45,7 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Volume
         /// <param name="newVolumePercentage">The new volume percentage.</param>
         public void ChangeVolume(Percentage newVolumePercentage)
         {
-            this.log.Debug($"{nameof(this.ChangeVolume)} {{{nameof(newVolumePercentage)}}}", newVolumePercentage);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(newVolumePercentage)}}}", newVolumePercentage);
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Volume
         /// <param name="isMuted">if set to <c>true</c> [new is muted].</param>
         public void ChangeMute(bool isMuted)
         {
-            this.log.Debug($"{nameof(this.ChangeMute)} {{{nameof(isMuted)}}}", isMuted);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(isMuted)}}}", isMuted);
         }
     }
 }

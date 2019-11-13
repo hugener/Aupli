@@ -23,7 +23,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         private readonly ISystemControl systemControl;
         private readonly IApplicationExit applicationExit;
         private readonly bool allowShutdown;
-        private readonly IShutdownControllerReporter shutdownControllerReporter;
+        private readonly IShutdownControllerReporter? shutdownControllerReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShutdownController" /> class.
@@ -38,7 +38,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
             ISystemControl systemControl,
             IApplicationExit applicationExit,
             bool allowShutdown,
-            IShutdownControllerReporter shutdownControllerReporter = null)
+            IShutdownControllerReporter? shutdownControllerReporter = null)
         {
             this.idleMonitor = idleMonitor;
             this.systemControl = systemControl;
@@ -55,9 +55,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         /// <summary>
         /// Occurs when shutting down.
         /// </summary>
-        public event EventHandler ShuttingDown;
+        public event EventHandler? ShuttingDown;
 
-        private void OnShutdownControlShuttingDown(object sender, ShutdownEventArgs e)
+        private void OnShutdownControlShuttingDown(object? sender, ShutdownEventArgs e)
         {
             this.shutdownControllerReporter?.RemotePiShutdown();
             if (this.allowShutdown)
@@ -73,7 +73,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
             this.applicationExit.Exit();
         }
 
-        private void OnIdleControllerSystemIdle(object sender, EventArgs e)
+        private void OnIdleControllerSystemIdle(object? sender, EventArgs e)
         {
             this.shutdownControllerReporter?.SystemIdleShutdown();
             if (this.allowShutdown)
@@ -86,12 +86,12 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
             }
         }
 
-        private void OnApplicationExiting(object sender, EventArgs e)
+        private void OnApplicationExiting(object? sender, EventArgs e)
         {
             this.ShuttingDown?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnApplicationExitRequest(object sender, ExitRequestEventArgs e)
+        private void OnApplicationExitRequest(object? sender, ExitRequestEventArgs e)
         {
             if (this.allowShutdown)
             {

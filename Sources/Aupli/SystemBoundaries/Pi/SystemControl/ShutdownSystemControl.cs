@@ -32,7 +32,7 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl
         /// <summary>
         /// Occurs when [shutting down].
         /// </summary>
-        public event EventHandler<Bridges.Shutdown.ShutdownEventArgs> ShuttingDown;
+        public event EventHandler<Bridges.Shutdown.ShutdownEventArgs>? ShuttingDown;
 
         /// <summary>
         /// Shutdowns this instance.

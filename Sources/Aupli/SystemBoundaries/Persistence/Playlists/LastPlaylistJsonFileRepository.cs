@@ -22,7 +22,7 @@ namespace Aupli.SystemBoundaries.Persistence.Playlists
     {
         private readonly string filePath;
         private readonly AsyncLazy<PlaylistEntity> playlistLazy;
-        private PlaylistEntity playlist;
+        private PlaylistEntity playlist = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LastPlaylistJsonFileRepository"/> class.

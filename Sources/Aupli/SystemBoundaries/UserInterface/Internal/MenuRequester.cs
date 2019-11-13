@@ -19,7 +19,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         /// <summary>
         /// Occurs when [menu requested].
         /// </summary>
-        public event EventHandler MenuRequested;
+        public event EventHandler? MenuRequested;
 
         /// <summary>
         /// Requests the menu asynchronous.

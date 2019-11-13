@@ -22,7 +22,7 @@ namespace Aupli.ApplicationServices.Player.Ari
         /// <returns>
         /// The entity.
         /// </returns>
-        Task<PlaylistEntity> GetPlaylistAsync(string id);
+        Task<PlaylistEntity?> GetPlaylistAsync(string id);
 
         /// <summary>
         /// Saves the asynchronous.

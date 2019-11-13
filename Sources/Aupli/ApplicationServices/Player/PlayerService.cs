@@ -46,7 +46,7 @@ namespace Aupli.ApplicationServices.Player
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             await this.playbackControls.UpdateAsync();
             if (this.playbackControls.Status.State != PlayerState.Playing && this.lastPlaylistService.LastPlaylist != null)

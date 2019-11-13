@@ -13,7 +13,7 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl.Linux
     /// <summary>
     /// Connection to power functionality.
     /// </summary>
-    public class OperatingSystemControl : IOperationSystemShutdown
+    public class OperatingSystemControl : IOperatingSystemShutdown
     {
         /// <summary>
         /// Executes and shutdown now command.

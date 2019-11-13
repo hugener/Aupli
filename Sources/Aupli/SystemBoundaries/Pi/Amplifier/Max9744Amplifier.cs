@@ -19,7 +19,7 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
     public class Max9744Amplifier : IAmplifier
     {
         private readonly Max9744Device max9744Device;
-        private readonly IAmplifierReporter max9744AmplifierReporter;
+        private readonly IAmplifierReporter? max9744AmplifierReporter;
         private readonly Interval<byte> volumeRange;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
         /// </summary>
         /// <param name="max9744Device">The max9744 device.</param>
         /// <param name="max9744AmplifierReporter">The max9744 amplifier reporter.</param>
-        public Max9744Amplifier(Max9744Device max9744Device, IAmplifierReporter max9744AmplifierReporter = null)
+        public Max9744Amplifier(Max9744Device max9744Device, IAmplifierReporter? max9744AmplifierReporter = null)
         {
             this.max9744Device = max9744Device;
             this.max9744AmplifierReporter = max9744AmplifierReporter;

@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player
 {
+    using System.Reflection;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
     using global::Serilog;
@@ -44,7 +45,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player
         /// <param name="keyInput">The key input.</param>
         public void KeyInput(KeyInput keyInput)
         {
-            this.log.Debug($"{nameof(this.KeyInput)} {{{nameof(keyInput)}}}", keyInput);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(keyInput)}}}", keyInput);
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player
         /// <param name="tagInputArgs">The tag input arguments.</param>
         public void TagInput(TagInputArgs tagInputArgs)
         {
-            this.log.Debug($"{nameof(this.TagInput)} {{{nameof(tagInputArgs)}}}", tagInputArgs);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(tagInputArgs)}}}", tagInputArgs);
         }
     }
 }

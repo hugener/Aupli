@@ -23,7 +23,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
         /// <value>
         /// The input targets.
         /// </value>
-        public IEnumerable<object> InputTargets => null;
+        public IEnumerable<object>? InputTargets => null;
 
         /// <summary>
         /// Called when is showing.
@@ -33,7 +33,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
         /// <returns>
         /// An async task.
         /// </returns>
-        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext characterContext)
+        public Task OnShowingAsync(IInvalidater invalidater, ICharacterContext? characterContext)
         {
             return Task.CompletedTask;
         }
@@ -42,7 +42,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
         /// Called when the text view should render.
         /// </summary>
         /// <param name="renderContext">The render context.</param>
-        public void Render(IRenderContext renderContext)
+        public void OnDraw(IRenderContext renderContext)
         {
             renderContext.Clear();
         }

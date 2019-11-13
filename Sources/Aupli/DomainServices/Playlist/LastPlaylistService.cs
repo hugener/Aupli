@@ -35,13 +35,13 @@ namespace Aupli.DomainServices.Playlist
         /// <value>
         /// The last playlist.
         /// </value>
-        public PlaylistEntity LastPlaylist { get; private set; }
+        public PlaylistEntity? LastPlaylist { get; private set; }
 
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             this.LastPlaylist = await this.lastPlaylistChangeHandler.GetLastPlaylistAsync().ConfigureAwait(false);
         }

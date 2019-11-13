@@ -35,20 +35,20 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         /// <summary>
         /// Occurs when menu should exit.
         /// </summary>
-        public event EventHandler Exit;
+        public event EventHandler? Exit;
 
         /// <summary>
         /// Occurs when a tag input occurs.
         /// </summary>
-        public event EventHandler<TagInputArgs> TagInput;
+        public event EventHandler<TagInputArgs>? TagInput;
 
-        private void OnInteractionControllerKeyInput(object sender, KeyInputArgs keyInputArgs)
+        private void OnInteractionControllerKeyInput(object? sender, KeyInputArgs keyInputArgs)
         {
-            this.textViewNavigator.NavigateBackAsync();
+            this.textViewNavigator.NavigateBackAsync().Wait();
             this.Exit?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnTagInput(object sender, TagInputArgs e)
+        private void OnTagInput(object? sender, TagInputArgs e)
         {
             this.TagInput?.Invoke(this, e);
         }

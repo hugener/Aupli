@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
 {
+    using System.Reflection;
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using global::Serilog;
     using Sundew.Base;
@@ -42,7 +43,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
         /// </summary>
         public void NavigateToPlayerTextView()
         {
-            this.log.Debug(nameof(this.NavigateToPlayerTextView));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
         /// </summary>
         public void NavigateToVolumeTextView()
         {
-            this.log.Debug(nameof(this.NavigateToVolumeTextView));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
         /// </summary>
         public void NavigateToMenuTextView()
         {
-            this.log.Debug(nameof(this.NavigateToMenuTextView));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
         /// </summary>
         public void NavigateToShutdownTextView()
         {
-            this.log.Debug(nameof(this.NavigateToShutdownTextView));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface
         /// </summary>
         public void NavigateBack()
         {
-            this.log.Debug(nameof(this.NavigateBack));
+            this.log.Debug(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase());
         }
     }
 }

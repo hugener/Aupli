@@ -48,7 +48,7 @@ namespace Aupli
         private readonly IApplication application;
         private readonly ILogger logger;
         private readonly DisposableLogger disposableLogger;
-        private Disposer disposer;
+        private Disposer? disposer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
@@ -77,15 +77,15 @@ namespace Aupli
             // Create Startup Module
             this.logger.Verbose("Create Startup module");
             var startupModuleFactory = this.CreateStartupModule(this.application, gpioConnectionDriverFactory);
-            var startupModule = await startupModuleFactory.StartupModule;
+            var startupModule = await startupModuleFactory.StartupModule.ConfigureAwait(false);
             this.logger.Verbose("Navigate to Startup view");
-            await startupModule.NavigateToStartupViewAsync();
+            await startupModule.NavigateToStartupViewAsync().ConfigureAwait(false);
 
             // Create required ApplicationServices-required system boundaries modules
             this.logger.Verbose("Create Repositories Module");
             var repositoriesModule = this.CreateRepositoriesModule();
             this.logger.Verbose("Initialize Repositories Module");
-            var repositoriesModuleTask = repositoriesModule.InitializeAsync();
+            var repositoriesModuleTask = repositoriesModule.InitializeAsync().ConfigureAwait(false);
 
             // Create domain required application modules
             this.logger.Verbose("Create LastPlaylist Module");
@@ -131,7 +131,7 @@ namespace Aupli
                 volumeModule,
                 allowShutdown,
                 startupModule.LifecycleConfiguration,
-                await repositoriesModule.ConfigurationRepository.GetConfigurationAsync(),
+                await repositoriesModule.ConfigurationRepository.GetConfigurationAsync().ConfigureAwait(false),
                 new Reporters(
                     new InteractionControllerLogger(this.logger),
                     new SystemActivityAggregatorLogger(this.logger),
@@ -145,7 +145,7 @@ namespace Aupli
 
             this.disposer = new Disposer(
                 this.disposableLogger,
-                new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync()),
+                new DisposeAction(async () => await repositoriesModule.PlaylistRepository.SaveAsync().ConfigureAwait(false)),
                 userInterfaceModule,
                 musicControlModule,
                 controlsModuleFactory,
@@ -156,7 +156,7 @@ namespace Aupli
             await playlistModule.InitializeAsync().ConfigureAwait(false);
             this.logger.Verbose("Initialize UserInterface Module");
             await userInterfaceModule.InitializeAsync().ConfigureAwait(false);
-            await userInterfaceModule.ViewNavigator.NavigateToPlayerViewAsync();
+            await userInterfaceModule.ViewNavigator.NavigateToPlayerViewAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -188,7 +188,8 @@ namespace Aupli
                 "last-greeting.val",
                 new TextViewRendererLogger(this.logger),
                 new InputManagerLogger(this.logger),
-                this.disposableLogger);
+                this.disposableLogger,
+                new TimeIntervalSynchronizerLogger(this.logger));
         }
 
         /// <summary>
@@ -245,7 +246,8 @@ namespace Aupli
                 playlistModule.LastPlaylistService,
                 musicControlModule.MusicPlayer,
                 new SystemServicesAwaiterLogger(this.logger),
-                new PlayerServiceLogger(this.logger));
+                new PlayerServiceLogger(this.logger),
+                new WifiConnecterLogger(this.logger));
         }
     }
 }

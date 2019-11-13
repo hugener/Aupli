@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume
 {
+    using System.Reflection;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
     using global::Serilog;
@@ -44,7 +45,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Volume
         /// <param name="keyInput">The key input.</param>
         public void KeyInput(KeyInput keyInput)
         {
-            this.log.Debug($"{nameof(this.KeyInput)} {{{nameof(keyInput)}}}", keyInput);
+            this.log.Debug($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()} {{{nameof(keyInput)}}}", keyInput);
         }
     }
 }

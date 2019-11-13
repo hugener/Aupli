@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
 {
+    using System.Reflection;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using global::Serilog;
     using global::Serilog.Events;
@@ -48,7 +49,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
         /// <param name="isMuted">if set to <c>true</c> [is muted].</param>
         public void ChangeMute(bool isMuted)
         {
-            this.logger.Write(this.logEventLevel, "Changed mute: {isMuted}", isMuted);
+            this.logger.Write(this.logEventLevel, $"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{isMuted}}", isMuted);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier
         /// <param name="volume">The volume.</param>
         public void ChangeVolume(Percentage volume)
         {
-            this.logger.Write(this.logEventLevel, "Changed volume: {volume}", volume);
+            this.logger.Write(this.logEventLevel, $"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{volume}}", volume);
         }
     }
 }
