@@ -41,9 +41,9 @@ namespace Aupli.DomainServices
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async ValueTask InitializeAsync()
+        public ValueTask InitializeAsync()
         {
-            await this.lastPlaylistService.InitializeAsync();
+            return this.lastPlaylistService.InitializeAsync();
         }
     }
 }

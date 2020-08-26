@@ -57,9 +57,9 @@ namespace Aupli.ApplicationServices
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async ValueTask InitializeAsync()
+        public ValueTask InitializeAsync()
         {
-            await this.VolumeService.InitializeAsync().ConfigureAwait(false);
+            return this.VolumeService.InitializeAsync();
         }
     }
 }

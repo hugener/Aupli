@@ -83,7 +83,7 @@ namespace Aupli.ApplicationServices.Volume
         /// <returns>An async task.</returns>
         public async ValueTask InitializeAsync()
         {
-            await this.SetVolumeAllAsync(Comparison.Min(this.Volume, new Percentage(0.8)));
+            await this.SetVolumeAllAsync(Comparison.Min(this.Volume, new Percentage(0.8))).ConfigureAwait(false);
             this.SetAmplifierMuteState(this.audioOutputStatusUpdater.IsAudioOutputActive);
             this.volumeControl.VolumeChanged += this.OnVolumeStatusUpdaterVolumeChanged;
         }
@@ -96,7 +96,7 @@ namespace Aupli.ApplicationServices.Volume
         public async Task ChangeVolumeAsync(bool isIncrementing)
         {
             var newVolume = this.volumeAdjuster.AdjustVolume(this.Volume, isIncrementing);
-            await this.SetVolumeAsync(newVolume);
+            await this.SetVolumeAsync(newVolume).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Aupli.ApplicationServices.Volume
         {
             var newIsMuted = !this.IsMuted;
             this.volumeServiceReporter?.ChangeMute(newIsMuted);
-            await this.SetMuteStateAsync(newIsMuted);
+            await this.SetMuteStateAsync(newIsMuted).ConfigureAwait(false);
             this.VolumeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -149,11 +149,11 @@ namespace Aupli.ApplicationServices.Volume
 
             if (!e.IsMuted)
             {
-                await this.SetVolumeAsync(e.Volume);
+                await this.SetVolumeAsync(e.Volume).ConfigureAwait(false);
             }
             else
             {
-                await this.SetMuteStateAsync(true);
+                await this.SetMuteStateAsync(true).ConfigureAwait(false);
             }
         }
 
@@ -166,8 +166,8 @@ namespace Aupli.ApplicationServices.Volume
         {
             this.volumeRepository.Volume = volume;
             this.amplifier.SetVolume(volume);
-            await this.volumeControl.SetVolumeAsync(volume);
-            await this.volumeRepository.SaveAsync();
+            await this.volumeControl.SetVolumeAsync(volume).ConfigureAwait(false);
+            await this.volumeRepository.SaveAsync().ConfigureAwait(false);
         }
 
         private async Task SetMuteStateAsync(bool isMuted)
@@ -176,11 +176,11 @@ namespace Aupli.ApplicationServices.Volume
             this.amplifier.IsMuted = isMuted;
             if (isMuted)
             {
-                await this.volumeControl.MuteAsync();
+                await this.volumeControl.MuteAsync().ConfigureAwait(false);
             }
             else
             {
-                await this.volumeControl.SetVolumeAsync(this.volumeRepository.Volume);
+                await this.volumeControl.SetVolumeAsync(this.volumeRepository.Volume).ConfigureAwait(false);
             }
         }
     }

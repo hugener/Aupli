@@ -389,7 +389,7 @@ namespace Aupli.SystemBoundaries.MusicControl
 
             public EventArgs? AudioOutputEventArgs { get; }
 
-            public bool Equals(MusicPlayerEventArgs other)
+            public bool Equals(MusicPlayerEventArgs? other)
             {
                 return EqualityHelper.Equals(
                     this,

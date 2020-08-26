@@ -77,9 +77,9 @@ namespace Aupli.SystemBoundaries.Persistence
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async ValueTask InitializeAsync()
+        public ValueTask InitializeAsync()
         {
-            await this.VolumeRepository.InitializeAsync();
+            return this.VolumeRepository.InitializeAsync();
         }
     }
 }

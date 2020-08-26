@@ -95,9 +95,9 @@ namespace Aupli.ApplicationServices.Player.Ari
         /// <returns>
         /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
         /// </returns>
-        public bool Equals(PlayerStatus other)
+        public bool Equals(PlayerStatus? other)
         {
-            return EqualityHelper.Equals(this, other, rhs => this.PlaylistName == rhs.PlaylistName &&
+            return EqualityHelper.Equals(this, other, rhs => this.PlaylistName == rhs?.PlaylistName &&
                                                              this.Artist == rhs.Artist &&
                                                              this.Title == rhs.Title &&
                                                              this.State == rhs.State &&

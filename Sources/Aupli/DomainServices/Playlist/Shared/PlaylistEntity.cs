@@ -50,7 +50,7 @@ namespace Aupli.DomainServices.Playlist.Shared
         /// <returns>
         /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
         /// </returns>
-        public bool Equals(PlaylistEntity other)
+        public bool Equals(PlaylistEntity? other)
         {
             return EqualityHelper.Equals(this, other, rhs => Equals(this.Name, rhs.Name));
         }

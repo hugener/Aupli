@@ -55,7 +55,7 @@ namespace Aupli.SystemBoundaries.MusicControl
         {
             this.mpcConnection = this.CreateMpcConnection(this.musicPlayerReporter);
             this.MusicPlayer = new MusicPlayer(this.mpcConnection, this.musicPlayerReporter);
-            await this.mpcConnection.ConnectAsync();
+            await this.mpcConnection.ConnectAsync().ConfigureAwait(false);
         }
 
         /// <summary>

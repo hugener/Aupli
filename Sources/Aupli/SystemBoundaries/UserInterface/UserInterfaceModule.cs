@@ -103,7 +103,7 @@ namespace Aupli.SystemBoundaries.UserInterface
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async ValueTask InitializeAsync()
+        public ValueTask InitializeAsync()
         {
             var interactionController =
                 new InteractionController(this.controlsModule.InputControls, this.application.InputManager, this.reporters?.InteractionControllerReporter);
@@ -145,7 +145,7 @@ namespace Aupli.SystemBoundaries.UserInterface
 
             interactionController.Start();
             this.disposer = new Disposer(this.reporters?.DisposableReporter, timerFactory);
-            await Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
