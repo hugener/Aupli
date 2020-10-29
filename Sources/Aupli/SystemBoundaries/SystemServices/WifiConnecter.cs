@@ -89,7 +89,7 @@ namespace Aupli.SystemBoundaries.SystemServices
             var wifiProfiles = new List<string>();
             while (!process.StandardOutput.EndOfStream)
             {
-                var wifiProfile = await process.StandardOutput.ReadLineAsync();
+                var wifiProfile = await process.StandardOutput.ReadLineAsync().ConfigureAwait(false);
 
                 var match = WifiListRegex.Match(wifiProfile);
                 if (match.Success)
@@ -125,7 +125,7 @@ namespace Aupli.SystemBoundaries.SystemServices
         {
             try
             {
-                var wifiProfiles = await GetMatchingWifiProfiles(profileFilter, cancellationToken);
+                var wifiProfiles = await GetMatchingWifiProfiles(profileFilter, cancellationToken).ConfigureAwait(false);
                 this.wifiConnecterReporter?.MatchedProfiles(wifiProfiles);
                 foreach (var wifiProfile in wifiProfiles)
                 {

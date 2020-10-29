@@ -77,7 +77,7 @@ namespace Aupli.SystemBoundaries
             this.startupModule = new AsyncLazy<IStartupModule, StartupModuleData>(
                 async () =>
                 {
-                    var lifecycleConfiguration = await this.GetLifecycleConfigurationAsync();
+                    var lifecycleConfiguration = await this.GetLifecycleConfigurationAsync().ConfigureAwait(false);
                     var greetingProvider = this.CreateGreetingProvider();
 
                     var displayFactory = this.CreateDisplayFactory();
@@ -135,7 +135,7 @@ namespace Aupli.SystemBoundaries
         {
             var nameTextFileRepository = new NameTextFileRepository(this.namePath);
             var pin26FeatureTextFileRepository = new Pin26FeatureTextFileRepository(this.pin26FeaturePath);
-            return new PrivateLifecycleConfiguration(await nameTextFileRepository.GetNameAsync(), await pin26FeatureTextFileRepository.GetPin26FeatureAsync());
+            return new PrivateLifecycleConfiguration(await nameTextFileRepository.GetNameAsync().ConfigureAwait(false), await pin26FeatureTextFileRepository.GetPin26FeatureAsync().ConfigureAwait(false));
         }
 
         private class PrivateLifecycleConfiguration : ILifecycleConfiguration
@@ -177,9 +177,9 @@ namespace Aupli.SystemBoundaries
 
             public IDisposable Disposer { get; }
 
-            public async Task NavigateToStartupViewAsync()
+            public Task NavigateToStartupViewAsync()
             {
-                await this.TextViewNavigator.ShowAsync(new StartupTextView(this.GreetingProvider, this.LifecycleConfiguration)).ConfigureAwait(false);
+                return this.TextViewNavigator.ShowAsync(new StartupTextView(this.GreetingProvider, this.LifecycleConfiguration));
             }
         }
     }

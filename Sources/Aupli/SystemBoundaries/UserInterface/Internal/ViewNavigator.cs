@@ -55,10 +55,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
             this.viewNavigatorReporter = viewNavigatorReporter;
             this.viewNavigatorReporter?.SetSource(this);
             this.viewTimeoutTimer = timerFactory.Create();
-            this.viewTimeoutTimer.Tick += async timer =>
-            {
-                await this.NavigateBackAsync();
-            };
+            this.viewTimeoutTimer.Tick += _ => this.NavigateBackAsync();
             volumeChangeNotifier.VolumeChanged += this.OnVolumeControllerVolumeChanged;
             menuRequester.MenuRequested += this.OnMenuRequesterMenuRequested;
             shutdownNotifier.ShuttingDown += this.OnShutdownNotifierShuttingDown;
@@ -68,34 +65,34 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
         /// Navigates to player view asynchronous.
         /// </summary>
         /// <returns>A async task.</returns>
-        public async Task NavigateToPlayerViewAsync()
+        public Task NavigateToPlayerViewAsync()
         {
-            await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.PlayerTextView, oldTextView => this.viewNavigatorReporter?.NavigateToPlayerTextView(), this.volumeController);
+            return this.textViewNavigator.NavigateToModalAsync(this.viewFactory.PlayerTextView, _ => this.viewNavigatorReporter?.NavigateToPlayerTextView(), this.volumeController);
         }
 
         /// <summary>
         /// Navigates the back asynchronous.
         /// </summary>
         /// <returns>A async task.</returns>
-        public async Task NavigateBackAsync()
+        public Task NavigateBackAsync()
         {
-            await this.textViewNavigator.NavigateBackAsync(oldViewView => this.viewNavigatorReporter?.NavigateBack());
+            return this.textViewNavigator.NavigateBackAsync(_ => this.viewNavigatorReporter?.NavigateBack());
         }
 
         private void OnVolumeControllerVolumeChanged(object? sender, EventArgs e)
         {
             this.viewTimeoutTimer.StartOnce(TimeSpan.FromMilliseconds(1500));
-            this.textViewNavigator.ShowAsync(this.viewFactory.VolumeTextView, oldTextView => this.viewNavigatorReporter?.NavigateToVolumeTextView()).Wait();
+            this.textViewNavigator.ShowAsync(this.viewFactory.VolumeTextView, _ => this.viewNavigatorReporter?.NavigateToVolumeTextView()).Wait();
         }
 
-        private async void OnShutdownNotifierShuttingDown(object? sender, EventArgs e)
+        private void OnShutdownNotifierShuttingDown(object? sender, EventArgs e)
         {
-            await this.textViewNavigator.NavigateToAsync(this.viewFactory.ShutdownTextView, oldTextView => this.viewNavigatorReporter?.NavigateToShutdownTextView());
+            this.textViewNavigator.NavigateToAsync(this.viewFactory.ShutdownTextView, _ => this.viewNavigatorReporter?.NavigateToShutdownTextView());
         }
 
-        private async void OnMenuRequesterMenuRequested(object? sender, EventArgs e)
+        private void OnMenuRequesterMenuRequested(object? sender, EventArgs e)
         {
-            await this.textViewNavigator.NavigateToModalAsync(this.viewFactory.MenuTextView, oldTextView => this.viewNavigatorReporter?.NavigateToMenuTextView());
+            this.textViewNavigator.NavigateToModalAsync(this.viewFactory.MenuTextView, _ => this.viewNavigatorReporter?.NavigateToMenuTextView());
         }
     }
 }

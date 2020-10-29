@@ -53,13 +53,13 @@ namespace Aupli
 
                 var bootstrapper = new Bootstrapper(application, logger);
                 logger.Verbose("Created Bootstrapper");
-                await bootstrapper.StartAsync(result.Value.AllowShutdown);
+                await bootstrapper.StartAsync(result.Value.AllowShutdown).ConfigureAwait(false);
                 logger.Information("Started Aupli in {time}, total startup time: {totalStartupTime}", stopwatch.Elapsed, new TimeSpan(Stopwatch.GetTimestamp()));
                 stopwatch.Stop();
 
                 application.Run();
 
-                await bootstrapper.StopAsync();
+                await bootstrapper.StopAsync().ConfigureAwait(false);
                 logger.Information("Stopped Aupli");
             }
             catch (Exception e)
@@ -83,7 +83,7 @@ namespace Aupli
             if (options.FileLogOptions != null)
             {
                 var fileLoggingOptions = options.FileLogOptions;
-                logConfiguration = logConfiguration.WriteTo.Async(x => x.RollingFile(
+                logConfiguration = logConfiguration.WriteTo.Async(x => x.File(
                     fileLoggingOptions.LogPath,
                     outputTemplate: "[{Timestamp:HH:mm:ss.fffff} {Level:u3}] <{ThreadId,-5}> {SourceContext,-80:l} | {Message:lj}{NewLine}{Exception}",
                     fileSizeLimitBytes: fileLoggingOptions.MaxLogFileSizeInBytes,

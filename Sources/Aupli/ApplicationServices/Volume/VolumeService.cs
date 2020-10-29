@@ -32,11 +32,11 @@ namespace Aupli.ApplicationServices.Volume
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeService" /> class.
         /// </summary>
-        /// <param name="volumeAdjuster">The volume adjuster.</param>
         /// <param name="amplifier">The amplifier.</param>
-        /// <param name="audioOutputStatusUpdater">The player status.</param>
         /// <param name="volumeControl">The volume control.</param>
+        /// <param name="audioOutputStatusUpdater">The player status.</param>
         /// <param name="volumeRepository">The volume repository.</param>
+        /// <param name="volumeAdjuster">The volume adjuster.</param>
         /// <param name="volumeServiceReporter">The volume controller reporter.</param>
         public VolumeService(
             IAmplifier amplifier,

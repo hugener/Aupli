@@ -47,7 +47,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
             }
             else
             {
-                await this.textViewNavigator.ShowAsync(new DisabledDisplayTextView());
+                await this.textViewNavigator.ShowAsync(new DisabledDisplayTextView()).ConfigureAwait(false);
             }
 
             this.displayStateControllerReporter?.DisabledDisplay();
@@ -57,7 +57,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
         {
             if (this.display.HasBacklight)
             {
-                if (this.display.BacklightEnabled != true)
+                if (!this.display.BacklightEnabled)
                 {
                     this.display.BacklightEnabled = true;
                     this.displayStateControllerReporter?.EnabledDisplay();
@@ -65,7 +65,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
             }
             else if (!eventArgs.IsFirstActivation)
             {
-                await this.textViewNavigator.NavigateBackAsync();
+                await this.textViewNavigator.NavigateBackAsync().ConfigureAwait(false);
                 this.displayStateControllerReporter?.EnabledDisplay();
             }
         }

@@ -22,11 +22,11 @@ namespace Aupli.ApplicationServices
         /// <summary>
         /// Initializes a new instance of the <see cref="VolumeModule" /> class.
         /// </summary>
-        /// <param name="volumeRepository">The volume repository.</param>
-        /// <param name="volumeIncrementStep">The volume increment step.</param>
-        /// <param name="audioOutputStatusUpdater">The audio output status updater.</param>
         /// <param name="amplifier">The amplifier.</param>
         /// <param name="volumeControl">The volume control.</param>
+        /// <param name="audioOutputStatusUpdater">The audio output status updater.</param>
+        /// <param name="volumeRepository">The volume repository.</param>
+        /// <param name="volumeIncrementStep">The volume increment step.</param>
         /// <param name="volumeServiceReporter">The volume service reporter.</param>
         public VolumeModule(
             IAmplifier amplifier,

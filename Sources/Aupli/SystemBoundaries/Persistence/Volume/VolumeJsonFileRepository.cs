@@ -80,15 +80,13 @@ namespace Aupli.SystemBoundaries.Persistence.Volume
         {
             using (await this.lockObject.LockAsync().ConfigureAwait(false))
             {
-                this.saveTask = this.saveTask?.ContinueWith(async task => await this.PrivateSaveAsync()) ??
-                                Task.Run(async () => await this.PrivateSaveAsync());
+                this.saveTask = this.saveTask?.ContinueWith(_ => this.PrivateSaveAsync()) ?? Task.Run(this.PrivateSaveAsync);
             }
         }
 
-        private async Task PrivateSaveAsync()
+        private Task PrivateSaveAsync()
         {
-            await File.WriteAllTextAsync(this.filePath, this.volume.Value.ToString(CultureInfo.InvariantCulture))
-                .ConfigureAwait(false);
+            return File.WriteAllTextAsync(this.filePath, this.volume.Value.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

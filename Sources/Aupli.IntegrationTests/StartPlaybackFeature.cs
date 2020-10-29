@@ -10,10 +10,11 @@ namespace Aupli.IntegrationTests
     using System.Threading.Tasks;
     using Aupli.DomainServices.Playlist.Shared;
     using Aupli.IntegrationTests.Bootstrapping;
-    using global::NSubstitute;
     using global::Serilog;
     using global::Sundew.Pi.IO.Devices.RfidTransceivers;
     using global::Sundew.Pi.IO.Devices.RfidTransceivers.Mfrc522;
+    using global::Telerik.JustMock;
+    using Moq;
     using MpcNET.Commands.Playback;
     using MpcNET.Commands.Playlist;
     using MpcNET.Message;
@@ -22,27 +23,27 @@ namespace Aupli.IntegrationTests
 
     public class StartPlaybackFeature
     {
-        private readonly ILogger logger = Substitute.For<ILogger>();
+        private readonly ILogger logger = New.Mock<ILogger>().SetDefaultValue(DefaultValue.Mock);
 
         [Fact]
-        public async Task Given_TagIsDetectedAndPlaylistExists_Then_PlayCommandShouldBeSent()
+        public async Task Given_PlaylistExists_When_TagIsDetected_Then_PlayCommandShouldBeSent()
         {
             var bootstrapper = new TestBootstrapper(new Application(), this.logger);
-            await bootstrapper.StartAsync(true);
+            await bootstrapper.StartAsync(true).ConfigureAwait(false);
             var playlistRepository = bootstrapper.RepositoriesModule.PlaylistRepository;
-            playlistRepository.GetPlaylistAsync("01020304").Returns(Task.FromResult(new PlaylistEntity("01020304", "Numbers")));
+            playlistRepository.Setup(x => x.GetPlaylistAsync("01020304")).ReturnsAsync(new PlaylistEntity("01020304", "Numbers"));
             var mpcConnection = bootstrapper.MusicControlModule.MpcConnection;
-            mpcConnection.SendAsync(Arg.Any<LoadCommand>()).Returns(x =>
+            mpcConnection.Setup(x => x.SendAsync(It.IsAny<LoadCommand>())).ReturnsAsync(() =>
             {
-                var mpdMessage = Substitute.For<IMpdMessage<string>>();
-                mpdMessage.IsResponseValid.Returns(true);
-                return Task.FromResult(mpdMessage);
+                var mpdMessage = New.Mock<IMpdMessage<string>>();
+                mpdMessage.SetupGet(x => x.IsResponseValid).Returns(true);
+                return mpdMessage;
             });
-            var rfidTransceiver = (await bootstrapper.ControlsModuleFactory.ControlsModule).InputControls.RfidTransceiver;
+            var rfidTransceiver = (await bootstrapper.ControlsModuleFactory.ControlsModule.ConfigureAwait(false)).InputControls.RfidTransceiver;
 
-            rfidTransceiver.TagDetected += Raise.EventWith(new TagDetectedEventArgs(new Uid(1, 2, 3, 4)));
+            rfidTransceiver.Raise(x => x.TagDetected += null, new TagDetectedEventArgs(new Uid(1, 2, 3, 4)));
 
-            await mpcConnection.Received(1).SendAsync(Arg.Any<PlayCommand>());
+            mpcConnection.Verify(x => x.SendAsync(It.IsAny<PlayCommand>()), Times.Once);
         }
     }
 }

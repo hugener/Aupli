@@ -14,6 +14,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Aupli.SystemBoundaries.SystemServices.Api;
     using Aupli.SystemBoundaries.SystemServices.Ari;
     using global::NSubstitute;
+    using Moq;
 
     public class TestSystemServicesModule : SystemServicesModule
     {
@@ -24,14 +25,14 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override ISystemServicesAwaiter CreateServicesAwaiter()
         {
-            var systemServicesAwaiter = Substitute.For<ISystemServicesAwaiter>();
-            systemServicesAwaiter.WaitForServicesAsync(Arg.Any<IEnumerable<string>>(), Timeout.InfiniteTimeSpan).Returns(Task.FromResult(true));
+            var systemServicesAwaiter = New.Mock<ISystemServicesAwaiter>();
+            systemServicesAwaiter.Setup(x => x.WaitForServicesAsync(It.IsAny<IEnumerable<string>>(), Timeout.InfiniteTimeSpan)).Returns(Task.FromResult(true));
             return systemServicesAwaiter;
         }
 
         protected override IWifiConnecter CreateWifiConnecter()
         {
-            return Substitute.For<IWifiConnecter>();
+            return New.Mock<IWifiConnecter>();
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             this.playerControllerReporter?.SetSource(this);
         }
 
-        private async void OnInteractionControllerKeyInput(object? sender, KeyInputArgs e)
+        private void OnInteractionControllerKeyInput(object? sender, KeyInputArgs e)
         {
             this.playerControllerReporter?.KeyInput(e.KeyInput);
             switch (e.KeyInput)
@@ -57,15 +57,15 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
                 case KeyInput.PlayPause:
                 case KeyInput.Ok:
                 case KeyInput.Stop:
-                    await this.playbackControls.PauseResumeAsync();
+                    this.playbackControls.PauseResumeAsync();
                     break;
                 case KeyInput.Next:
                 case KeyInput.Right:
-                    await this.playbackControls.NextAsync();
+                    this.playbackControls.NextAsync();
                     break;
                 case KeyInput.Previous:
                 case KeyInput.Left:
-                    await this.playbackControls.PreviousAsync();
+                    this.playbackControls.PreviousAsync();
                     break;
                 case KeyInput.Menu:
                     this.menuRequester.RequestMenu();
@@ -73,10 +73,10 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
             }
         }
 
-        private async void OnInteractionControllerTagDetected(object? sender, TagInputArgs e)
+        private void OnInteractionControllerTagDetected(object? sender, TagInputArgs e)
         {
             this.playerControllerReporter?.TagInput(e);
-            await this.playerService.StartPlaylistAsync(e.Uid).ConfigureAwait(false);
+            this.playerService.StartPlaylistAsync(e.Uid);
         }
     }
 }

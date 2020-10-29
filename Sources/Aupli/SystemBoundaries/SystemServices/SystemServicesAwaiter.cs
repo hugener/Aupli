@@ -74,9 +74,9 @@ namespace Aupli.SystemBoundaries.SystemServices
             var result = await Task.WhenAll(servicesNames.Select(serviceName =>
             {
                 return Task.Run(
-                    async () => await this.CheckServiceIsStarted(serviceName, timeoutCancellationToken),
+                    () => this.CheckServiceIsStarted(serviceName, timeoutCancellationToken),
                     timeoutCancellationToken);
-            }));
+            })).ConfigureAwait(false);
             return result.All(x => x);
         }
 
@@ -114,7 +114,7 @@ namespace Aupli.SystemBoundaries.SystemServices
                     }
 
                     this.systemServicesAwaiterReporter?.ServiceIsNotRunning(serviceName);
-                    await Task.Delay(this.delay, cancellationToken);
+                    await Task.Delay(this.delay, cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {

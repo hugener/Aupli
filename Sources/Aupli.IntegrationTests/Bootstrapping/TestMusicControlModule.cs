@@ -10,6 +10,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Aupli.SystemBoundaries.MusicControl;
     using Aupli.SystemBoundaries.MusicControl.Ari;
     using global::NSubstitute;
+    using Moq;
     using MpcNET;
 
     public class TestMusicControlModule : MusicControlModule
@@ -23,7 +24,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IMpcConnection CreateMpcConnection(IMpcConnectionReporter mpcConnectionReporter)
         {
-            this.MpcConnection = Substitute.For<IMpcConnection>();
+            this.MpcConnection = New.Mock<IMpcConnection>();
             return this.MpcConnection;
         }
     }

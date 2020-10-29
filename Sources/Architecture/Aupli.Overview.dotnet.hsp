@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<local-project language="dotnet" version="4.2.10263" xml-version="3" flavor="dotNet">
+<local-project language="dotnet" version="4.2.15352" xml-version="3" flavor="dotNet">
   <property name="show-as-module" value="false" />
   <property name="relative-to" value="const(THIS_FILE)" />
   <property name="action-set-mod" value="1" />
+  <property name="publish-architecture-artifacts" value="true" />
   <property name="detail-mode" value="true" />
+  <property name="resolve-name-clashes" value="true" />
   <property name="hide-externals" value="true" />
   <assemblyList>
-    <assembly kind="lib" path="../Aupli/bin/Release/netcoreapp2.1/Aupli.dll" />
+    <assembly kind="lib" path="../Aupli/bin/Debug/netcoreapp3.1/Aupli.dll" />
   </assemblyList>
   <restructuring>
-    <set version="3" name="Model 1" hiview="Codemap" active="true" todo="false" list="0" />
+    <set version="3" name="Action list 1" hiview="Codemap" active="true" todo="false" list="0" />
   </restructuring>
-  <grid-set sep="." version="4.2.10263" />
+  <grid-set sep="." version="4.2.15352" />
 </local-project>
-

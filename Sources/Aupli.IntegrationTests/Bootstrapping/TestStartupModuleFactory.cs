@@ -8,11 +8,11 @@
 namespace Aupli.IntegrationTests.Bootstrapping
 {
     using System.Threading.Tasks;
-    using Aupli.IntegrationTests.NSubstitute;
     using Aupli.SystemBoundaries;
     using Aupli.SystemBoundaries.Bridges.Lifecycle;
     using Aupli.SystemBoundaries.Pi.Display.Api;
     using global::NSubstitute;
+    using Moq;
     using Pi.IO.GeneralPurpose;
     using Sundew.Base.Computation;
     using Sundew.TextView.ApplicationFramework;
@@ -36,20 +36,20 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IDisplayFactory CreateDisplayFactory()
         {
-            var displayFactory = Substitute.For<IDisplayFactory>();
-            var display = displayFactory.Create(Arg.Any<IGpioConnectionDriverFactory>(), Arg.Any<bool>());
-            display.TryCreateCharacterContext().Returns(Result.Success(Substitute.For<ICharacterContext>()));
+            var displayFactory = New.Mock<IDisplayFactory>().SetDefaultValue(DefaultValue.Mock);
+            var display = displayFactory.Create(It.IsAny<IGpioConnectionDriverFactory>(), It.IsAny<bool>());
+            display.Setup(x => x.TryCreateCharacterContext()).Returns(Result.Success(New.Mock<ICharacterContext>()));
             return displayFactory;
         }
 
         protected override IGreetingProvider CreateGreetingProvider()
         {
-            return Substitute.For<IGreetingProvider>();
+            return New.Mock<IGreetingProvider>();
         }
 
         protected override Task<ILifecycleConfiguration> GetLifecycleConfigurationAsync()
         {
-            var lifeCycleConfiguration = Substitute.For<ILifecycleConfiguration>();
+            var lifeCycleConfiguration = New.Mock<ILifecycleConfiguration>();
             return Task.FromResult(lifeCycleConfiguration);
         }
     }

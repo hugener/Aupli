@@ -36,11 +36,11 @@ namespace Aupli.SystemBoundaries.SystemServices
         /// <returns>An async task.</returns>
         public async ValueTask InitializeAsync()
         {
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
                 var systemServicesAwaiter = this.CreateServicesAwaiter();
-                await systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, Timeout.InfiniteTimeSpan);
-            });
+                return systemServicesAwaiter.WaitForServicesAsync(new[] { "mpd" }, Timeout.InfiniteTimeSpan);
+            }).ConfigureAwait(false);
 
             var task = this.CreateWifiConnecter().TryConnectAsync(x => x.StartsWith("A"), CancellationToken.None);
         }

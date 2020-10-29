@@ -13,7 +13,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using Aupli.SystemBoundaries.Pi.Amplifier.Api;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using Aupli.SystemBoundaries.Pi.SystemControl.Api;
-    using global::NSubstitute;
+    using Moq;
     using Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
     using Sundew.Pi.IO.Devices.Buttons;
@@ -34,24 +34,24 @@ namespace Aupli.IntegrationTests.Bootstrapping
         protected override InputControls CreateInputControls(IGpioConnectionDriverFactory gpioConnectionDriverFactory)
         {
             return new InputControls(
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IButtonDevice>(),
-                Substitute.For<IRfidConnection>(),
-                Substitute.For<ILircDevice>(),
-                Substitute.For<IRotaryEncoderWithButtonDevice>(),
-                Substitute.For<IDisposable>());
+                New.Mock<IButtonDevice>(),
+                New.Mock<IButtonDevice>(),
+                New.Mock<IButtonDevice>(),
+                New.Mock<IButtonDevice>(),
+                New.Mock<IRfidConnection>(),
+                New.Mock<ILircDevice>(),
+                New.Mock<IRotaryEncoderWithButtonDevice>(),
+                New.Mock<IDisposable>());
         }
 
         protected override ISystemControlFactory CreateSystemControlFactory()
         {
-            return Substitute.For<ISystemControlFactory>();
+            return New.Mock<ISystemControlFactory>().SetDefaultValue(DefaultValue.Mock);
         }
 
         protected override IAmplifierFactory CreateAmplifierFactory()
         {
-            return Substitute.For<IAmplifierFactory>();
+            return New.Mock<IAmplifierFactory>().SetDefaultValue(DefaultValue.Mock);
         }
     }
 }

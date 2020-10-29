@@ -11,13 +11,14 @@ namespace Aupli.IntegrationTests.Bootstrapping
     using System.Threading.Tasks;
     using Aupli.ApplicationServices;
     using Aupli.DomainServices;
+    using Aupli.DomainServices.Playlist.Shared;
     using Aupli.SystemBoundaries.Api;
     using Aupli.SystemBoundaries.Bridges.Controls;
     using Aupli.SystemBoundaries.MusicControl;
     using Aupli.SystemBoundaries.Persistence.Api;
     using Aupli.SystemBoundaries.Persistence.Configuration.Api;
     using Aupli.SystemBoundaries.SystemServices;
-    using global::NSubstitute;
+    using Moq;
     using Pi.IO.GeneralPurpose;
     using Serilog;
     using Sundew.TextView.ApplicationFramework;
@@ -41,7 +42,7 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IGpioConnectionDriverFactory CreateGpioConnectionDriverFactory()
         {
-            this.GpioConnectionDriverFactory = Substitute.For<IGpioConnectionDriverFactory>();
+            this.GpioConnectionDriverFactory = New.Mock<IGpioConnectionDriverFactory>();
             return this.GpioConnectionDriverFactory;
         }
 
@@ -53,10 +54,12 @@ namespace Aupli.IntegrationTests.Bootstrapping
 
         protected override IRepositoriesModule CreateRepositoriesModule()
         {
-            this.RepositoriesModule = Substitute.For<IRepositoriesModule>();
+            this.RepositoriesModule = New.Mock<IRepositoriesModule>().SetDefaultValue(DefaultValue.Mock);
             var configurationRepository = this.RepositoriesModule.ConfigurationRepository;
-            configurationRepository.GetConfigurationAsync()
+            configurationRepository.Setup(x => x.GetConfigurationAsync())
                 .Returns(Task.FromResult(new Configuration(TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(4))));
+            var lastPlaylistRepository = this.RepositoriesModule.LastPlaylistRepository;
+            lastPlaylistRepository.Setup(x => x.GetLastPlaylistAsync()).ReturnsAsync(default(PlaylistEntity));
             return this.RepositoriesModule;
         }
 

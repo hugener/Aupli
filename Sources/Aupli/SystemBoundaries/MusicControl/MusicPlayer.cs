@@ -99,24 +99,25 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// Updates the status asynchronously.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task UpdateStatusAsync()
+        public Task UpdateStatusAsync()
         {
             if (!this.musicPlayerStatusJob.Start())
             {
                 this.statusUpdatedEvent.Reset();
                 this.updateStatusSleepEvent.Set();
-                await this.statusUpdatedEvent.WaitAsync();
+                return this.statusUpdatedEvent.WaitAsync();
             }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Updates the database asynchronously.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task UpdateAsync()
+        public Task UpdateAsync()
         {
-            await this.ExecuteCommandAsync(
-                async () => { await this.mpcConnection.SendAsync(new UpdateCommand()); });
+            return this.ExecuteCommandAsync(() => this.mpcConnection.SendAsync(new UpdateCommand()));
         }
 
         /// <summary>
@@ -124,13 +125,13 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// </summary>
         /// <param name="volume">The volume.</param>
         /// <returns>An async task.</returns>
-        public async Task<bool> SetVolumeAsync(Percentage volume)
+        public Task<bool> SetVolumeAsync(Percentage volume)
         {
-            return await this.ExecuteCommandAsync(async () =>
+            return this.ExecuteCommandAsync(async () =>
             {
                 if (this.volume != volume)
                 {
-                    var result = await this.mpcConnection.SendAsync(new SetVolumeCommand((byte)(volume.Value * 100)));
+                    var result = await this.mpcConnection.SendAsync(new SetVolumeCommand((byte)(volume.Value * 100))).ConfigureAwait(false);
                     this.updateStatusSleepEvent.Set();
                     return result.IsResponseValid;
                 }
@@ -145,13 +146,13 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// <returns>
         /// An async task.
         /// </returns>
-        public async Task MuteAsync()
+        public Task MuteAsync()
         {
-            await this.ExecuteCommandAsync(async () =>
+            return this.ExecuteCommandAsync(async () =>
             {
                 if (!this.isMuted)
                 {
-                    await this.mpcConnection.SendAsync(new SetVolumeCommand(0));
+                    await this.mpcConnection.SendAsync(new SetVolumeCommand(0)).ConfigureAwait(false);
                     this.updateStatusSleepEvent.Set();
                 }
             });
@@ -162,20 +163,20 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// </summary>
         /// <param name="playlistName">Name of the playlist.</param>
         /// <returns>An async task.</returns>
-        public async Task PlayPlaylistAsync(string playlistName)
+        public Task PlayPlaylistAsync(string playlistName)
         {
-            await this.ExecuteCommandAsync(async () =>
+            return this.ExecuteCommandAsync(async () =>
             {
                 if (playlistName != null)
                 {
                     this.musicPlayerReporter?.StartingPlaylist(playlistName);
-                    await this.mpcConnection.SendAsync(new StopCommand());
-                    await this.mpcConnection.SendAsync(new ClearCommand());
-                    var loadResult = await this.mpcConnection.SendAsync(new LoadCommand(playlistName));
+                    await this.mpcConnection.SendAsync(new StopCommand()).ConfigureAwait(false);
+                    await this.mpcConnection.SendAsync(new ClearCommand()).ConfigureAwait(false);
+                    var loadResult = await this.mpcConnection.SendAsync(new LoadCommand(playlistName)).ConfigureAwait(false);
                     if (loadResult.IsResponseValid)
                     {
                         this.currentPlaylist = playlistName;
-                        await this.mpcConnection.SendAsync(new PlayCommand(0));
+                        await this.mpcConnection.SendAsync(new PlayCommand(0)).ConfigureAwait(false);
                         this.updateStatusSleepEvent.Set();
                         return;
                     }
@@ -189,11 +190,11 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// Pauses or resumes asynchronously.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task PauseResumeAsync()
+        public Task PauseResumeAsync()
         {
-            await this.ExecuteCommandAsync(async () =>
+            return this.ExecuteCommandAsync(async () =>
             {
-                await this.mpcConnection.SendAsync(new PauseResumeCommand(this.lastMpdStatus.State == MpdState.Play));
+                await this.mpcConnection.SendAsync(new PauseResumeCommand(this.lastMpdStatus.State == MpdState.Play)).ConfigureAwait(false);
                 this.updateStatusSleepEvent.Set();
             });
         }
@@ -204,17 +205,17 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// <returns>
         /// An async task.
         /// </returns>
-        public async Task NextAsync()
+        public Task NextAsync()
         {
-            await this.ExecuteCommandAsync(async () =>
+            return this.ExecuteCommandAsync(async () =>
             {
                 if (!this.lastMpdStatus.Repeat && this.lastMpdStatus.Song == this.lastMpdStatus.PlaylistLength - 1)
                 {
-                    await this.mpcConnection.SendAsync(new PlayCommand(0));
+                    await this.mpcConnection.SendAsync(new PlayCommand(0)).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this.mpcConnection.SendAsync(new NextCommand());
+                    await this.mpcConnection.SendAsync(new NextCommand()).ConfigureAwait(false);
                 }
 
                 this.updateStatusSleepEvent.Set();
@@ -225,17 +226,17 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// Plays the previous song asynchronously.
         /// </summary>
         /// <returns>An async task.</returns>
-        public async Task PreviousAsync()
+        public Task PreviousAsync()
         {
-            await this.ExecuteCommandAsync(async () =>
+            return this.ExecuteCommandAsync(async () =>
             {
                 if (!this.lastMpdStatus.Repeat && this.lastMpdStatus.Song == 0)
                 {
-                    await this.mpcConnection.SendAsync(new PlayCommand(this.lastMpdStatus.PlaylistLength - 1));
+                    await this.mpcConnection.SendAsync(new PlayCommand(this.lastMpdStatus.PlaylistLength - 1)).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this.mpcConnection.SendAsync(new PreviousCommand());
+                    await this.mpcConnection.SendAsync(new PreviousCommand()).ConfigureAwait(false);
                 }
 
                 this.updateStatusSleepEvent.Set();
@@ -262,8 +263,8 @@ namespace Aupli.SystemBoundaries.MusicControl
 
         private async Task<MusicPlayerEventArgs> ExecuteCurrentSongAndStatusCommandAsync()
         {
-            var statusResult = await this.mpcConnection.SendAsync(new StatusCommand());
-            var currentSongResult = await this.mpcConnection.SendAsync(new CurrentSongCommand());
+            var statusResult = await this.mpcConnection.SendAsync(new StatusCommand()).ConfigureAwait(false);
+            var currentSongResult = await this.mpcConnection.SendAsync(new CurrentSongCommand()).ConfigureAwait(false);
             if (currentSongResult.IsResponseValid && statusResult.IsResponseValid)
             {
                 var currentSong = currentSongResult.Response.Content;
@@ -310,11 +311,11 @@ namespace Aupli.SystemBoundaries.MusicControl
 #nullable disable
         private async Task<TResult> ExecuteCommandAsync<TResult>(Func<Task<TResult>> func)
         {
-            using (var lockResult = await this.mpcCommandLock.TryLockAsync())
+            using (var lockResult = await this.mpcCommandLock.TryLockAsync().ConfigureAwait(false))
             {
                 if (lockResult)
                 {
-                    await func();
+                    await func().ConfigureAwait(false);
                 }
             }
 
@@ -324,23 +325,23 @@ namespace Aupli.SystemBoundaries.MusicControl
 
         private async Task ExecuteCommandAsync(Func<Task> action)
         {
-            using var lockResult = await this.mpcCommandLock.TryLockAsync();
+            using var lockResult = await this.mpcCommandLock.TryLockAsync().ConfigureAwait(false);
             if (lockResult)
             {
-                await action();
+                await action().ConfigureAwait(false);
             }
         }
 
         private async Task GetStatus(CancellationToken cancellationToken)
         {
             var musicPlayerEventArgs = MusicPlayerEventArgs.EmptyEventArgs;
-            using (var lockResult = await this.mpcCommandLock.TryLockAsync(cancellationToken))
+            using (var lockResult = await this.mpcCommandLock.TryLockAsync(cancellationToken).ConfigureAwait(false))
             {
                 if (lockResult)
                 {
                     using (this.musicPlayerReporter?.EnterStatusRefresh())
                     {
-                        musicPlayerEventArgs = await this.ExecuteCurrentSongAndStatusCommandAsync();
+                        musicPlayerEventArgs = await this.ExecuteCurrentSongAndStatusCommandAsync().ConfigureAwait(false);
                         cancellationToken.ThrowIfCancellationRequested();
                     }
                 }
@@ -366,9 +367,9 @@ namespace Aupli.SystemBoundaries.MusicControl
                 this.statusUpdatedEvent.Set();
             }
 
-            if (await this.updateStatusSleepEvent.WaitAsync(this.StatusAutoRefreshPeriod, cancellationToken))
+            if (await this.updateStatusSleepEvent.WaitAsync(this.StatusAutoRefreshPeriod, cancellationToken).ConfigureAwait(false))
             {
-                await Task.Delay(DefaultCommandDelay, cancellationToken);
+                await Task.Delay(DefaultCommandDelay, cancellationToken).ConfigureAwait(false);
             }
         }
 

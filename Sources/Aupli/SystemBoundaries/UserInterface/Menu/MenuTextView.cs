@@ -91,7 +91,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
                 this.ipAddressIndex = 0;
             }
 
-            if (this.networkDevices.Any())
+            if (this.networkDevices.Count > 0)
             {
                 this.ipAddress = this.networkDevices[this.ipAddressIndex++].IpAddress;
             }

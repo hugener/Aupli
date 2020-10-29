@@ -37,7 +37,7 @@ namespace Aupli.ApplicationServices.Playlist
         /// </returns>
         public async Task<PlaylistEntity> GetLastPlaylistAsync()
         {
-            return await this.lastPlaylistRepository.GetLastPlaylistAsync();
+            return await this.lastPlaylistRepository.GetLastPlaylistAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Aupli.ApplicationServices.Playlist
         public async Task SetLastPlaylistAsync(PlaylistEntity playlistEntity)
         {
             this.lastPlaylistRepository.SetLastPlaylist(playlistEntity);
-            await this.lastPlaylistRepository.SaveAsync();
+            await this.lastPlaylistRepository.SaveAsync().ConfigureAwait(false);
         }
     }
 }

@@ -51,13 +51,15 @@ namespace Aupli.DomainServices.Playlist
         /// </summary>
         /// <param name="playlist">The playlist.</param>
         /// <returns>An async task.</returns>
-        public async Task ChangeLastPlaylistAsync(PlaylistEntity playlist)
+        public Task ChangeLastPlaylistAsync(PlaylistEntity playlist)
         {
             if (!Equals(this.LastPlaylist, playlist))
             {
                 this.LastPlaylist = playlist;
-                await this.lastPlaylistChangeHandler.SetLastPlaylistAsync(playlist);
+                return this.lastPlaylistChangeHandler.SetLastPlaylistAsync(playlist);
             }
+
+            return Task.CompletedTask;
         }
     }
 }
