@@ -36,8 +36,9 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.SystemServices
         /// <summary>
         /// Sets the source.
         /// </summary>
+        /// <param name="target">The target.</param>
         /// <param name="source">The source.</param>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.logger = this.logger.ForContext(source.AsType());
         }

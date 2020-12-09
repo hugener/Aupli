@@ -11,6 +11,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Player
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
+    using Sundew.Base.Reporting;
 
     /// <summary>
     /// Controls the music using player controls.

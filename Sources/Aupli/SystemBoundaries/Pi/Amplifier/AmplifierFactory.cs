@@ -12,13 +12,14 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Base.Disposal;
+    using Sundew.Base.Numeric;
     using Sundew.Pi.IO.Devices.Amplifiers.Max9744;
 
     /// <summary>
     /// Factory for create Max9744 volume controls.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public class AmplifierFactory : IAmplifierFactory
+    public sealed class AmplifierFactory : IAmplifierFactory
     {
         private readonly DisposingDictionary<IAmplifier> amplifiers = new DisposingDictionary<IAmplifier>();
 
@@ -31,12 +32,15 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
         /// </returns>
         public IAmplifier Create(IAmplifierReporter amplifierReporter)
         {
+            // return new Amp();
             var max9744Device = new Max9744Device(
                 0x4b,
                 ConnectorPin.P1Pin07,
                 ConnectorPin.P1Pin11,
                 ProcessorPin.Pin02,
-                ProcessorPin.Pin03);
+                ProcessorPin.Pin03,
+                null,
+                amplifierReporter);
             max9744Device.SetMuteState(true);
             max9744Device.SetShutdownState(false);
             var amplifier = new Max9744Amplifier(max9744Device, amplifierReporter);
@@ -58,6 +62,15 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
         public void Dispose()
         {
             this.amplifiers.Dispose();
+        }
+
+        private class Amp : IAmplifier
+        {
+            public bool IsMuted { get; set; }
+
+            public void SetVolume(Percentage volume)
+            {
+            }
         }
     }
 }

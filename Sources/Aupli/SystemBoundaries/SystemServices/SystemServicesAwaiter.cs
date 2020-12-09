@@ -16,6 +16,7 @@ namespace Aupli.SystemBoundaries.SystemServices
     using Aupli.SystemBoundaries.SystemServices.Ari;
     using Aupli.SystemBoundaries.SystemServices.Unix;
     using Aupli.SystemBoundaries.SystemServices.Windows;
+    using Sundew.Base.Reporting;
 
     /// <summary>
     /// Waits until all specified services are running.
@@ -82,17 +83,12 @@ namespace Aupli.SystemBoundaries.SystemServices
 
         private static ISystemServiceStateChecker GetSystemServiceChecker()
         {
-            switch (Environment.OSVersion.Platform)
+            return Environment.OSVersion.Platform switch
             {
-                case PlatformID.Unix:
-                    return new UnixSystemServiceStateChecker();
-                case PlatformID.Win32NT:
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                    return new WindowsSystemServiceStateChecker();
-                default:
-                    throw new NotSupportedException($"{Environment.OSVersion.Platform} is not supported.");
-            }
+                PlatformID.Unix => new UnixSystemServiceStateChecker(),
+                PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows => new WindowsSystemServiceStateChecker(),
+                _ => throw new NotSupportedException($"{Environment.OSVersion.Platform} is not supported."),
+            };
         }
 
         /// <summary>

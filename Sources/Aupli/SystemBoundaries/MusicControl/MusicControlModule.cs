@@ -63,8 +63,9 @@ namespace Aupli.SystemBoundaries.MusicControl
         /// </summary>
         public void Dispose()
         {
-            this.MusicPlayer?.Dispose();
+            this.musicPlayer?.Dispose();
             this.mpcConnection?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

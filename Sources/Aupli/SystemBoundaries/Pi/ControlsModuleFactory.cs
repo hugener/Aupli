@@ -78,6 +78,7 @@ namespace Aupli.SystemBoundaries.Pi
         void IDisposable.Dispose()
         {
             this.controlsModule.GetValueOrDefault()?.Disposer.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

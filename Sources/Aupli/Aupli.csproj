@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyVersion>0.0.1.0</AssemblyVersion>
     <FileVersion>0.0.1.0</FileVersion>
     <Version>0.0.1</Version>
-    <LangVersion>8</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Company>Hukano</Company>
     <TieredCompilation>true</TieredCompilation>
     <Nullable>enable</Nullable>
@@ -72,9 +72,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MpcNET.SundewFork" Version="0.0.2" />
+    <PackageReference Include="MpcNET.SundewFork" Version="0.0.4-pre-u20201205-182121" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="0.1.0" />
+    <PackageReference Include="Pi.IO.Devices.SundewFork" Version="2.0.0-pre-u20201205-191202" />
+    <PackageReference Include="Pi.SundewFork" Version="2.0.0-pre-u20201205-191200" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
@@ -84,11 +85,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Sundew.Base" Version="5.0.0" />
-    <PackageReference Include="Sundew.CommandLine" Version="4.2.4" />
-    <PackageReference Include="Sundew.Pi.IO.Devices" Version="0.0.1" />
-    <PackageReference Include="Sundew.TextView.ApplicationFramework" Version="0.0.1" />
-    <PackageReference Include="Sundew.TextView.Pi.Drivers" Version="0.0.1" />
+    <PackageReference Include="Sundew.Base" Version="6.0.0" />
+    <PackageReference Include="Sundew.CommandLine" Version="4.2.6" />
+    <PackageReference Include="Sundew.Pi.IO.Devices" Version="0.0.4" />
+    <PackageReference Include="Sundew.TextView.ApplicationFramework" Version="0.4.0" />
+    <PackageReference Include="Sundew.TextView.Pi.Drivers" Version="0.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 

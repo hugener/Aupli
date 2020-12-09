@@ -49,7 +49,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
         /// <param name="renderContext">The render context.</param>
         public void OnDraw(IRenderContext renderContext)
         {
-            renderContext.Home();
+            renderContext.SetPosition(0, 0);
             var line1 = $"Volume: {this.volumeService.Volume.ToString(0),5}{' '.Repeat(renderContext.Size.Width - 5 + 8)}";
             if (this.volumeService.IsMuted)
             {

@@ -11,6 +11,7 @@ namespace Aupli.ApplicationServices.Player
     using Aupli.ApplicationServices.Player.Api;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.DomainServices.Playlist.Api;
+    using Sundew.Base.Reporting;
 
     /// <summary>
     /// The player service.
@@ -20,7 +21,7 @@ namespace Aupli.ApplicationServices.Player
         private readonly PlaylistSearchService playlistSearchService;
         private readonly ILastPlaylistService lastPlaylistService;
         private readonly IPlaybackControls playbackControls;
-        private readonly IPlayerServiceReporter playerServiceReporter;
+        private readonly IPlayerServiceReporter? playerServiceReporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerService" /> class.
@@ -33,7 +34,7 @@ namespace Aupli.ApplicationServices.Player
             PlaylistSearchService playlistSearchService,
             ILastPlaylistService lastPlaylistService,
             IPlaybackControls playbackControls,
-            IPlayerServiceReporter playerServiceReporter)
+            IPlayerServiceReporter? playerServiceReporter)
         {
             this.playlistSearchService = playlistSearchService;
             this.lastPlaylistService = lastPlaylistService;

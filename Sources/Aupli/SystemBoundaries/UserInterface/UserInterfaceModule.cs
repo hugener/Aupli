@@ -32,7 +32,7 @@ namespace Aupli.SystemBoundaries.UserInterface
     /// <summary>
     /// A module representing the user interface.
     /// </summary>
-    public class UserInterfaceModule : IInitializable, IDisposable
+    public sealed class UserInterfaceModule : IInitializable, IDisposable
     {
         private readonly IApplication application;
         private readonly IUserInterfaceBridge userInterfaceBridge;
@@ -47,8 +47,9 @@ namespace Aupli.SystemBoundaries.UserInterface
         private VolumeController volumeController = default!;
         private ShutdownController shutdownController = default!;
         private PlayerController playerController = default!;
-        private Disposer disposer = default!;
+        private Disposer? disposer;
         private IViewNavigator? viewNavigator;
+        private DisplayStateController? displayStateController;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterfaceModule" /> class.
@@ -100,6 +101,18 @@ namespace Aupli.SystemBoundaries.UserInterface
         }
 
         /// <summary>
+        /// Gets the display state controller.
+        /// </summary>
+        /// <value>
+        /// The display state controller.
+        /// </value>
+        public DisplayStateController DisplayStateController
+        {
+            get => this.displayStateController ?? throw new NotInitializedException(this);
+            private set => this.displayStateController = value;
+        }
+
+        /// <summary>
         /// Initializes the asynchronous.
         /// </summary>
         /// <returns>An async task.</returns>
@@ -141,7 +154,7 @@ namespace Aupli.SystemBoundaries.UserInterface
                 timerFactory,
                 this.reporters?.ViewNavigatorReporter);
 
-            new DisplayStateController(this.userInterfaceBridge.TextViewNavigator, idleMonitor, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
+            this.DisplayStateController = new DisplayStateController(this.userInterfaceBridge.TextViewNavigator, idleMonitor, this.userInterfaceBridge.Display, this.reporters?.DisplayStateControllerReporter);
 
             interactionController.Start();
             this.disposer = new Disposer(this.reporters?.DisposableReporter, timerFactory);

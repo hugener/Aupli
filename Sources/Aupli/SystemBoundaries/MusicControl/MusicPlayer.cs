@@ -27,7 +27,7 @@ namespace Aupli.SystemBoundaries.MusicControl
     /// <summary>
     /// Aupli music player.
     /// </summary>
-    public class MusicPlayer : IMusicPlayer
+    public sealed class MusicPlayer : IMusicPlayer
     {
         private static readonly TimeSpan DefaultCommandDelay = TimeSpan.FromMilliseconds(5);
         private readonly AsyncLock mpcCommandLock = new AsyncLock();
@@ -52,8 +52,8 @@ namespace Aupli.SystemBoundaries.MusicControl
         {
             this.mpcConnection = mpcConnection;
             this.musicPlayerReporter = musicPlayerReporter;
-            this.musicPlayerReporter?.SetSource(this);
-            this.musicPlayerStatusJob = new ContinuousJob(this.GetStatus, e => musicPlayerReporter?.OnStatusException(e));
+            this.musicPlayerReporter?.SetSource(typeof(IMusicPlayerReporter), this);
+            this.musicPlayerStatusJob = new ContinuousJob(this.GetStatus, (Exception exception, ref bool _) => musicPlayerReporter?.OnStatusException(exception));
         }
 
         /// <summary>
@@ -398,6 +398,16 @@ namespace Aupli.SystemBoundaries.MusicControl
                     rhs => this.StatusEventArgs == rhs.StatusEventArgs &&
                            this.VolumeChangedEventArgs == rhs.VolumeChangedEventArgs &&
                            this.AudioOutputEventArgs == rhs.AudioOutputEventArgs);
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return EqualityHelper.Equals(this, obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return EqualityHelper.GetHashCode(this.StatusEventArgs?.GetHashCode() ?? 0, this.VolumeChangedEventArgs?.GetHashCode() ?? 0, this.AudioOutputEventArgs?.GetHashCode() ?? 0);
             }
         }
     }

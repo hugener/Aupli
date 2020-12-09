@@ -17,13 +17,13 @@ namespace Aupli.SystemBoundaries.SystemServices
     using System.Threading.Tasks;
     using Aupli.SystemBoundaries.SystemServices.Api;
     using Aupli.SystemBoundaries.SystemServices.Ari;
+    using Sundew.Base.Reporting;
 
     /// <summary>Implement of wifi enabler for Linux (netctl).</summary>
     public class WifiConnecter : IWifiConnecter
     {
         private const string WifiNameGroupName = "WifiName";
         private const string StartCommandText = "switch-to";
-        private const string StopCommandText = "stop";
         private static readonly Regex WifiListRegex = new Regex($@"^. (?<{WifiNameGroupName}>[\w-_,]+)");
         private readonly IWifiConnecterReporter? wifiConnecterReporter;
 
@@ -77,19 +77,25 @@ namespace Aupli.SystemBoundaries.SystemServices
 
         private static async Task<List<string>> GetMatchingWifiProfiles(Func<string, bool>? profileFilter, CancellationToken cancellationToken)
         {
-            using var process = Process.Start(new ProcessStartInfo("netctl", "list")
+            var processStartInfo = new ProcessStartInfo("netctl", "list");
+            using var process = Process.Start(processStartInfo);
+            if (process == null)
             {
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-            });
+                throw new InvalidOperationException(@$"The ""{processStartInfo.FileName} {processStartInfo.Arguments}"" process could not be started.");
+            }
+
             process.Start();
             cancellationToken.ThrowIfCancellationRequested();
-            process.WaitForExit();
+            await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             var wifiProfiles = new List<string>();
             while (!process.StandardOutput.EndOfStream)
             {
                 var wifiProfile = await process.StandardOutput.ReadLineAsync().ConfigureAwait(false);
+                if (wifiProfile == null)
+                {
+                    continue;
+                }
 
                 var match = WifiListRegex.Match(wifiProfile);
                 if (match.Success)
@@ -107,16 +113,23 @@ namespace Aupli.SystemBoundaries.SystemServices
 
         private static void NetctlCommand(string wifiProfile, string command)
         {
-            using var process = Process.Start(new ProcessStartInfo("sudo", $" netctl {command} {wifiProfile}")
+            var processStartInfo = new ProcessStartInfo("sudo", $" netctl {command} {wifiProfile}")
             {
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
-            });
+            };
+            using var process = Process.Start(processStartInfo);
+
+            if (process == null)
+            {
+                throw new InvalidOperationException(@$"The ""{processStartInfo.FileName} {processStartInfo.Arguments}"" process could not be started.");
+            }
+
             process.Start();
             process.WaitForExit();
         }
 
-        private static bool IsOnline(string wifiProfile)
+        private static bool IsOnline()
         {
             return HasIp();
         }
@@ -130,7 +143,7 @@ namespace Aupli.SystemBoundaries.SystemServices
                 foreach (var wifiProfile in wifiProfiles)
                 {
                     NetctlCommand(wifiProfile, StartCommandText);
-                    if (IsOnline(wifiProfile))
+                    if (IsOnline())
                     {
                         this.wifiConnecterReporter?.ConnectedToWifi(wifiProfile);
                         return;

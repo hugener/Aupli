@@ -7,13 +7,13 @@
 
 namespace Aupli.SystemBoundaries.Pi.Amplifier.Ari
 {
+    using global::Pi.IO.InterIntegratedCircuit;
     using Sundew.Base.Numeric;
-    using Sundew.Base.Reporting;
 
     /// <summary>
     /// Reporter for <see cref="Max9744Amplifier"/>.
     /// </summary>
-    public interface IAmplifierReporter : IReporter
+    public interface IAmplifierReporter : II2cDeviceConnectionReporter
     {
         /// <summary>
         /// Changes the mute.

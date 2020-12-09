@@ -65,7 +65,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Menu
         /// <inheritdoc />
         public void OnDraw(IRenderContext renderContext)
         {
-            renderContext.Home();
+            renderContext.SetPosition(0, 0);
 
             renderContext.WriteLine(this.ipAddress != null
                 ? this.ipAddress.ToString().LimitAndPadRight(renderContext.Size.Width, ' ')

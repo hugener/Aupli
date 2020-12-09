@@ -19,6 +19,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering
     /// <seealso cref="ITextViewRendererReporter" />
     public class TextViewRendererLogger : ITextViewRendererReporter
     {
+        private const string LogFormat = ": {view}";
         private ILogger log;
 
         /// <summary>
@@ -33,8 +34,9 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering
         /// <summary>
         /// Sets the source.
         /// </summary>
+        /// <param name="target">The target.</param>
         /// <param name="source">The source.</param>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.log = this.log.ForContext(source.AsType());
         }
@@ -76,6 +78,14 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering
         }
 
         /// <summary>
+        /// Logs stopping.
+        /// </summary>
+        public void Stopping()
+        {
+            this.log.Information(nameof(this.Stopping));
+        }
+
+        /// <summary>
         /// Logs stopped.
         /// </summary>
         public void Stopped()
@@ -96,14 +106,14 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering
         /// <param name="view">The view.</param>
         public void WaitingForAccessToChangeViewTo(ITextView view)
         {
-            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + ": {view}", GetViewName(view));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + LogFormat, GetViewName(view));
         }
 
         /// <summary>Waiting for rendering to abort.</summary>
         /// <param name="view">The view.</param>
         public void WaitingForRenderingAborted(ITextView view)
         {
-            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + ": {view}", GetViewName(view));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + LogFormat, GetViewName(view));
         }
 
         /// <summary>Waiting for access to render view.</summary>
@@ -116,28 +126,28 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering
         /// <param name="view">The view.</param>
         public void AcquiredViewForRendering(ITextView view)
         {
-            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + ": {view}", GetViewName(view));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + LogFormat, GetViewName(view));
         }
 
         /// <summary>Aborting the rendering.</summary>
         /// <param name="view">The view.</param>
         public void AbortingRendering(ITextView view)
         {
-            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + ": {view}", GetViewName(view));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + LogFormat, GetViewName(view));
         }
 
         /// <summary>Waiting for view to invalidate.</summary>
         /// <param name="view">The view.</param>
         public void WaitingForViewToInvalidate(ITextView view)
         {
-            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + ": {view}", GetViewName(view));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + LogFormat, GetViewName(view));
         }
 
         /// <summary>Views the already set.</summary>
         /// <param name="view">The view.</param>
         public void ViewAlreadySet(ITextView view)
         {
-            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + ": {view}", GetViewName(view));
+            this.log.Verbose(MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase() + LogFormat, GetViewName(view));
         }
 
         private static string GetViewName(ITextView view)

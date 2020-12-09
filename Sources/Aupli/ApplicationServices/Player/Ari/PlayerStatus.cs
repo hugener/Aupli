@@ -73,20 +73,20 @@ namespace Aupli.ApplicationServices.Player.Ari
         public PlayerState State { get; }
 
         /// <summary>
-        /// Gets the elapsed.
-        /// </summary>
-        /// <value>
-        /// The elapsed.
-        /// </value>
-        public TimeSpan Elapsed { get; }
-
-        /// <summary>
         /// Gets the track.
         /// </summary>
         /// <value>
         /// The track.
         /// </value>
         public int Track { get; }
+
+        /// <summary>
+        /// Gets the elapsed.
+        /// </summary>
+        /// <value>
+        /// The elapsed.
+        /// </value>
+        public TimeSpan Elapsed { get; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -97,12 +97,35 @@ namespace Aupli.ApplicationServices.Player.Ari
         /// </returns>
         public bool Equals(PlayerStatus? other)
         {
-            return EqualityHelper.Equals(this, other, rhs => this.PlaylistName == rhs?.PlaylistName &&
+            return EqualityHelper.Equals(this, other, rhs => this.PlaylistName == rhs.PlaylistName &&
                                                              this.Artist == rhs.Artist &&
                                                              this.Title == rhs.Title &&
                                                              this.State == rhs.State &&
                                                              this.Track == rhs.Track &&
                                                              this.Elapsed == rhs.Elapsed);
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified object  is equal to the current object; otherwise, <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object? obj)
+        {
+            return EqualityHelper.Equals(this, obj);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return EqualityHelper.GetHashCode(this.PlaylistName.GetHashCode(), this.Artist.GetHashCode(), this.Title.GetHashCode(), this.Track.GetHashCode(), this.State.GetHashCode(), this.Elapsed.GetHashCode());
         }
     }
 }

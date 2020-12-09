@@ -10,6 +10,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Volume
     using Aupli.ApplicationServices.Volume.Api;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Volume.Ari;
+    using Sundew.Base.Reporting;
 
     /// <summary>
     /// Controls the volume of the MAX 9744 using the KY-040.

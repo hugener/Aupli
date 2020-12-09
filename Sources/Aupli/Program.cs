@@ -48,7 +48,7 @@ namespace Aupli
             try
             {
                 logger.Information("------------------------------------------");
-                logger.Information("Starting Aupli: {Args}, start time: {startTime}", string.Join(" ", args), new TimeSpan(startTime));
+                logger.Information("Starting Aupli: {Args}, start time: {startTime}", string.Join(' ', args), new TimeSpan(startTime));
                 var application = new Application();
 
                 var bootstrapper = new Bootstrapper(application, logger);

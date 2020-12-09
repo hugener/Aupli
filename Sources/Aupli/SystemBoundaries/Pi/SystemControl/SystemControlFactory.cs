@@ -7,6 +7,7 @@
 
 namespace Aupli.SystemBoundaries.Pi.SystemControl
 {
+    using System;
     using Aupli.SystemBoundaries.Bridges.Shutdown;
     using Aupli.SystemBoundaries.Pi.SystemControl.Api;
     using Aupli.SystemBoundaries.Pi.SystemControl.Linux;
@@ -17,7 +18,7 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl
     /// <summary>
     /// Factory for creating a remote PI device.
     /// </summary>
-    public class SystemControlFactory : ISystemControlFactory
+    public sealed class SystemControlFactory : ISystemControlFactory
     {
         private readonly DisposingDictionary<ISystemControl> systemControls = new DisposingDictionary<ISystemControl>();
 
@@ -49,6 +50,7 @@ namespace Aupli.SystemBoundaries.Pi.SystemControl
         public void Dispose()
         {
             this.systemControls.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

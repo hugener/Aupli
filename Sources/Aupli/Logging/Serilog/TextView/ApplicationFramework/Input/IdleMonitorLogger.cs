@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
 {
+    using System;
     using System.Reflection;
     using global::Serilog;
     using global::Sundew.Base;
@@ -32,8 +33,9 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.Input
         /// <summary>
         /// Sets the source.
         /// </summary>
+        /// <param name="target">The target.</param>
         /// <param name="source">The source.</param>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.log = this.log.ForContext(source.AsType());
         }

@@ -10,6 +10,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
     using System;
     using Aupli.ApplicationServices.Player.Ari;
     using Aupli.SystemBoundaries.UserInterface.Input.Ari;
+    using Sundew.Base.Reporting;
     using Sundew.TextView.ApplicationFramework.Input;
 
     /// <summary>

@@ -23,8 +23,8 @@ namespace Aupli.CommandLine
         /// </summary>
         /// <param name="allowShutdown">if set to <c>true</c> [allow shutdown].</param>
         /// <param name="isLoggingToConsole">if set to <c>true</c> [is logging to console].</param>
-        /// <param name="fileLogOptions">The file log options.</param>
         /// <param name="logLevel">The log level.</param>
+        /// <param name="fileLogOptions">The file log options.</param>
         public Options(bool allowShutdown, bool isLoggingToConsole, LogEventLevel logLevel = LogEventLevel.Information, FileLogOptions? fileLogOptions = null)
         {
             this.AllowShutdown = allowShutdown;

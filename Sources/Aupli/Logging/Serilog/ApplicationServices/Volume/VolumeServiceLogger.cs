@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.ApplicationServices.Volume
 {
+    using System;
     using System.Reflection;
     using Aupli.ApplicationServices.Volume.Ari;
     using global::Serilog;
@@ -33,8 +34,9 @@ namespace Aupli.Logging.Serilog.ApplicationServices.Volume
         /// <summary>
         /// Sets the source.
         /// </summary>
+        /// <param name="target">The target.</param>
         /// <param name="source">The source.</param>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.log = this.log.ForContext(source.AsType());
         }

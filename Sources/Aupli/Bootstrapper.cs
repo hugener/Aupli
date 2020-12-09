@@ -14,6 +14,7 @@ namespace Aupli
     using Aupli.Logging.Serilog.ApplicationServices.Volume;
     using Aupli.Logging.Serilog.SundewBase;
     using Aupli.Logging.Serilog.SystemBoundaries.MusicControl;
+    using Aupli.Logging.Serilog.SystemBoundaries.Pi;
     using Aupli.Logging.Serilog.SystemBoundaries.Pi.Amplifier;
     using Aupli.Logging.Serilog.SystemBoundaries.SystemServices;
     using Aupli.Logging.Serilog.SystemBoundaries.UserInterface;
@@ -200,10 +201,12 @@ namespace Aupli
         /// <summary>
         /// Creates the gpio connection driver factory.
         /// </summary>
-        /// <returns>A <see cref="GpioConnectionDriverFactory"/>.</returns>
+        /// <returns>
+        /// A <see cref="GpioConnectionDriverFactory" />.
+        /// </returns>
         protected virtual IGpioConnectionDriverFactory CreateGpioConnectionDriverFactory()
         {
-            return new GpioConnectionDriverFactory(true);
+            return new GpioConnectionDriverFactory(false);
         }
 
         /// <summary>

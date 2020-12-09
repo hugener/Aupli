@@ -10,6 +10,7 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
     using Aupli.ApplicationServices.Volume.Ari;
     using Aupli.SystemBoundaries.Pi.Amplifier.Ari;
     using Sundew.Base.Numeric;
+    using Sundew.Base.Reporting;
     using Sundew.Pi.IO.Devices.Amplifiers.Max9744;
 
     /// <summary>
@@ -34,7 +35,7 @@ namespace Aupli.SystemBoundaries.Pi.Amplifier
             this.max9744AmplifierReporter?.SetSource(this);
             this.volumeRange = new Interval<byte>(
                 (byte)(max9744Device.VolumeRange.Min + 10),
-                (byte)(max9744Device.VolumeRange.Max - 20));
+                (byte)(max9744Device.VolumeRange.Max - 10));
         }
 
         /// <summary>

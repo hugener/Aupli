@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player
 {
+    using System;
     using System.Reflection;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Player.Ari;
@@ -33,8 +34,9 @@ namespace Aupli.Logging.Serilog.SystemBoundaries.UserInterface.Player
         /// <summary>
         /// Sets the source.
         /// </summary>
+        /// <param name="target">The target.</param>
         /// <param name="source">The source.</param>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.log = this.log.ForContext(source.AsType());
         }

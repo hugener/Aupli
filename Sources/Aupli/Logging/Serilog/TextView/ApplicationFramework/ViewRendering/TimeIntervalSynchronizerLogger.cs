@@ -27,7 +27,7 @@ namespace Aupli.Logging.Serilog.TextView.ApplicationFramework.ViewRendering
         }
 
         /// <inheritdoc/>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.logger = this.logger.ForContext(source.AsType());
         }

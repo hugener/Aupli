@@ -11,6 +11,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
     using Aupli.SystemBoundaries.Bridges.Shutdown;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Api;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Ari;
+    using Sundew.Base.Reporting;
     using Sundew.TextView.ApplicationFramework;
     using Sundew.TextView.ApplicationFramework.Input;
 

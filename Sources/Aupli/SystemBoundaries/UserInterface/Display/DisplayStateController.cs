@@ -10,6 +10,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Display
     using System;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using Aupli.SystemBoundaries.UserInterface.Display.Ari;
+    using Sundew.Base.Reporting;
     using Sundew.TextView.ApplicationFramework.Input;
     using Sundew.TextView.ApplicationFramework.Navigation;
 

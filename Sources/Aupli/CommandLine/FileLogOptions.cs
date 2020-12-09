@@ -21,7 +21,7 @@ namespace Aupli.CommandLine
         /// <param name="logPath">The log path.</param>
         /// <param name="maxLogFileSizeInBytes">The maximum log file size in bytes.</param>
         /// <param name="maxNumberOfLogFiles">The maximum number of log files.</param>
-        public FileLogOptions(string logPath = "Logs/Aupli-{Date}.log", long maxLogFileSizeInBytes = 5_000_000, int maxNumberOfLogFiles = 10)
+        public FileLogOptions(string logPath = "Logs/Aupli.log", long maxLogFileSizeInBytes = 5_000_000, int maxNumberOfLogFiles = 10)
         {
             this.LogPath = logPath;
             this.MaxLogFileSizeInBytes = maxLogFileSizeInBytes;

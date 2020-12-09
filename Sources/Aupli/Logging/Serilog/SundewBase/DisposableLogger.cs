@@ -7,6 +7,7 @@
 
 namespace Aupli.Logging.Serilog.SundewBase
 {
+    using System;
     using System.Reflection;
     using global::Serilog;
     using Sundew.Base;
@@ -25,9 +26,12 @@ namespace Aupli.Logging.Serilog.SundewBase
             this.logger = logger.ForContext<DisposableLogger>();
         }
 
-        /// <summary>Sets the source.</summary>
+        /// <summary>
+        /// Sets the source.
+        /// </summary>
+        /// <param name="target">The target.</param>
         /// <param name="source">The source.</param>
-        public void SetSource(object source)
+        public void SetSource(Type target, object source)
         {
             this.logger = this.logger.ForContext(source.AsType());
         }
@@ -36,7 +40,7 @@ namespace Aupli.Logging.Serilog.SundewBase
         /// <param name="disposable">The disposable.</param>
         public void Disposed(object disposable)
         {
-            this.logger.Verbose($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{disposable}}", disposable);
+            this.logger.Verbose($"{MethodBase.GetCurrentMethod()!.Name.FromCamelCaseToSentenceCase()}: {{Disposable}}", disposable);
         }
     }
 }

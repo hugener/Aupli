@@ -13,6 +13,7 @@ namespace Aupli.ApplicationServices.Volume
     using Aupli.ApplicationServices.Volume.Ari;
     using Sundew.Base.Initialization;
     using Sundew.Base.Numeric;
+    using Sundew.Base.Reporting;
 
     /// <summary>
     /// The volume service.

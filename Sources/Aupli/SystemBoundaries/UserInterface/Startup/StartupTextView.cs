@@ -40,21 +40,21 @@ namespace Aupli.SystemBoundaries.UserInterface.Startup
         /// <inheritdoc />
         public async Task OnShowingAsync(IInvalidater invalidater, ICharacterContext? characterContext)
         {
-            this.greeting = await this.greetingProvider.GetGreetingAsync();
+            this.greeting = await this.greetingProvider.GetGreetingAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc />
         public void OnDraw(IRenderContext renderContext)
         {
             renderContext.Clear();
-            renderContext.Home();
+            renderContext.SetPosition(0, 0);
             renderContext.WriteLine($"{this.greeting} {this.lifecycleConfiguration.Name}");
         }
 
         /// <inheritdoc />
-        public async Task OnClosingAsync()
+        public Task OnClosingAsync()
         {
-            await this.greetingProvider.SaveLastGreetingAsync(this.greeting);
+            return this.greetingProvider.SaveLastGreetingAsync(this.greeting);
         }
     }
 }

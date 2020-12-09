@@ -42,7 +42,9 @@ namespace Aupli.SystemBoundaries
         private readonly ITimeIntervalSynchronizerReporter? timeIntervalSynchronizerReporter;
         private readonly AsyncLazy<IStartupModule, StartupModuleData> startupModule;
 
-        /// <summary>Initializes a new instance of the <see cref="SystemBoundaries.StartupModuleFactory"/> class.</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SystemBoundaries.StartupModuleFactory" /> class.
+        /// </summary>
         /// <param name="application">The application.</param>
         /// <param name="gpioConnectionDriverFactory">The gpio connection driver factory.</param>
         /// <param name="namePath">The name path.</param>
@@ -107,6 +109,7 @@ namespace Aupli.SystemBoundaries
         void IDisposable.Dispose()
         {
             this.startupModule.GetValueOrDefault()?.Disposer.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

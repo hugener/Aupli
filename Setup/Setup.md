@@ -69,6 +69,7 @@ Create the pi user:
 ```
 useradd -m pi
 passwd pi
+sudo usermod --append --groups audio
 ```
 
 Delete alarm user
@@ -233,14 +234,15 @@ yaourt -S upmpdcli
 
 sudo systemctl enable upmpdcli
 ```
-## 5.4 Install .NET Core runtime
-Download the latest .NET Core Runtime for ARM64. This is refered to as armhf on the Daily Builds page.
-https://dotnet.microsoft.com/download/dotnet-core/3.0
+## 5.4 Install .NET 5 runtime
+Download the latest .NET 5 Runtime for ARM/ARM64. This is refered to as armhf on the Daily Builds page.
+https://dotnet.microsoft.com/download/dotnet/5.0
 
 ```
-curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/5cbf9f66-7945-43e2-9b7c-351f900e9893/2fcd48f3d4db99283ebdb46daf9bacec/aspnetcore-runtime-3.0.0-linux-arm64.tar.gz
+curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/5fc4659b-86c2-4e8f-b409-853e6d8224a5/6de0fc8c6e26f308bf246aaa967c9fc1/dotnet-runtime-5.0.0-linux-arm.tar.gz
 
-curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/e9d4b012-a877-443c-8344-72ef910c86dd/b5e729b532d7b3b5488c97764bd0fb8e/aspnetcore-runtime-3.0.0-linux-arm.tar.gz
+curl -sSL -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/4b114207-eaa2-40fe-8524-bd3c56b2fd9a/1d74fdea8701948c0150c39645455b2f/dotnet-runtime-5.0.0-linux-arm64.tar.gz
+
 ```
 Create a destination folder and extract the downloaded package into it.
 ```
@@ -316,84 +318,24 @@ Skip this step if you set up everything from scratch.
 ```
 su
 <enter password>
-systemctl rescue
-nano /boot/cmdline.txt
-```
-Change rw to ro in the line below:
-```
-root=/dev/mmcblk0p2 rw rootwait...
 
-ctrl o
-<enter>
-ctrl x
+pacman-key --populate archlinuxarm
+pacman -Sy
+pacman -S parted
 
-nano /etc/fstab
+parted
 ```
-Add the following lines below:
-
+Parted commands:
 ```
-tmpfs   /var/log    tmpfs   nodev,nosuid    0   0
-tmpfs   /var/tmp    tmpfs   nodev,nosuid    0   0
-
-ctrl o
-<enter>
-ctrl x
-reboot
-
-su
-<enter password>
-
-fdisk /dev/mmcblk0
+print
+resizepart 2 
+y
+100%
+quit
 ```
-Fdisk commands
+Resize file system
 ```
-p
-d
-2
-n
-p
-2
-```
-Make sure the beginning of old and new partition are the same.
-<br>The p command above lists the start blocks
-<br>If you are asked whether to remove the old signature press No.
-```
-<enter>
-<enter>
-<no>
-
-w
-```
-Reboot the pick up changes and resize file system.
-```
-reboot
-
-su
-<enter password>
-
-systemctl rescue
-mount -o rw,remount /
 resize2fs /dev/mmcblk0p2
-mount -o ro,remount /
-e2fsck /dev/mmcblk0p2
-sync
-nano /boot/cmdline.txt
-```
-Change ro back to rw in the line below:
-```
-root=/dev/mmcblk0p2 ro rootwait...
-
-mount -o rw,remount /
-nano /etc/fstab
-```
-Comment out the added lines below:
-```
-tmpfs   /var/log    tmpfs   nodev,nosuid    0   0
-tmpfs   /var/tmp    tmpfs   nodev,nosuid    0   0
-
-ctrl o
-<enter>
-ctrl x
 
 reboot
 ```

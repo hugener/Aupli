@@ -7,12 +7,15 @@
 
 namespace Aupli.SystemBoundaries.Pi.Input
 {
+    using System;
     using System.Linq;
     using Aupli.SystemBoundaries.Bridges.Interaction;
     using global::Pi.IO.GeneralPurpose;
     using Sundew.Pi.IO.Devices.Buttons;
     using Sundew.Pi.IO.Devices.InfraredReceivers.Lirc;
+    using Sundew.Pi.IO.Devices.RfidTransceivers;
     using Sundew.Pi.IO.Devices.RfidTransceivers.Mfrc522;
+    using Sundew.Pi.IO.Devices.RotaryEncoders;
     using Sundew.Pi.IO.Devices.RotaryEncoders.Ky040;
 
     /// <summary>
@@ -60,6 +63,89 @@ namespace Aupli.SystemBoundaries.Pi.Input
                 lircConnection,
                 ky040Connection,
                 buttonsGpioConnection);
+            /* new Rfid(),
+             new Lirc(),
+             new Rotary(),
+             new Dispo());*/
+        }
+
+        private class Dispo : IDisposable
+        {
+            public void Dispose()
+            {
+            }
+        }
+
+        private class Lirc : ILircDevice
+        {
+            public event EventHandler<LircCommandEventArgs>? CommandReceived;
+
+            public void Dispose()
+            {
+                if (false)
+#pragma warning disable 162
+                {
+                    this.CommandReceived += (sender, args) => { };
+                    this.CommandReceived?.Invoke(this, new LircCommandEventArgs(LircKeyCodes.Btn0, "L", 0, "Aupli"));
+                }
+#pragma warning restore 162
+            }
+
+            public void StartListening()
+            {
+            }
+
+            public void Stop()
+            {
+            }
+        }
+
+        private class Rfid : IRfidConnection
+        {
+            public event EventHandler<TagDetectedEventArgs>? TagDetected;
+
+            public void Dispose()
+            {
+                if (false)
+#pragma warning disable 162
+                {
+                    this.TagDetected += (sender, args) => { };
+                    this.TagDetected?.Invoke(this, new TagDetectedEventArgs(new Uid(1, 2, 3, 4)));
+                }
+#pragma warning restore 162
+            }
+
+            public void StartScanning()
+            {
+            }
+        }
+
+        private class Rotary : IRotaryEncoderWithButtonDevice
+        {
+            public event EventHandler<RotationEventArgs>? Rotated;
+
+            public event EventHandler? Pressed;
+
+            public void Dispose()
+            {
+                if (false)
+#pragma warning disable 162
+                {
+                    this.Pressed += (sender, args) => { };
+                    this.Rotated += (sender, args) => { };
+                    this.Rotated?.Invoke(this, new RotationEventArgs(EncoderDirection.Clockwise));
+                    this.Pressed?.Invoke(this, EventArgs.Empty);
+                }
+#pragma warning restore 162
+            }
+
+            public void Start()
+            {
+            }
+
+            public void Stop()
+            {
+            }
         }
     }
 }

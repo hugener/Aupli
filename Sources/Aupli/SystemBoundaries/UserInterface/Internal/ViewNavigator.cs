@@ -14,6 +14,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Internal
     using Aupli.SystemBoundaries.UserInterface.Ari;
     using Aupli.SystemBoundaries.UserInterface.Shutdown.Api;
     using Aupli.SystemBoundaries.UserInterface.Volume;
+    using Sundew.Base.Reporting;
     using Sundew.Base.Threading;
     using Sundew.TextView.ApplicationFramework.Navigation;
 

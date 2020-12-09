@@ -35,7 +35,7 @@ namespace Aupli.SystemBoundaries.UserInterface.Input
             this.inputControls = inputControls;
             this.inputManager = inputManager;
             this.interactionControllerReporter = interactionControllerReporter;
-            this.interactionControllerReporter?.SetSource(typeof(InteractionController));
+            this.interactionControllerReporter?.SetSource(typeof(IInteractionControllerReporter), typeof(InteractionController));
             this.KeyInputEvent = inputManager.CreateEvent<KeyInputArgs>();
             this.TagInputEvent = inputManager.CreateEvent<TagInputArgs>();
             this.inputControls.PlayPauseButton.Pressed += this.OnPlayPauseButtonPressed;

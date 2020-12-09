@@ -43,8 +43,9 @@ namespace Aupli.SystemBoundaries.UserInterface.Shutdown
         public void OnDraw(IRenderContext renderContext)
         {
             renderContext.Clear();
-            renderContext.Home();
+            renderContext.SetPosition(0, 0);
             renderContext.WriteLine("Bye bye ");
+            renderContext.WriteLine(this.lifecycleConfiguration.Name);
         }
 
         /// <inheritdoc />
